@@ -138,14 +138,15 @@
     )
 )
 
-(define (apply-contour drawable channel contour)
+(define (apply-contour-kh drawable channel contour)
     (let* (
+            (dummy-var 0)
              ; (0 0 127 255 255 0)
             ;dropped leading' before the #
             (contourtypes #(0 0 0 0 0 0 0 0 0 1 1))
             (contourlengths #(6 6 10 14 18 10 18 18 10 256 256))
             (contours #(#(0.0 0.0 0.5 1.0 1.0 0.0)
-                        #(0.0 1.0 0.5 0.0 1.0 1.0)
+                        #(0.0 1.0 0.5 0.0 0.99 1.0) ; was 0.0 1.0 1.0 at end
                         #(0.0 0.25 0.368 0.29 0.588 0.45 0.701 0.701 0.749 1.00)
                         #(0.0 0.0 0.196 0.4901 0.0235 0.04901 0.188 0.5803 0.3098 0.7019 0.4196 0.8509 0.509 1.000) ;0 0 5 125 6 125 48 148 79 179 107 217 130 255
                         #(0.0 0.0 0.129 0.031 0.250 0.149 0.380 0.400 0.501 0.650 0.619 0.819 0.749 0.921 0.870 0.968 1.000 1.000) ;;(0 0 33 8 64 38 97 102 128 166 158 209 191 235 222 247 255 255)
@@ -153,32 +154,68 @@
                         #(0.0 0.0 0.129 0.431 0.250 0.929 0.380 0.941 0.501 0.541 0.619 0.129 0.749 0.019 0.870 0.388 1.000 1.000) ;; 0 0 33 110 64 237 97 240 128 138 158 33 191 5 222 99 255 255)
                         #(0.0 0.0 0.129 0.290 0.250 0.858 0.380 0.729 0.501 0.000 0.619 0.690 0.749 0.788 0.870 0.011 1.000 1.000) ;;(0 0 33 74 64 219 97 186 128 0 158 176 191 201 222 3 255 255)
                         #(0.011 1.000 0.211 0.388 0.380 0.419 0.701 0.600 0.988 0.000) ;; 3 255 54 99 97 107 179 153 252 0)
-;#(0.000 0.019 0.035 0.050 0.062 0.074 0.086 0.098 0.105 0.112 0.117 0.125 0.129 0.133 0.137 0.141 0.149 0.152 0.156 0.160 0.168 0.172 0.180 0.184 0.188 0.192 0.196 0.200 0.203 0.207 0.211 0.215 0.215 0.219 0.219
-;   0.223 0.223 0.227 0.227 0.231 0.231 0.231 0.235 0.235 0.235 0.239 0.239 0.239 0.239 0.243 0.243 0.243 0.243 0.243 0.247 0.247 0.247 0.247 0.247 0.247 0.250 0.250 0.250 0.250 0.250 0.278 0.294 0.305 0.317 
-;   0.329 0.337 0.349 0.356 0.364 0.372 0.376 0.384 0.388 0.396 0.400 0.403 0.407 0.411 0.419 0.419 0.423 0.431 0.435 0.439 0.443 0.447 0.450 0.454 0.458 0.462 0.466 0.466
-;   0.470 0.474 0.474 0.478 0.482 0.482 0.482 0.486 0.486 0.486 0.490 0.490 0.490 0.490 0.490 0.490 0.490 0.494 0.494 0.494 0.494 0.494 0.494 0.494 0.490
-; 125 125 125 125 125 125 125 130 134 137 141 145 148 151 153 156 158 160 162 163 165 166 167 168 170
-; 171 171 172 173 174 175 176 177 178 178 179 180 181 181 182 183 183 184 184 185 185 186 186 187 187
-; 188 188 189 189 189 189 190 190 190 190 191 191 191 191 191 191 191 191 191 191 193 194 196 197 198
-; 200 201 203 204 205 207 208 209 211 212 213 214 215 217 218 219 220 220 221 222 222 223 223 224 224
-; 224 224 224 223 223 222 222 221 221 220 219 218 217 216 215 214 213 212 211 210 209 208 206 205 204
-; 203 202 200 199 198 197 196 194 194)
-; ;;(0 5 9 13 16 19 22 25 27 29 30 32 33 34 35 36 38 39 40 41 43 44 46 47 48 49 50 51 52 53 54 55 55 56 56 57 57 58 58 59 59 59 60 60 60 61 61 61 61 62 62 62 62 62 63 63 63 63 63 63 64 64 64 64 64 71 75 78 81 84 86 89 91 93 95 96 98 99 101 102 103 104 105 107 107 108 110 111 112 113 114 115 116 117 118 119 119 120 121 121 122 123 123 123 124 124 124 125 125 125 125 125 125 125 126 126 126 126 126 126 126 125 125 125 125 125 125 125 125 130 134 137 141 145 148 151 153 156 158 160 162 163 165 166 167 168 170 171 171 172 173 174 175 176 177 178 178 179 180 181 181 182 183 183 184 184 185 185 186 186 187 187 188 188 189 189 189 189 190 190 190 190 191 191 191 191 191 191 191 191 191 191 193 194 196 197 198 200 201 203 204 205 207 208 209 211 212 213 214 215 217 218 219 220 220 221 222 222 223 223 224 224 224 224 224 223 223 222 222 221 221 220 219 218 217 216 215 214 213 212 211 210 209 208 206 205 204 203 202 200 199 198 197 196 194 194)
-;#(0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 66 68 70 72 74 76 78 80 82 84 86 88 90 92 94 96 98 100 102 104 106 108 110 112 114 116 118 120 122 124 126 127 125 123 121 119 117 115 113 111 109 107 105 103 101 99 97 95 93 91 89 87 85 83 81 79 77 75 73 71 69 67 65 63 61 59 57 55 53 51 49 47 45 43 41 39 37 35 33 31 29 27 25 23 21 19 17 15 13 11 9 7 5 3 1 1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59 61 63 65 67 69 71 73 75 77 79 81 83 85 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 128 126 124 122 120 118 116 114 112 110 108 106 104 102 100 98 96 94 92 90 88 86 84 82 80 78 76 74 72 70 68 66 64 62 60 58 56 54 52 50 48 46 44 42 40 38 36 34 32 30 28 26 24 22 20 18 16 14 12 10 8 6 4 2)
-                        )
-            )
-         )
-         (gimp-message "in countours")
+            ;#(0.000 0.019 0.035 0.050 0.062 0.074 0.086 0.098 0.105 0.112 0.117 0.125 0.129 0.133 0.137 0.141 0.149 0.152 0.156 0.160 0.168 0.172 0.180 0.184 0.188 0.192 0.196 0.200 0.203 0.207 0.211 0.215 0.215 0.219 0.219
+            ;   0.223 0.223 0.227 0.227 0.231 0.231 0.231 0.235 0.235 0.235 0.239 0.239 0.239 0.239 0.243 0.243 0.243 0.243 0.243 0.247 0.247 0.247 0.247 0.247 0.247 0.250 0.250 0.250 0.250 0.250 0.278 0.294 0.305 0.317 
+            ;   0.329 0.337 0.349 0.356 0.364 0.372 0.376 0.384 0.388 0.396 0.400 0.403 0.407 0.411 0.419 0.419 0.423 0.431 0.435 0.439 0.443 0.447 0.450 0.454 0.458 0.462 0.466 0.466
+            ;   0.470 0.474 0.474 0.478 0.482 0.482 0.482 0.486 0.486 0.486 0.490 0.490 0.490 0.490 0.490 0.490 0.490 0.494 0.494 0.494 0.494 0.494 0.494 0.494 0.490
+            ; 125 125 125 125 125 125 125 130 134 137 141 145 148 151 153 156 158 160 162 163 165 166 167 168 170
+            ; 171 171 172 173 174 175 176 177 178 178 179 180 181 181 182 183 183 184 184 185 185 186 186 187 187
+            ; 188 188 189 189 189 189 190 190 190 190 191 191 191 191 191 191 191 191 191 191 193 194 196 197 198
+            ; 200 201 203 204 205 207 208 209 211 212 213 214 215 217 218 219 220 220 221 222 222 223 223 224 224
+            ; 224 224 224 223 223 222 222 221 221 220 219 218 217 216 215 214 213 212 211 210 209 208 206 205 204
+            ; 203 202 200 199 198 197 196 194 194)
+            ; ;;(0 5 9 13 16 19 22 25 27 29 30 32 33 34 35 36 38 39 40 41 43 44 46 47 48 49 50 51 52 53 54 55 55 56 56 57 57 58 58 59 59 59 60 60 60 61 61 61 61 62 62 62 62 62 63 63 63 63 63 63 64 64 64 64 64 71 75 78 81 84 86 89 91 93 95 96 98 99 101 102 103 104 105 107 107 108 110 111 112 113 114 115 116 117 118 119 119 120 121 121 122 123 123 123 124 124 124 125 125 125 125 125 125 125 126 126 126 126 126 126 126 125 125 125 125 125 125 125 125 130 134 137 141 145 148 151 153 156 158 160 162 163 165 166 167 168 170 171 171 172 173 174 175 176 177 178 178 179 180 181 181 182 183 183 184 184 185 185 186 186 187 187 188 188 189 189 189 189 190 190 190 190 191 191 191 191 191 191 191 191 191 191 193 194 196 197 198 200 201 203 204 205 207 208 209 211 212 213 214 215 217 218 219 220 220 221 222 222 223 223 224 224 224 224 224 223 223 222 222 221 221 220 219 218 217 216 215 214 213 212 211 210 209 208 206 205 204 203 202 200 199 198 197 196 194 194)
+            ;#(0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 66 68 70 72 74 76 78 80 82 84 86 88 90 92 94 96 98 100 102 104 106 108 110 112 114 116 118 120 122 124 126 127 125 123 121 119 117 115 113 111 109 107 105 103 101 99 97 95 93 91 89 87 85 83 81 79 77 75 73 71 69 67 65 63 61 59 57 55 53 51 49 47 45 43 41 39 37 35 33 31 29 27 25 23 21 19 17 15 13 11 9 7 5 3 1 1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59 61 63 65 67 69 71 73 75 77 79 81 83 85 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 128 126 124 122 120 118 116 114 112 110 108 106 104 102 100 98 96 94 92 90 88 86 84 82 80 78 76 74 72 70 68 66 64 62 60 58 56 54 52 50 48 46 44 42 40 38 36 34 32 30 28 26 24 22 20 18 16 14 12 10 8 6 4 2)
+                      #(0.000 0.001 0.002 0.003 0.004 0.005 0.006 0.007 0.008 0.009
+                      0.010 0.011 0.012 0.013 0.014 0.015 0.016 0.017 0.018 0.019
+                      0.020 0.021 0.022 0.023 0.024 0.025 0.026 0.027 0.028 0.029
+                      0.030 0.031 0.032 0.033 0.034 0.035 0.036 0.037 0.038 0.039
+                      0.040 0.041 0.042 0.043 0.044 0.045 0.046 0.047 0.048 0.049
+                      0.050 0.051 0.052 0.053 0.054 0.055 0.056 0.057 0.058 0.059
+                      0.060 0.061 0.062 0.063 0.064 0.065 0.066 0.067 0.068 0.069
+                      0.070 0.071 0.072 0.073 0.074 0.075 0.076 0.077 0.078 0.079
+                      0.080 0.001 0.002 0.003 0.004 0.005 0.006 0.007 0.008 0.009
+                      0.090 0.011 0.012 0.013 0.014 0.015 0.016 0.017 0.018 0.019
+                      0.100 0.021 0.022 0.023 0.024 0.025 0.026 0.027 0.028 0.029
+                      0.110 0.031 0.032 0.033 0.034 0.035 0.036 0.037 0.038 0.039
+                      0.120 0.041 0.042 0.043 0.044 0.045 0.046 0.047 0.048 0.049
+                      0.130 0.051 0.052 0.053 0.054 0.055 0.056 0.057 0.058 0.059
+                      0.140 0.061 0.062 0.063 0.064 0.065 0.066 0.067 0.068 0.069
+                      0.150 0.071 0.072 0.073 0.074 0.075 0.076 0.077 0.078 0.079
+                      0.160 0.001 0.002 0.003 0.004 0.005 0.006 0.007 0.008 0.009
+                      0.170 0.011 0.012 0.013 0.014 0.015 0.016 0.017 0.018 0.019
+                      0.180 0.021 0.022 0.023 0.024 0.025 0.026 0.027 0.028 0.029
+                      0.190 0.031 0.032 0.033 0.034 0.035 0.036 0.037 0.038 0.039
+                      0.200 0.041 0.042 0.043 0.044 0.045 0.046 0.047 0.048 0.049
+                      0.210 0.051 0.052 0.053 0.054 0.055 0.056 0.057 0.058 0.059
+                      0.220 0.061 0.062 0.063 0.064 0.065 0.066 0.067 0.068 0.069
+                      0.230 0.071 0.072 0.073 0.074 0.075 0.076 0.077 0.078 0.079
+                      0.240 0.241 0.072 0.073 0.074 0.075 0.076 0.077 0.078 0.079
+                      0.250 0.251 0.252 0.253 0.254 1.000
+                      )
+                      ))
+          )
+         
+         
+         (gimp-message "in contours")
+         (gimp-message (number->string contour))
+         (set! dummy-var 3)
+         
         (if (= (vector-ref contourtypes (- contour 1)) 0)
             (begin
+                (gimp-message "contour type0")
                 ;;(gimp-drawable-curves-spline drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
                 (gimp-drawable-curves-spline drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
             )
             (begin
+                (gimp-message "contour type1")
                 (gimp-drawable-curves-explicit drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
             )
         )
+        
         (gimp-message "leaving countours")
+        
+        
     )
 )
 
@@ -278,9 +315,10 @@
             (offsetY (* offsetdist (sin ang)))
             (origmask 0)
             (opacity 0)
+            (tempcolor '(0 0 0))
         )
-        (gimp-message "drop shadow row 264")
-        ; there a bug passing opacity through; don't use opacitykh anywhere as a result.
+        (gimp-message "drop shadow row 320")
+        ; there is a bug passing opacity through; don't use opacitykh anywhere as a result.
         (set! opacity 100.0)
         
         ;(gimp-message (number->string (cdr (colorkh))))
@@ -291,58 +329,87 @@
         
         (add-under-layer img shadowlayer drawable)
         (gimp-layer-set-offsets shadowlayer (- (+ (car drwoffsets) offsetX) lyrgrowamt) (- (+ (cadr drwoffsets) offsetY) lyrgrowamt))
-        (gimp-message "drop shadow row 273")
+        (gimp-message "drop shadow row 332")
         (gimp-layer-set-opacity shadowlayer opacity) ; was opacitykh
         
         (gimp-selection-all img)
-        (gimp-message "drop shadow row 277")
-        (gimp-context-set-foreground colorkh)
-        (gimp-edit-fill shadowlayer FILL-FOREGROUND)
-        (gimp-message "drop shadow row 280")
+        (gimp-message "drop shadow row 336")
+        (gimp-context-set-foreground '(0 0 50))
+        (gimp-message "drop shadow row 338")
+        (set! tempcolor '(0 0 10))
+        (gimp-context-set-foreground tempcolor)
+        (gimp-message "drop shadow row 341")
+        (gimp-drawable-edit-fill shadowlayer FILL-FOREGROUND)
+        (gimp-message "drop shadow row 343")
         (gimp-selection-none img)
         (set! shadowmask (car (gimp-layer-create-mask shadowlayer 1)))
         (gimp-layer-add-mask shadowlayer shadowmask)
-        (gimp-selection-layer-alpha drawable)
-        (if (> (car (gimp-layer-get-mask drawable)) -1)
-            (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
+        (gimp-message "drop shadow row 347")
+        ; deprecated(gimp-selection-layer-alpha drawable)
+        (gimp-image-select-item img CHANNEL-OP-ADD drawable)
+        
+        (gimp-message "drop shadow row 351")
+        (if (> (car (gimp-layer-get-mask drawable)) -1) ; was drawable
+            (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3) ; was drawable
         )
+        
         (gimp-selection-translate img offsetX offsetY)
         (set! alphaSel (car (gimp-selection-save img)))
-        (gimp-message "drop shadow row 290")
+        (gimp-message "drop shadow row 358")
         (draw-blurshape img shadowmask steps growamt alphaSel 0)
         (gimp-selection-none img)
-        (gimp-message "drop shadow row 293")
+        (gimp-message "drop shadow row 361")
         (if (> contour 0)
             (begin
-                (gimp-message "drop shadow row 296")
-                (apply-contour shadowmask HISTOGRAM-VALUE contour)
+                ;(gimp-displays-flush)
+                ;(gimp-message "drop shadow row 365")
+                ;(apply-contour shadowmask HISTOGRAM-VALUE 0)
+                ;(apply-contour-kh shadowmask 0 4)
+                ;
+                ;(gimp-message "drop shadow row 369")
+                ;(apply-contour-kh shadowmask 0 10)
+                ;
+                ;
+                ;(gimp-message "drop shadow row 373")
+                ;(apply-contour-kh shadowmask 0 2)
+                
+                (apply-contour-kh shadowmask 0 contour)
+                ;(gimp-displays-flush)
                 (gimp-selection-load alphaSel)
+                (gimp-message "drop shadow row 379")
                 (gimp-selection-grow img growamt)
                 (gimp-selection-invert img)
                 (gimp-context-set-foreground '(0 0 0))
-                (gimp-edit-fill shadowmask FILL-FOREGROUND)
+                (gimp-drawable-edit-fill shadowmask FILL-FOREGROUND)
                 (gimp-selection-none img)
-                (gimp-message "drop shadow row 304")
+                (gimp-message "drop shadow row 374")
             )
         )
+        (gimp-message "drop shadow row 387")
         (if (> noise 0)
             (apply-noise img drawable shadowlayer noise)
         )
+        
         (if (= knockout TRUE)
             (begin
                 (gimp-context-set-foreground '(0 0 0))
-                (gimp-selection-layer-alpha drawable)
-                (gimp-edit-fill shadowmask FILL-FOREGROUND)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
+                (gimp-drawable-edit-fill shadowmask FILL-FOREGROUND)
             )
         )
+        (gimp-message "drop shadow row 400")
         (gimp-layer-remove-mask shadowlayer 0)
         (gimp-selection-none img)
+        ;(gimp-displays-flush)
         (if (= merge TRUE)
             (begin
+                (gimp-message "drop shadow row 405")
                 (set! origmask (car (gimp-layer-get-mask drawable)))
                 (if (> origmask -1)
                     (gimp-layer-remove-mask drawable 0)
                 )
+                (gimp-layer-set-visible drawable TRUE)
                 (set! shadowlayer (car (gimp-image-merge-down img drawable 0)))
                 (gimp-drawable-set-name shadowlayer layername)
             )
@@ -399,7 +466,8 @@
         (gimp-selection-none img)
         (set! shadowmask (car (gimp-layer-create-mask shadowlayer 1)))
         (gimp-layer-add-mask shadowlayer shadowmask)
-        (gimp-selection-layer-alpha drawable)
+        ;(gimp-selection-layer-alpha drawable)
+        (gimp-image-select-item img CHANNEL-OP-ADD drawable)
         (if (> (car (gimp-layer-get-mask drawable)) -1)
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
@@ -417,11 +485,12 @@
         )
         (gimp-selection-none img)
         (if (> contour 0)
-            (apply-contour shadowmask 0 contour)
+            (apply-contour-kh shadowmask 0 contour)
         )
         (if (= merge 0)
             (begin
-                (gimp-selection-layer-alpha drawable)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (gimp-selection-invert img)
                 (gimp-context-set-foreground '(0 0 0))
                 (gimp-edit-fill shadowmask 0)
@@ -513,7 +582,8 @@
         (gimp-selection-none img)
         (set! glowmask (car (gimp-layer-create-mask glowlayer 1)))
         (gimp-layer-add-mask glowlayer glowmask)
-        (gimp-selection-layer-alpha drawable)
+        ;(gimp-selection-layer-alpha drawable)
+        (gimp-image-select-item img CHANNEL-OP-ADD drawable)
         (if (> (car (gimp-layer-get-mask drawable)) -1)
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
@@ -522,7 +592,7 @@
         (gimp-selection-none img)
         (if (> contour 0)
             (begin
-                (apply-contour glowmask 0 contour)
+                (apply-contour-kh glowmask 0 contour)
                 (gimp-selection-load alphaSel)
                 (gimp-selection-grow img size)
                 (gimp-selection-invert img)
@@ -537,7 +607,8 @@
         (if (= knockout 1)
             (begin
                 (gimp-context-set-foreground '(0 0 0))
-                (gimp-selection-layer-alpha drawable)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (gimp-edit-fill glowmask 0)
             )
         )
@@ -599,7 +670,8 @@
         (gimp-selection-none img)
         (set! glowmask (car (gimp-layer-create-mask glowlayer 1)))
         (gimp-layer-add-mask glowlayer glowmask)
-        (gimp-selection-layer-alpha drawable)
+        ;(gimp-selection-layer-alpha drawable)
+        (gimp-image-select-item img CHANNEL-OP-ADD drawable)
         (if (> (car (gimp-layer-get-mask drawable)) -1)
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
@@ -616,7 +688,7 @@
         )
         (gimp-selection-none img)
         (if (> contour 0)
-            (apply-contour glowmask 0 contour)
+            (apply-contour-kh glowmask 0 contour)
         )
         (if (and (= source 0) (= merge 0))
             (begin
@@ -782,7 +854,8 @@
         (set! shadowmask (car (gimp-layer-create-mask shadowlayer 1)))
         (gimp-layer-add-mask highlightlayer highlightmask)
         (gimp-layer-add-mask shadowlayer shadowmask)
-        (gimp-selection-layer-alpha drawable)
+        ;(gimp-selection-layer-alpha drawable)
+        (gimp-image-select-item img CHANNEL-OP-ADD drawable)
         (if (> (car (gimp-layer-get-mask drawable)) -1)
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
@@ -817,7 +890,7 @@
         (gimp-edit-fill highlightmask 0)
         (gimp-selection-none img)
         (if (> surfacecontour 0)
-            (apply-contour bumpmaplayer 0 surfacecontour)
+            (apply-contour-kh bumpmaplayer 0 surfacecontour)
         )
         (gimp-message "emboss line 764")
         (if (< angle 0)
@@ -825,7 +898,7 @@
         )
         (plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 0)
         (if (> glosscontour 0)
-            (apply-contour highlightmask 0 glosscontour)
+            (apply-contour-kh highlightmask 0 glosscontour)
         )
         (if (> soften 0)
             (plug-in-gauss-rle 1 img highlightmask soften 1 1)
@@ -934,7 +1007,8 @@
         (gimp-context-set-foreground '(0 0 0))
         (gimp-edit-fill satinlayer 0)
         (gimp-selection-none img)
-        (gimp-selection-layer-alpha drawable)
+        ;(gimp-selection-layer-alpha drawable)
+        (gimp-image-select-item img CHANNEL-OP-ADD drawable)
         (if (> (car (gimp-layer-get-mask drawable)) -1)
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
@@ -962,7 +1036,7 @@
         (gimp-drawable-set-name satinlayer (string-append layername "-satin"))
         (if (> contour 0)
             (begin
-                (apply-contour satinlayer 0 contour)
+                (apply-contour-kh satinlayer 0 contour)
                 (gimp-selection-load alphaSel)
                 (gimp-selection-grow img size)
                 (gimp-selection-invert img)
@@ -1054,7 +1128,8 @@
                 (gimp-selection-all img)
                 (gimp-edit-clear strokelayer)
                 (gimp-selection-none img)
-                (gimp-selection-layer-alpha drawable)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
                     (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
                 )
@@ -1103,7 +1178,8 @@
                 (gimp-selection-all img)
                 (gimp-edit-clear strokelayer)
                 (gimp-selection-none img)
-                (gimp-selection-layer-alpha drawable)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
                     (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
                 )
@@ -1139,7 +1215,8 @@
                 (gimp-selection-all img)
                 (gimp-edit-clear strokelayer)
                 (gimp-selection-none img)
-                (gimp-selection-layer-alpha drawable)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
                     (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
                 )
@@ -1220,7 +1297,8 @@
                 )
             )
             (begin
-                (gimp-selection-layer-alpha drawable)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
                     (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
                 )
@@ -1433,7 +1511,8 @@
         (if (and (>= gradtype 6) (<= gradtype 8))
             (begin
                 (gimp-message "type 6 , 7 or 8 ie Symmetrical")
-                (gimp-selection-layer-alpha drawable)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
             )
             (begin
                 (gimp-message "type 1 to 5 or 9 plus (ie not symmetrical)")
@@ -1596,7 +1675,8 @@
                 )
             )
             (begin
-                (gimp-selection-layer-alpha drawable)
+                ;(gimp-selection-layer-alpha drawable)
+                (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
                     (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
                 )
@@ -1618,14 +1698,14 @@
 
 (script-fu-register "script-fu-layerfx-drop-shadow"
             "<Image>/Script-Fu/Layer Effects/Drop Shadow..."
-            "Adds a drop shadow to a layer. Does not add a shadow to an unfilled or drawn selection."
+            "Adds a drop shadow to a layer. Does not add a shadow to an unfilled or drawn selection. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
             "RGBA, GRAYA"
             SF-IMAGE        "Image"             0
             SF-DRAWABLE     "Drawable"          0
-            SF-COLOR        "Colorkh"           '(0 0 0)
+            SF-COLOR        "colorkh"           '(0 0 1)
             SF-ADJUSTMENT   "Opacity"           '(75 0 100 1 10 0 0)
             SF-OPTION       "Contour"           '("Linear" "Cone" "Cone - Inverted" "Cove - Deep" "Cove-Shallow" "Gaussian" "Half Round" "Ring" "Ring - Double" "Rolling Slope - Descending" "Rounded Steps" "Sawtooth 1")
             SF-ADJUSTMENT   "Noise - noise opacity"             '(0 0 100 1 10 0 0)
