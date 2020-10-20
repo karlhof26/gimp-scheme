@@ -165,7 +165,7 @@
             (ibumpflag (if (= ibumpp TRUE) 0 1))
         )
         
-        (gimp-message "line 168")
+        ;(gimp-message "line 168")
         ; fill with transparent pixels and resize to new dimensions
         (gimp-drawable-fill layer FILL-TRANSPARENT)
         (gimp-image-resize img width height ulimage_x ulimage_y)
@@ -176,7 +176,7 @@
         ; set up for pattern fill if that was requested
         (if (> fillchoice 2)
             (begin
-                (gimp-message "Pattern filling")
+                ;(gimp-message "Pattern filling")
                 (set! filltype BUCKET-FILL-PATTERN)
             )
         )
@@ -191,7 +191,7 @@
               (list-to-array (list ulborder_x ulborder_y ulimage_x ulimage_y
                                llimage_x llimage_y llborder_x llborder_y
                                ulborder_x ulborder_y)))
-        (gimp-message "line189")
+        ;(gimp-message "line194")
         
         (gimp-edit-bucket-fill layer filltype LAYER-MODE-NORMAL 100 0 FALSE 0 0)
         ;debug
@@ -239,7 +239,7 @@
         
         (gimp-edit-bucket-fill layer filltype LAYER-MODE-NORMAL 100 0 FALSE 0 0)
         
-        (gimp-message "line 233")
+        ;(gimp-message "line 242")
         ; color the right pad
         (if (> rpad 0)
             (begin
@@ -282,7 +282,7 @@
                     (bumpmap (car (gimp-layer-new img width height imgtype
                                              "Texture Bump Map" 100 LAYER-MODE-NORMAL)))
               )
-            (gimp-message "bumpmapping")
+            ;(gimp-message "bumpmapping")
             (gimp-image-insert-layer img bumpmap 0 0)
             (gimp-context-set-pattern bumppattern)
             ; NOTE: if we try to do a bump map on only the selection we get
@@ -305,7 +305,7 @@
             (gimp-layer-set-preserve-trans layer 0)
         )
     )
-        (gimp-message "line304")
+        ;(gimp-message "line308")
         ; clear selection
         (gimp-selection-none img)
         
@@ -417,7 +417,7 @@
             leaveselectionp      ; flag: TRUE-->mat is selected on exit
             leavebevelbumpmapp   ; flag: TRUE-->preserve bevel bump map
         )
-        (gimp-message "line 404")
+        ;(gimp-message "line 420")
         (gimp-image-undo-group-start image)
         (if (not (= RGB (car (gimp-image-base-type image))))
             (gimp-image-convert-rgb image)
@@ -450,7 +450,7 @@
                                          "Frame Bevel Bump Map" 100 LAYER-MODE-NORMAL)))
            (index 1)
            )
-        (gimp-message "line 436")
+        ;(gimp-message "line 453")
         ; Initialise our bumpmap
         (gimp-image-insert-layer img bumpmap 0 0)
         (gimp-item-set-visible bumpmap 0)
@@ -461,7 +461,7 @@
         ; Fill with a gradient of sorts
         ; TODO: there has got to be a more efficient way to do this
         ; (gradient fills?)
-        (gimp-message "line 447")
+        ;(gimp-message "line 464")
         (while (< index bevelindex)
             (let ((gv (/ (* index 255) bevelindex)))
                 (begin
@@ -482,7 +482,7 @@
         (gimp-selection-none img)
         (plug-in-bump-map 1 img frame bumpmap 125 45 3 0 0 0 0 TRUE FALSE 1)
         
-        (gimp-message "line 468")
+        ;(gimp-message "line 485")
         ; remove bump map if user did not want it
         (if (= leavebevelbumpmapp FALSE)
             (gimp-image-remove-layer img bumpmap)
@@ -495,7 +495,7 @@
                  (shadow (car (gimp-layer-new img width height imgtype
                                               "Shadow" ds-opacity LAYER-MODE-NORMAL)))
                  )
-                 (gimp-message "line 481")
+                 ;(gimp-message "line 498")
                 (gimp-image-insert-layer img shadow 0 0)
                 (gimp-selection-none img)
                 (gimp-edit-clear shadow)
@@ -532,6 +532,7 @@
     ; th-th-th-that's all folks!
     (gimp-image-undo-group-end img)
     (gimp-displays-flush)
+    (gc) ; garbage collect
   )
 )
 
