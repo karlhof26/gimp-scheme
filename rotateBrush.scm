@@ -33,18 +33,21 @@
 ;version 2.6 fixed for Gimp 2.6 by Lee Dennegar
 ;by initializing variables to zero 
 ;which was not necessary in earlier versions.
+;
+; version 2.7 fixed for Gimp 2.10.22
+;
 
 
 (define (script-fu-resize-brush image drawable resFactor angSel mirror bgray?)
-	(define brushnameResi "#resiZed")
-	(define filesave (string-append "" gimp-directory "/brushes/" brushnameResi ".gbr"))
-	(define brushnameIn (car (gimp-context-get-brush)))
-	(define (testIfresiZed a)
-		(let* (
-			(len1 0)
-			(len2 0)
-			(sstr "")
-			)
+    (define brushnameResi "#resiZed")
+    (define filesave (string-append "" gimp-directory "/brushes/" brushnameResi ".gbr"))
+    (define brushnameIn (car (gimp-context-get-brush)))
+    (define (testIfresiZed a)
+        (let* (
+                (len1 0)
+                (len2 0)
+                (sstr "")
+            )
             (set! len1 (string-length a))
             (set! len2 (string-length brushnameResi))
             (if (>= len1 len2)
@@ -67,52 +70,51 @@
         )
     )
     
-	(let* (
-		(actualbrush 0)
-		(layer 0)
-		(scolor)
-		(bcolor 0)
-		(arrayToPaint 0)  
-		)
-	(set! actualbrush (testIfresiZed brushnameIn))
-	;(set! actualbrush brushnameIn)
-	(gimp-context-set-brush actualbrush) 
-	(let* 
-		(   
-			(brushnameOut (string-append actualbrush brushnameResi))
-			(spacing (car (gimp-brush-get-spacing actualbrush)))
-			(brushDimens (gimp-brush-get-info actualbrush))
-			(brushWidth (car brushDimens))
-			(brushHeight (cadr brushDimens))
-			(resiZedWidth (* brushWidth resFactor))
-			(resiZedHeight(* brushHeight resFactor))
-			(centerX (/ brushWidth 2))
-			(centerY (/ brushHeight 2))
-			(centerXpluseins(+ centerX 1))
-			(centerYpluseins(+ centerY 1))
-			(angle (* angSel (/ 3.14159 180)))
-		 )
-		 
-		(and (> resiZedWidth 1)(> resiZedHeight 1)
-		    (begin
-				(set! arrayToPaint (cons-array 4 'double))
-				(aset arrayToPaint 0 centerX)
-				(aset arrayToPaint 1 centerY)
-				(aset arrayToPaint 2 centerXpluseins)
-				(aset arrayToPaint 3 centerYpluseins)
-				(set! image (car (gimp-image-new brushWidth brushHeight RGB)))
-				(set! layer (car (gimp-layer-new image brushWidth brushHeight 1 "layer 1" 100 0)))
-				(gimp-image-undo-disable image)
-				(gimp-image-add-layer image layer 0)
-				(gimp-drawable-fill layer 3)
-				(if (= bgray? TRUE)
-					(begin
-						(set! scolor (car (gimp-context-get-foreground)))
-						(set! bcolor (car (gimp-context-get-background)))
-						(gimp-context-set-foreground '(0 0 0))
-						(gimp-context-set-background '(255 255 255))
-						(gimp-paintbrush-default layer 4 arrayToPaint)
-						(gimp-image-scale image resiZedWidth resiZedHeight)
+    (let* (
+            (actualbrush 0)
+            (layer 0)
+            (scolor)
+            (bcolor 0)
+            (arrayToPaint 0)  
+        )
+        (set! actualbrush (testIfresiZed brushnameIn))
+        ;(set! actualbrush brushnameIn)
+        (gimp-context-set-brush actualbrush) 
+        (let* (   
+                (brushnameOut (string-append actualbrush brushnameResi))
+                (spacing (car (gimp-brush-get-spacing actualbrush)))
+                (brushDimens (gimp-brush-get-info actualbrush))
+                (brushWidth (car brushDimens))
+                (brushHeight (cadr brushDimens))
+                (resiZedWidth (* brushWidth resFactor))
+                (resiZedHeight(* brushHeight resFactor))
+                (centerX (/ brushWidth 2))
+                (centerY (/ brushHeight 2))
+                (centerXpluseins(+ centerX 1))
+                (centerYpluseins(+ centerY 1))
+                (angle (* angSel (/ 3.14159 180)))
+             )
+            
+          (if (and (> resiZedWidth 1)(> resiZedHeight 1))
+            (begin
+                (set! arrayToPaint (cons-array 4 'double))
+                (aset arrayToPaint 0 centerX)
+                (aset arrayToPaint 1 centerY)
+                (aset arrayToPaint 2 centerXpluseins)
+                (aset arrayToPaint 3 centerYpluseins)
+                (set! image (car (gimp-image-new brushWidth brushHeight RGB)))
+                (set! layer (car (gimp-layer-new image brushWidth brushHeight 1 "layer 1" 100 0)))
+                (gimp-image-undo-disable image)
+                (gimp-image-add-layer image layer 0)
+                (gimp-drawable-fill layer 3)
+                (if (= bgray? TRUE)
+                    (begin
+                        (set! scolor (car (gimp-context-get-foreground)))
+                        (set! bcolor (car (gimp-context-get-background)))
+                        (gimp-context-set-foreground '(0 0 0))
+                        (gimp-context-set-background '(255 255 255))
+                        (gimp-paintbrush-default layer 4 arrayToPaint)
+                        (gimp-image-scale image resiZedWidth resiZedHeight)
                         (if (not (= angle 0))
                             (begin
                                 (gimp-drawable-transform-rotate-default layer angle 1 0 0 1 0)
@@ -151,12 +153,14 @@
                 (gimp-image-undo-enable image)
                 (gimp-image-delete image)
                 (gimp-brushes-refresh)
-                (gimp-context-set-brush brushnameOut))
+                (gimp-context-set-brush brushnameOut)
+            )
+          )
         )
     )
-    )
+    
 )
-;
+
 (script-fu-register "script-fu-resize-brush"
                     "Resize Rotate Brush"
                     "Resize Rotate a brush, Base on resizebrush.scm by Michael Hoelzen. \nfile:rotateBrush.scm"
