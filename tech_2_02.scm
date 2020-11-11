@@ -96,13 +96,13 @@
         (gimp-selection-none image)
         
         ;;(plug-in-scatter-hsv 1 image drawable 2 0 30 60)
-        (plug-in-hsv-noise 1 image drawable 6 0 30 60)
+        (plug-in-hsv-noise 1 image drawable 6 0 20 50)
         (plug-in-gauss 1 image drawable 5 5 0)
         (plug-in-sharpen 1 image drawable 70)
         (plug-in-bump-map 1 image drawable drawable 150 40.70 40 0 0 0 0 1 0 1)
         (plug-in-pixelize 1 image drawable pixamm)
         
-        (gimp-drawable-posterize drawable 3)
+        (gimp-drawable-posterize drawable 3) ; was 3
         
         (plug-in-max-rgb 1 image drawable 1) ; was 0=minimize
         (plug-in-edge 1 image drawable edge 1 0)
@@ -130,7 +130,7 @@
         (gimp-displays-flush)
         
         (gimp-image-undo-group-end image)
-       ; (gc) ; garbage collector  
+        (gc) ; garbage collector  
     )
 )
 

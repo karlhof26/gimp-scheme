@@ -3,7 +3,7 @@
 ; Copyright (C) 1995 Spencer Kimball and Peter Mattis
 ;
 ; Slide maker script  for GIMP 2.4
-;Copyright (C) 1997-1999 Sven Neumann <sven@gimp.org>
+;Copyright (C) 1997-1999 Sven Neumann <sven@gimp.org> 
 ;
 ; Tags: photo, decor, slide
 ;
@@ -35,6 +35,8 @@
 ;       - make 'add background' an option
 ;       - ?
 ; Updated for GIMP 2.4 by Paul Sherman
+;
+; Updated for GIMP-2.10.22 by karlhof26
 ; --------------------------------------------------------------------
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -54,7 +56,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(define (script-fu-slide img
+(define (script-fu-slide-neumann img
                         drawable
                         text
                         number
@@ -129,13 +131,16 @@
         )
         
         ; add the background layer
-        (gimp-drawable-fill bg-layer FILL-BACKGROUND)
         (gimp-image-insert-layer image bg-layer 0 -1)
+        (gimp-context-set-background '(128 128 128))
+        (gimp-drawable-fill bg-layer FILL-BACKGROUND)
+        
         
         ; add the film layer
+        (gimp-image-insert-layer image film-layer 0 -1)
         (gimp-context-set-background '(0 0 0))
         (gimp-drawable-fill film-layer FILL-BACKGROUND)
-        (gimp-image-insert-layer image film-layer 0 -1)
+        
         
         ; add the text
         (gimp-context-set-foreground font-color)
@@ -186,7 +191,7 @@
         
         ; create a mask for the holes and cut them out
         (let* (
-                (film-mask (car (gimp-layer-create-mask film-layer ADD-WHITE-MASK)))
+                (film-mask (car (gimp-layer-create-mask film-layer ADD-MASK-WHITE)))
                 (hole hole-start)
                 (top-y (* height 0.06))
                 (bottom-y (* height 0.855))
@@ -231,6 +236,7 @@
         (if (< ratio 1)
             (plug-in-rotate 1 image pic-layer 3 TRUE)
         )
+        ;(gimp-item-set-visible bg-layer FALSE)
         
         ; clean up after the script
         (gimp-selection-none image)
@@ -245,7 +251,7 @@
     )
 )
 
-(script-fu-register "script-fu-slide"
+(script-fu-register "script-fu-slide-neumann"
     "Slide..."
     "Add a slide-film like frame, sprocket holes, and labels to an image. \nfile:neumann-slide.scm"
     "Sven Neumann <sven@gimp.org>"
@@ -258,10 +264,10 @@
     SF-STRING    "Number"        "32"
     SF-FONT      "Font"          "Serif"
     SF-COLOR     "Font color"    '(255 180 0)
-    SF-TOGGLE    "Work on copy"  TRUE
+    SF-TOGGLE    "Work on copy"  FALSE
 )
 
-(script-fu-menu-register "script-fu-slide"
+(script-fu-menu-register "script-fu-slide-neumann"
                          "<Toolbox>/Script-Fu/Decor")
 
 ; end of script
