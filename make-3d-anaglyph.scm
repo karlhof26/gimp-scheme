@@ -49,6 +49,8 @@
 ; the glasses matching the colour applied to the right image (e.g.
 ; with the default red/cyan combination the red side of the glasses
 ; goes over the left eye and the cyan side on the right eye).
+;
+; Updated for Gimp-2.10.22 by karlhof26 (Nov 2020)
 
 (define (make-3d-anaglyph img_r_f img_l_f inRightColour inLeftColour)
     (let* (
@@ -64,7 +66,7 @@
         (gimp-drawable-set-name theRightImageLayer (string-append "Right Image: " (car (reverse (strbreakup img_r_f "/")))))
         
         (define theLeftImageLayer (car (gimp-file-load-layer RUN-INTERACTIVE theImage img_l_f)))
-        (gimp-image-add-layer theImage theLeftImageLayer -1)
+        (gimp-image-insert-layer theImage theLeftImageLayer 0 -1)
         (gimp-drawable-set-name theLeftImageLayer (string-append "Left Image: " (car (reverse (strbreakup img_l_f "/")))))
         
         (gimp-image-resize-to-layers theImage)
