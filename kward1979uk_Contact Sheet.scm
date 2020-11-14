@@ -79,15 +79,20 @@
                 (if ( < maxh (* height scale))
                     (set! scale (/ maxh height))
                 )
-                (gimp-message "line82")
+                ;(gimp-message "line82")
                 (gimp-image-scale image (* width scale) (* height scale) )
                 (set! indraw (car (gimp-image-get-active-drawable image)))
                 (gimp-edit-copy indraw)
-                (gimp-rect-select (car newimage) (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2) 2 0 0)
+                
+                ;(gimp-rect-select (car newimage) (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2) 2 0 0)
+                (gimp-context-set-feather FALSE)
+                (gimp-image-select-rectangle (car newimage) CHANNEL-OP-REPLACE (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2))
                 
                 (set! float (car (gimp-edit-paste (car newlayer) 0)))
                 (gimp-floating-sel-anchor float)
-                (gimp-rect-select (car newimage) (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2) 2 0 0)
+                ;(gimp-rect-select (car newimage) (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2) 2 0 0)
+                (gimp-image-select-rectangle (car newimage) CHANNEL-OP-REPLACE (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2))
+                
                 (gimp-edit-bucket-fill (car framelayer) 0 0 100 0 0 0 0)
                 (gimp-selection-shrink (car newimage) 1)
                 (gimp-edit-cut (car framelayer))
@@ -105,7 +110,7 @@
                 (set! num-files (- num-files 1))
                 
                 (gimp-displays-flush)
-                (gimp-message "line108")
+                ;(gimp-message "line108")
             )
         )
     )
@@ -115,7 +120,7 @@
 
 (script-fu-register  "contact"
         "<Image>/Script-Fu2/Misc/Contact sheet..."
-        "Creates a contact sheet of images in folder. \nfile:kward1979uk_ContactSheet.scm"
+        "Creates a contact sheet of images in a folder. \nfile:kward1979uk_ContactSheet.scm"
         "Karl Ward"
         "Karl Ward"
         "JAN 2007"
