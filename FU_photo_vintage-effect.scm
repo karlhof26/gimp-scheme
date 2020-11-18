@@ -1,0 +1,204 @@
+; FU_photo_vintage-effect.scm 
+; version 2.8 [gimphelp.org]
+; last modified/tested by Paul Sherman
+; 02/14/2014 on GIMP-2.8.10
+; 20/10/2020 on GIMP-2.10.20
+;
+; 04/27/2008 - Edited by Paul Sherman
+; added faded border option
+;
+;==============================================================
+;
+; Installation:
+; This script should be placed in the user or system-wide script folder.
+;
+;	Windows Vista/7/8)
+;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;	or
+;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
+;	
+;	Windows XP
+;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;	or
+;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;    
+;	Linux
+;	/home/yourname/.gimp-2.8/scripts  
+;	or
+;	Linux system-wide
+;	/usr/share/gimp/2.0/scripts
+;
+;==============================================================
+;
+; LICENSE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;
+;==============================================================
+; Original information 
+; 
+; Vintage Film Effect script for GIMP 2.4
+; Original author: Alexia Death
+; Tags: photo, vintage
+; Author statement:
+;
+; Based on paint net tutorial by fallout75.
+; (http://www.flickr.com/photos/fallout75/)
+; This represents my first attempt at gimp scripting and my first 
+; ever contact with Scheme language. If you feel its not as good 
+; as it can be, feel free to improve it.
+;==============================================================
+
+
+(define (FU-vintage-effect     
+            inImage
+            inLayer
+            inCopy
+            inFlatten
+            inBorder
+        )
+    
+  (let (
+            
+            (theWidth (car (gimp-image-width inImage)))
+            (theHeight (car (gimp-image-height inImage)))
+            (theImage 0)
+            (base 0)
+            (sepia 0)
+            (magenta 0)
+            (floating-sel 0)
+            (control_pts_r (cons-array 10 'byte))
+            (control_pts_g (cons-array 8 'byte))
+            (control_pts_b (cons-array 4 'byte))
+            
+        )
+        
+        (set! theImage (if (= inCopy TRUE)
+                        (car (gimp-image-duplicate inImage))
+                        inImage
+                      )
+        )
+        
+        (if (= inCopy FALSE)
+            (begin
+                (gimp-image-undo-group-start theImage)
+            )
+        )
+        (if (> (car (gimp-drawable-type inLayer)) 1)(gimp-image-convert-rgb theImage))
+        
+        ; flattening the image at hand into a copy
+        (gimp-edit-copy-visible theImage)
+        
+        ; Making base layer
+        (set! base (car (gimp-layer-new theImage
+                                        theWidth
+                                        theHeight
+                                        RGBA-IMAGE
+                                        "base"
+                                        100
+                                        LAYER-MODE-NORMAL)))
+        
+        (gimp-image-insert-layer theImage base 0 -1)
+        (gimp-floating-sel-anchor (car (gimp-edit-paste base TRUE)))
+        (gimp-drawable-hue-saturation base HUE-RANGE-ALL 0 0 15 0)
+        ;(gimp-brightness-contrast base 0 20)
+        (gimp-brightness-contrast base 0.0 0.078)
+        ;(set! control_pts_r #(0 0 88 47 170 188 221 249 255 255))
+        (set! control_pts_r #(0.0 0.0 0.345 0.184 0.666 0.737 0.866 0.976 1.000 1.000))
+        ;(set! control_pts_g #(0 0 65 57 184 208 255 255))
+        (set! control_pts_g #(0.0 0.0 0.254 0.223 0.722 0.825 1.000 1.000))
+        ;(set! control_pts_b #(0 29 255 226))
+        (set! control_pts_b #(0.0 0.113 1.000 0.886))
+        (gimp-drawable-curves-spline base HISTOGRAM-RED 10 control_pts_r)
+        (gimp-drawable-curves-spline base HISTOGRAM-GREEN 8 control_pts_g)
+        (gimp-drawable-curves-spline base HISTOGRAM-BLUE 4 control_pts_b)
+        
+        ; making sepia layer
+        
+        (set! sepia (car (gimp-layer-new theImage
+                                        theWidth
+                                        theHeight
+                                        RGBA-IMAGE
+                                        "sepia"
+                                        100
+                                        LAYER-MODE-NORMAL)))
+        
+        (gimp-image-insert-layer theImage sepia 0 -1)
+        (gimp-floating-sel-anchor (car (gimp-edit-paste sepia TRUE)))
+        (gimp-colorize sepia 25 25 30)
+        (gimp-brightness-contrast sepia 40 30)
+        (gimp-layer-set-opacity sepia 50)
+        ; making magenta layer
+        (set! magenta (car (gimp-layer-new theImage
+                                        theWidth
+                                        theHeight
+                                        RGBA-IMAGE
+                                        "magenta"
+                                        100
+                                        LAYER-MODE-SCREEN)))
+        
+        (gimp-image-insert-layer theImage magenta 0 -1)
+        (gimp-context-push)
+        (gimp-context-set-foreground '(255 0 220))
+        (gimp-drawable-fill magenta FILL-FOREGROUND)
+        (gimp-layer-set-opacity magenta 6)
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (if (= inBorder TRUE)
+            (begin
+                (gimp-selection-all theImage)
+                (gimp-selection-shrink theImage 4)
+                (gimp-selection-invert theImage)
+                (gimp-selection-feather theImage 24)
+                (gimp-context-set-foreground '(166 129 71))
+                (gimp-edit-fill base FILL-FOREGROUND)
+                (gimp-selection-none theImage)
+            )
+        )
+        
+        (gimp-context-pop)
+        (if (= inFlatten TRUE)
+            (gimp-image-flatten theImage)
+        )
+        
+        (if (= inCopy TRUE)
+            (begin
+                (gimp-image-clean-all theImage)
+                (gimp-display-new theImage)
+            ) 
+        )
+        (if (= inCopy FALSE)
+            (begin
+                (gimp-image-undo-group-end theImage)
+            )
+        )
+        (gimp-displays-flush)
+        (gc) ; garbage collect 
+  )
+)
+
+(script-fu-register "FU-vintage-effect"
+    "<Image>/Script-Fu/Photo/Effects/Vintage Photo"
+    "Make image look like an old photograph. \nfile:FU_photo_vintage-effect.scm"
+    "Alexia Death"
+    "2007, Alexia Death."
+    "3rd October 2007"
+    "*"
+    SF-IMAGE      "The image"       0
+    SF-DRAWABLE   "The layer"       0
+    SF-TOGGLE     "Work on copy"    FALSE
+    SF-TOGGLE     "Flatten image"   FALSE
+    SF-TOGGLE     "Faded Border"    TRUE
+)
+
+;end of script

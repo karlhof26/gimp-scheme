@@ -180,10 +180,10 @@
                                 
                                 ; sélection elliptique
                                 (gimp-image-select-ellipse 
-                                    img_brosse_fonction					; image 
-                                    0									; operation 
-                                    2									; x 
-                                    2									; y 
+                                    img_brosse_fonction                 ; image 
+                                    0                                   ; operation 
+                                    2                                   ; x 
+                                    2                                   ; y 
                                     (round (* diametre_exterieur_bulle_a_creer_fonction Coeff_X_fonction))	; width 
                                     (round (* diametre_exterieur_bulle_a_creer_fonction Coeff_Y_fonction))	; height
                                 )
@@ -254,7 +254,7 @@
 ;							
 ;							; remplir de motif
 ;							(gimp-edit-fill calque_brosse_fonction 4)
-;
+;                           
 ;						)
 ;					)					
                     
@@ -294,12 +294,12 @@
                             
                             ; sélection elliptique
                             (gimp-image-select-ellipse 
-                                img_brosse_fonction							; image 
-                                0											; operation 
+                                img_brosse_fonction                         ; image 
+                                0                                           ; operation 
                                 (round (/ (- (+ 4 diametre_exterieur_bulle_a_creer_fonction) diametre_interieur_bulle_a_creer_fonction) 2 ))		; x 
                                 (round (/ (- (+ 4 diametre_exterieur_bulle_a_creer_fonction) diametre_interieur_bulle_a_creer_fonction) 2 ))		; y 
-                                diametre_interieur_bulle_a_creer_fonction	; width 
-                                diametre_interieur_bulle_a_creer_fonction	; height 
+                                diametre_interieur_bulle_a_creer_fonction   ; width 
+                                diametre_interieur_bulle_a_creer_fonction   ; height 
                             )
                     )
                     
@@ -328,12 +328,12 @@
                         (= Forme_des_bulles_fonction 2)
                             
                             (gimp-image-select-rectangle 
-                                img_brosse_fonction							; image 
-                                0											; operation 
+                                img_brosse_fonction                         ; image 
+                                0                                           ; operation 
                                 (round (/ (- (+ 4 diametre_exterieur_bulle_a_creer_fonction) diametre_interieur_bulle_a_creer_fonction) 2 ))		; x 
                                 (round (/ (- (+ 4 diametre_exterieur_bulle_a_creer_fonction) diametre_interieur_bulle_a_creer_fonction) 2 ))		; y 
-                                diametre_interieur_bulle_a_creer_fonction	; width 
-                                diametre_interieur_bulle_a_creer_fonction	; height 
+                                diametre_interieur_bulle_a_creer_fonction   ; width 
+                                diametre_interieur_bulle_a_creer_fonction   ; height 
                             )
                     )
                     
@@ -342,7 +342,7 @@
                     ; mélange de formes
                     (if
                         (= Forme_des_bulles_fonction 3)
-                            (begin						
+                            (begin
                                     ; ne rien sélectionner
                                     (gimp-selection-none img_brosse_fonction)
                                     

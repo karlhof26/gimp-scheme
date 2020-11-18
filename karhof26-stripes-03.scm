@@ -4,9 +4,9 @@
 ;; Karl Hofmeyr (karl@hofmeyr.net)
 ;; (C) 2016, Cape Town, South Africa
 ;
-;; This script was tested with Gimp 2.8
+;; This script was tested with Gimp 2.10.22
 ;;
-;; New versions will be distributed from <http:// registry.gimp.org/> only
+;; New versions will be distributed from <http://github.com/> only
 ;;
 ;;This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -50,11 +50,11 @@
             )
         )
         
-        (gimp-message "GG - draw a stripe 1")
+        ;(gimp-message "GG - draw a stripe 1")
         (gimp-image-select-rectangle inImage CHANNEL-OP-REPLACE thisstripex thisstripey blockwidth blockheight)
-        (gimp-message "C set the color")
+        ;(gimp-message "C set the color")
         (gimp-context-set-foreground stripeColor)
-        (gimp-message "D Fill the color")
+        ;(gimp-message "D Fill the color")
         (gimp-edit-fill inLayer FILL-FOREGROUND)
     )
 )
@@ -111,28 +111,28 @@
                 (set! newstripestart 1)
                 (set! newstripestart (* stripeheight 0))
                 (set! finalstart (+ basestart newstripestart))
-                (gimp-message "final start is")
-                (gimp-message (number->string finalstart))    
-                (gimp-message "B - draw row 1")
+                ;(gimp-message "final start is")
+                ;(gimp-message (number->string finalstart))    
+                ;(gimp-message "B - draw row 1")
                 (gimp-image-select-rectangle firstImage CHANNEL-OP-REPLACE firstx finalstart stripewidth stripeheight)
-                (gimp-message "C set the color")
+                ;(gimp-message "C set the color")
                 (gimp-context-set-foreground colorA)
-                (gimp-message "D Fill the color")
+                ;(gimp-message "D Fill the color")
                 (gimp-edit-fill firstLayer FILL-FOREGROUND)
                 (gimp-selection-none firstImage)
                 
                 (if (= firstvert FALSE)
                     (begin 
-                        (gimp-message "inside first vert")
-                        (gimp-message (number->string count))
+                        ;(gimp-message "inside first vert")
+                        ;(gimp-message (number->string count))
                         (set! newstripestart (* stripeheight 1) )
-                        (gimp-message "debug1")
+                        ;(gimp-message "debug1")
                         (set! finalstart (+ basestart newstripestart))
-                        (gimp-message "number here isit ")
-                        (gimp-message (number->string count))
-                        (gimp-message (number->string newstripestart))
-                        (gimp-message (number->string basestart))
-                        (gimp-message (number->string finalstart))
+                        ;(gimp-message "number here isit ")
+                        ;(gimp-message (number->string count))
+                        ;(gimp-message (number->string newstripestart))
+                        ;(gimp-message (number->string basestart))
+                        ;(gimp-message (number->string finalstart))
                     )
                 )
                 (gimp-image-select-rectangle firstImage CHANNEL-OP-ADD firstx finalstart stripewidth stripeheight)
@@ -142,11 +142,11 @@
                 
                 (if (= firstvert FALSE)
                     (begin
-                        (gimp-message "inside second vert")
+                        ;(gimp-message "inside second vert")
                         (set! newstripestart  (* stripeheight 2))
                         (set! finalstart (+ basestart newstripestart))
-                        (gimp-message "number here")
-                        (gimp-message (number->string finalstart))
+                        ;(gimp-message "number here")
+                        ;(gimp-message (number->string finalstart))
                     )
                 )
                 (gimp-selection-none firstImage)
@@ -158,11 +158,11 @@
                         (gimp-edit-fill firstLayer FILL-FOREGROUND)               
                         (if (= firstvert FALSE)
                             (begin
-                                (gimp-message "inside third vert")
+                                ;(gimp-message "inside third vert")
                                 (set! newstripestart (* stripeheight 3) )
                                 (set! finalstart (+ basestart newstripestart))
-                                (gimp-message (number->string finalstart))
-                                (gimp-message (number->string totalslots))
+                                ;(gimp-message (number->string finalstart))
+                                ;(gimp-message (number->string totalslots))
                             )
                         )
                     )
@@ -176,11 +176,11 @@
                         (gimp-edit-fill firstLayer FILL-FOREGROUND)
                         (if (= firstvert FALSE)
                             (begin
-                                (gimp-message "inside fourth vert")
+                                ;(gimp-message "inside fourth vert")
                                 (set! newstripestart (* stripeheight 4))
                                 (set! finalstart (+ basestart newstripestart))
-                                (gimp-message (number->string finalstart))
-                                (gimp-message (number->string totalslots))
+                                ;(gimp-message (number->string finalstart))
+                                ;(gimp-message (number->string totalslots))
                             )
                         )
                     )
@@ -195,54 +195,54 @@
                         (gimp-edit-fill firstLayer FILL-FOREGROUND)
                         (if (= firstvert FALSE)
                             (begin
-                                (gimp-message "inside fifth vert")
+                                ;(gimp-message "inside fifth vert")
                                 (set! newstripestart (* stripeheight 5))
                                 (set! finalstart (+ basestart newstripestart))
-                                (gimp-message (number->string finalstart))
+                                ;(gimp-message (number->string finalstart))
                             )
                         )
                     )
                     (begin
-                        (gimp-message "skipped five")
+                        ;(gimp-message "skipped five")
                     )
                 )
                 
                 (gimp-selection-none firstImage)
                 (if (> numcolors 5)
                     (begin
-                        (gimp-message "inside sixth part 1")
+                        ;(gimp-message "inside sixth part 1")
                         (gimp-image-select-rectangle firstImage CHANNEL-OP-ADD firstx finalstart stripewidth stripeheight)
                         (gimp-context-set-foreground colorF)
                         (gimp-edit-fill firstLayer FILL-FOREGROUND)
                         (if (= firstvert FALSE)
                             (begin
-                                (gimp-message "inside sixth vert")
+                                ;(gimp-message "inside sixth vert")
                                 (set! newstripestart (* stripeheight 6))
                                 (set! finalstart (+ basestart newstripestart))
-                                (gimp-message (number->string finalstart))
+                                ;(gimp-message (number->string finalstart))
                             )
                         )
                     )
                     (begin
-                        (gimp-message "skipped six")
+                        ;(gimp-message "skipped six")
                     )
                 )
                 
                 (gimp-selection-none firstImage)
                 (if (> numcolors 5)
                     (begin
-                        (gimp-message "inside sixth part 2")
+                        ;(gimp-message "inside sixth part 2")
                         (gimp-image-select-rectangle firstImage CHANNEL-OP-ADD firstx finalstart stripewidth stripeheight)
                         (gimp-context-set-foreground colorE)
                         (gimp-edit-fill firstLayer FILL-FOREGROUND)
                         (if (= firstvert FALSE)
                             (begin
-                                (gimp-message "inside seventh vert")
+                                ;(gimp-message "inside seventh vert")
                                 ;;(set! newstripestart (* stripeheight (- totalslots 3)))
                                 (set! newstripestart (+ newstripestart stripeheight))
                                 (set! finalstart (+ basestart newstripestart))
-                                (gimp-message (number->string finalstart))
-                                (gimp-message (number->string totalslots))
+                                ;(gimp-message (number->string finalstart))
+                                ;(gimp-message (number->string totalslots))
                             )
                         )
                     )
@@ -255,12 +255,12 @@
                         (gimp-edit-fill firstLayer FILL-FOREGROUND)
                         (if (= firstvert FALSE)
                             (begin
-                                (gimp-message "inside eigthth vert")
+                                ;(gimp-message "inside eigthth vert")
                                 ;;(set! newstripestart (* stripeheight (- totalslots 2)))
                                 (set! newstripestart (+ newstripestart stripeheight))
                                 (set! finalstart (+ basestart newstripestart))
-                                (gimp-message (number->string finalstart))
-                                (gimp-message (number->string totalslots))
+                                ;(gimp-message (number->string finalstart))
+                                ;(gimp-message (number->string totalslots))
                             )
                         )
                     )
@@ -273,11 +273,11 @@
                         (gimp-edit-fill firstLayer FILL-FOREGROUND)
                         (if (= firstvert FALSE)
                             (begin
-                                (gimp-message "inside ninth vert")
+                                ;(gimp-message "inside ninth vert")
                                ;; (set! newstripestart (* stripeheight (- totalslots 1)))
                                 (set! newstripestart (+ newstripestart stripeheight))
                                 (set! finalstart (+ basestart newstripestart))
-                                (gimp-message (number->string finalstart))
+                                ;(gimp-message (number->string finalstart))
                             )
                         )
                     )
@@ -289,10 +289,10 @@
                         (gimp-image-select-rectangle firstImage CHANNEL-OP-ADD firstx finalstart stripewidth stripeheight)
                         (gimp-context-set-foreground colorB)
                         (gimp-edit-fill firstLayer FILL-FOREGROUND)
-                        (gimp-message "inside tenth vert")
+                        ;(gimp-message "inside tenth vert")
                         (set! newstripestart (* stripeheight (- totalslots 0)))
                         (set! finalstart (+ basestart newstripestart))
-                        (gimp-message (number->string finalstart))
+                        ;(gimp-message (number->string finalstart))
                     )
                 )
                 
@@ -302,26 +302,27 @@
                         (set! newstripestart (* stripeheight (- (* numcolors 2) 2)))
                         (set! finalstart (+ basestart newstripestart))
                         (set! basestart (+ basestart newstripestart))
-                        (gimp-message "final numbers:")
-                        (gimp-message (number->string finalstart))
-                        (gimp-message (number->string basestart))
+                        ;(gimp-message "final numbers:")
+                        ;(gimp-message (number->string finalstart))
+                        ;(gimp-message (number->string basestart))
                     )
                 )
                 ; check that image has not been exceeded
                 ; if newbasestart is higher than height of image
                 (if (> basestart firstHeight)
                     (begin
-                        (gimp-message "height exceeded. stop loops")
+                        ;(gimp-message "height exceeded. stop loops")
                         (set! count (+ mainrepeat 1))
                     )
                 )
                 
                 
-                (gimp-displays-flush)
+                ;(gimp-displays-flush)
             )
         )
         (gimp-displays-flush)
         (gimp-display-new firstImage)
+        (gc) ; garbage collect
        ;; (quit)
     )
 )
@@ -424,14 +425,14 @@
         
         (gimp-image-undo-group-start TheImage)
         (gimp-selection-none TheImage)
-        (gimp-message "A")
+        ;(gimp-message "A")
         (set! stripelayer (car (gimp-layer-new TheImage TheWidth TheHeight RGBA-IMAGE "StripeLayer" 100 LAYER-MODE-NORMAL)))
         (gimp-image-insert-layer TheImage stripelayer 0 -1)
-        (gimp-message "layer added")
-        (gimp-message (number->string stripetype))
+        ;(gimp-message "layer added")
+        ;(gimp-message (number->string stripetype))
         (if (= stripetype 1)
             (begin
-                (gimp-message "do the first set method")
+                ;(gimp-message "do the first set method")
                 (fu-draw-first-set TheImage TheLayer 
                             stripeno
                             1
@@ -482,64 +483,64 @@
         
         (while (<= maincount bigset)
             (begin
-                (gimp-message "main count")
-                (gimp-message (number->string maincount))
-                (gimp-message "starting a set")
+                ;(gimp-message "main count")
+                ;(gimp-message (number->string maincount))
+                ;(gimp-message "starting a set")
                 
                 (set! count 1)
                 (while (<= count numrowsinset)
                     (begin
-                        (gimp-message "1st color known")
-                        (gimp-message (number->string count))
-                        (gimp-message "draw pos=1 using color count")
+                        ;(gimp-message "1st color known")
+                        ;(gimp-message (number->string count))
+                        ;(gimp-message "draw pos=1 using color count")
                         
                         (set! count2 1)
                         (while (<= count2 numrowsinset)
                             (begin
                                 (if (= count count2)
                                     (begin
-                                        (gimp-message "skipping outer one")
+                                        ;(gimp-message "skipping outer one")
                                     )
                                     (begin 
-                                        (gimp-message "end colors known")
-                                        (gimp-message "draw pos=numrowsinset using color count2")
-                                        (gimp-message "starting a set")
-                                        (gimp-message (number->string count2))
+                                        ;(gimp-message "end colors known")
+                                        ;(gimp-message "draw pos=numrowsinset using color count2")
+                                        ;(gimp-message "starting a set")
+                                        ;(gimp-message (number->string count2))
                                         
-                                        (gimp-message (number->string count))
+                                        ;(gimp-message (number->string count))
                                         (set! usecolor (determinecolor count    colorA
                                                                 colorB
                                                                 colorC
                                                                 colorD
                                                                 colorE
                                                                 colorF))
-                                        (gimp-message "back from determine")
-                                        (gimp-message (number->string stripe1y))
+                                        ;(gimp-message "back from determine")
+                                        ;(gimp-message (number->string stripe1y))
                                         (fu-draw-stripe TheImage stripelayer stripe1x stripe1y stripewidth stripeheight FALSE usecolor 1)
                                         
-                                        (gimp-message (number->string count2))
+                                        ;(gimp-message (number->string count2))
                                         (set! usecolor (determinecolor count2    colorA
                                                                 colorB
                                                                 colorC
                                                                 colorD
                                                                 colorE
                                                                 colorF))
-                                        (gimp-message "back from determine")
-                                        (gimp-message (number->string stripe1y))
+                                        ;(gimp-message "back from determine")
+                                        ;(gimp-message (number->string stripe1y))
                                         (fu-draw-stripe TheImage stripelayer stripe1x stripe1y stripewidth stripeheight FALSE usecolor numrowsinset)
                                         
                                         (set! internalpos 2) ; start filling from position 2 to n-1 and use the color determined by the counter
                                         (set! count3 1)
                                         (while (<= count3 numrowsinset)
                                             (begin
-                                                (gimp-message "rest of colors known")
+                                                ;(gimp-message "rest of colors known")
                                                 (if (or (= count3 count2) (= count3 count))
                                                     (begin
-                                                        (gimp-message "skipping inner ones")
+                                                        ;(gimp-message "skipping inner ones")
                                                     )
                                                     (begin
-                                                        (gimp-message "draw pos pos=count3 using color=count3")
-                                                        (gimp-message (number->string count3))
+                                                        ;(gimp-message "draw pos pos=count3 using color=count3")
+                                                        ;(gimp-message (number->string count3))
                                                         
                                                         (set! usecolor (determinecolor count3    colorA
                                                                 colorB
@@ -547,8 +548,8 @@
                                                                 colorD
                                                                 colorE
                                                                 colorF))
-                                                        (gimp-message "back from determine")
-                                                        (gimp-message (number->string stripe1y))
+                                                        ;(gimp-message "back from determine")
+                                                        ;(gimp-message (number->string stripe1y))
                                                         (fu-draw-stripe TheImage stripelayer stripe1x stripe1y stripewidth stripeheight FALSE usecolor internalpos)
                                                         (set! internalpos (+ internalpos 1))
                                                         
@@ -562,13 +563,13 @@
                                         (if (= vertline FALSE)
                                             (begin
                                                 (set! stripe1y (+ stripe1y mainjump))
-                                                (gimp-message "stripey increasing by big jump")
-                                                (gimp-message (number->string stripe1y))
+                                                ;(gimp-message "stripey increasing by big jump")
+                                                ;(gimp-message (number->string stripe1y))
                                                 ; now check we haven't jumped out the image
                                                 (set! checknum (+ stripe1y (* numrowsinset stripeheight)))
                                                 (if (> checknum TheHeight)
                                                     (begin
-                                                        (gimp-message "height exceeded. stop loops")
+                                                        ;(gimp-message "height exceeded. stop loops")
                                                         (set! count3 (+ numrowsinset 1))
                                                         (set! count2 (+ numrowsinset 1))
                                                         (set! count (+ numrowsinset 1))
@@ -578,9 +579,9 @@
                                             )
                                             ;; (set! stripe1x (+ stripe1x mainjump))
                                         )
-                                        (gimp-message "first group of 5 DONE")
+                                        ;(gimp-message "first group of 5 DONE")
                                         (gimp-displays-flush)
-                                        (gimp-display-new TheImage)
+                                        ;(gimp-display-new TheImage)
                                     )
                                 )                              
                                 (set! count2 (+ count2 1))
@@ -594,7 +595,7 @@
                 (set! maincount (+ maincount 1))
             )
         )
-        (gimp-message "FINAL QUIT")
+        ;(gimp-message "FINAL QUIT")
         ;;(fu-draw-stripe TheImage stripelayer 1 325 stripewidth stripeheight FALSE '(100 100 100) 1)
         
         
@@ -637,6 +638,7 @@
     (gimp-displays-flush)
     (gimp-display-new TheImage)
     (gimp-image-undo-group-end TheImage)
+    (gc) ; garbage cleaner
   ) ;;; let
   ;
   ; Finish work
@@ -650,7 +652,7 @@
 (script-fu-register
    "script-fu-stripes"
    "<Image>/Script-Fu2/Render/Stripes..."
-   "Render some stripes. Pattern has large repeat cycle. Doesn't fill the full image as this may impact the repeatability. \nfile:karlhof26-stripes-03.scm"
+   "Render some stripes. Pattern has large repeat cycle. Doesn't fill the full image as this may impact the repeatability. First set only shows stripes to the first cycle point. \nfile:karlhof26-stripes-03.scm"
    "Karl Hofmeyr email"
    "Karl Hofmeyr, city country"
    "2016"
