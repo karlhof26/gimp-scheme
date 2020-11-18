@@ -121,10 +121,10 @@
         (if (> ring 0)
             (if (= inZoomAdjustSpacing TRUE)
                 (if (<= inZoomFrom inZoomTo)
-                    (set! radius (* zoom (* ring inRingSpacing)))		;growing: radius scales with motif size
-                    (set! radius (+ radius (* zoom inRingSpacing)))	;shrinking; radius increments with motif size
+                    (set! radius (* zoom (* ring inRingSpacing)))       ;growing: radius scales with motif size
+                    (set! radius (+ radius (* zoom inRingSpacing)))     ;shrinking; radius increments with motif size
                 )
-                (set! radius (* ring inRingSpacing))		;no zoom-adjust: radius is proportional to ring number
+                (set! radius (* ring inRingSpacing))            ;no zoom-adjust: radius is proportional to ring number
             )
         )
         
@@ -209,17 +209,17 @@
 (script-fu-register
     "script-fu-JT-replicate-in-rings"
     "JT Replicate in Rings"
-    "Replicate a layer/selection as a motif in concentric (or offset) rings. \nfile:JT-replicate-in-rings-v1.1.scm"
+    "Replicate a layer/selection as a motif in concentric (or offset) rings. Try stroking a selection to start. \nfile:JT-replicate-in-rings-v1.1.scm"
     "Jon Tait"
     "Jon Tait (jontait2 at http://gimpchat.com)"
     "9th April 2015"
     "RGB* GRAY*"
     SF-IMAGE      "Image"             0
     SF-DRAWABLE   "Drawable"          0
-    SF-ADJUSTMENT "Replication radix"     '(6 1 20 1 1 0 1)
-    SF-ADJUSTMENT "Number of rings"       '(3 1 30 1 10 0 1)
+    SF-ADJUSTMENT "Replication radix"     '(8 1 20 1 1 0 1)
+    SF-ADJUSTMENT "Number of rings"       '(2 1 30 1 10 0 1)
     SF-ADJUSTMENT "Ring spacing"          '(50 10 1000 1 10 0 1)
-    SF-ADJUSTMENT "Offset angle"          '(0 -360 360 1 15 0 1)
+    SF-ADJUSTMENT "Offset angle"          '(30 -360 360 1 15 0 1)
     SF-ADJUSTMENT "Progressive offset X"      '(0 -1000 1000 1 10 0 1)
     SF-ADJUSTMENT "Progressive offset Y"      '(0 -1000 1000 1 10 0 1)
     SF-ADJUSTMENT "Zoom at centre"            '(1 0 10 0.01 1 2 1)

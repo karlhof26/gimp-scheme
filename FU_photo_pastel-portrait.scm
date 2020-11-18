@@ -129,7 +129,7 @@
             (gimp-image-flatten img)
         )
         
-        ;; Clean up
+        ;; Clean up 
         (gimp-image-undo-group-end img)
         (gimp-displays-flush)
     )

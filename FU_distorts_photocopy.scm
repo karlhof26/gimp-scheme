@@ -1,6 +1,6 @@
 ; FU_distorts_photocopy.scm
 ; version 2.8 [gimphelp.org]
-; last modified/tested by Paul Sherman
+; last modified/tested by Paul Sherman & karlhof26
 ; 02/13/2014 on GIMP-2.8.10
 ; 01/09/2020 on GIMP-2.10.20
 ;
@@ -107,7 +107,7 @@
                 (gimp-message "Execution error:\n Threshold1 equals to threshold2!")
             )
             (begin
-                (gimp-message "threshold")
+                ;(gimp-message "threshold")
                 (gimp-drawable-threshold channel HISTOGRAM-VALUE (/ threshold1 255) (/ threshold2 255))
             )
         )
@@ -146,13 +146,14 @@
         
         (gimp-image-undo-group-end img)
         (gimp-displays-flush)
+        (gc) ; garbage collect 
   )
 )
 
 (script-fu-register
     "FU-photocopy"
     "<Image>/Script-Fu/Photo/Distorts/Photocopy"
-    "Creates photocopy false coloured image of just 2 colors (BW). \nfile:FU_distorts_photocopy.scm"
+    "Creates photocopy false coloured image of just 2 colors (BW).\nUse balance to grow or shink dots (positive values grow the base colour) \nfile:FU_distorts_photocopy.scm"
     "Iccii <iccii@hotmail.com>"
     "Iccii"
     "2001, Oct"
@@ -163,7 +164,7 @@
     SF-ADJUSTMENT   "Threshold (Bigger 1<-->255 Smaller)"  '(255 0 255 1 10 0 0)
     SF-COLOR        "Base Color"                          '(255 255 255)
     SF-COLOR        "Background Color"                    '(  0   0   0)
-    SF-ADJUSTMENT   "Balance"                             '(0 -100 100 1 10 0 1)
+    SF-ADJUSTMENT   "Balance (grow or shrink dots)"       '(0 -100 100 1 10 0 1)
     SF-ADJUSTMENT   "Smooth"                              '(5 1 100 1 10 0 1)
     SF-TOGGLE       "Merge layers when complete?"         FALSE
 )
