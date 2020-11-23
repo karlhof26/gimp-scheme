@@ -4,7 +4,7 @@
 ;  02/14/2014 on GIMP-2.8.10
 ;  13/09/2020 on GIMP-2.10.20
 ;
-;  02/14/2014 - convert to RGB if needed
+;  02/14/2014 - convert to RGB if needed 
 ;==============================================================
 ;
 ; Installation:
@@ -358,9 +358,9 @@
     "*"
     SF-IMAGE        "Image"    0
     SF-DRAWABLE     "Drawable" 0
-    SF-ADJUSTMENT "Reflection Fade Rate (%)" '(70 0 100 10 20 0 0)
-    SF-ADJUSTMENT "Blue Amount on Water" '(2 1 5 1 1 0 0)
-    SF-TOGGLE "Wavier Reflection"  FALSE
+    SF-ADJUSTMENT   "Reflection Fade Rate (%)" '(70 0 100 10 20 0 0)
+    SF-ADJUSTMENT   "Blue Amount on Water" '(2 1 5 1 1 0 0)
+    SF-TOGGLE       "Wavier Reflection"  FALSE
 )
 
 ;end of script
