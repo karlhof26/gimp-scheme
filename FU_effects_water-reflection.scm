@@ -350,7 +350,7 @@
 )
 
 (script-fu-register "FU-water-reflection"
-    "<Image>/Script-Fu/Effects/Water Reflection"
+    "<Toolbox>/Script-Fu/Effects/Water Reflection"
     "Reflection -- extends lower section of an image as a reflection of the original image. \nfile:FU_effects_water-reflection.scm"
     "Original author Otavio Cordeiro, later edited by David Cummins and Paul Sherman"
     "Paul Sherman <psherman2001@gmail.com>"

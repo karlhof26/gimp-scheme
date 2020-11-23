@@ -62,7 +62,7 @@
             drawable
             contrast
             deform
-            random
+            random_b
             emboss?
             bright
     )
@@ -99,7 +99,7 @@
         )
         
        
-        (while (< count random)
+        (while (< count random_b)
             (aset control_pts (+ (* count 4) 2) (* step (+ (* count 2) 1)))
             (aset control_pts (+ (* count 4) 3) (+ 128 contrast))
             (aset control_pts (+ (* count 4) 4) (* step (+ (* count 2) 2)))
@@ -130,8 +130,8 @@
 
 (script-fu-register
     "FU-chrome-image"
-    "<Image>/Script-Fu/Effects/Chrome Image"
-    "Create chrome image.  Usefull when you want to create metallic surfaces. \nfile:FU_effects_chrome-image.scm"
+    "<Toolbox>/Script-Fu/Effects/Chrome Image"
+    "Create chrome image.  Useful when you want to create metallic surfaces. Works best on transparent layer with thick lines. \nfile:FU_effects_chrome-image.scm"
     "Iccii <iccii@hotmail.com>"
     "Iccii"
     "2002, Feb"
@@ -142,7 +142,7 @@
     SF-ADJUSTMENT "Deformation"     '(3 1 50 1 10 0 0)
     SF-ADJUSTMENT "Ramdomeness"     '(4 1 7 1 10 0 1)
     SF-TOGGLE     "Enable Emboss"   FALSE
-    SF-TOGGLE "Bright Chrome" FALSE
+    SF-TOGGLE     "Bright Chrome" FALSE
 )
 
 ; end of script

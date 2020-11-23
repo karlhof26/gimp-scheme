@@ -62,7 +62,7 @@
 
 (script-fu-register
     "script-fu-water-paint-effect"
-    "<Image>/Script-Fu/Effects/Water Paint Effect Iccii"
+    "<Toolbox>/Script-Fu/Effects/Water Paint Effect Iccii"
     "Draw with water paint effect. Version de abcdugimp.free.fr. \nfile:iccii-water-paint-effect_02.scm"
     "Iccii <iccii@hotmail.com>"
     "Iccii"
