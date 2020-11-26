@@ -49,7 +49,10 @@
     )
     (gimp-drawable-set-name theNewlayer "New layer")
     (gimp-image-insert-layer inImage theNewlayer 0 -1)
+
     ;; not working (plug-in-laplace 1 inImage theNewlayer) 
+
+
     (plug-in-edge 1 inImage theNewlayer 5 2 0)
     (gimp-layer-set-mode theNewlayer LAYER-MODE-SUBTRACT)
     (gimp-drawable-posterize theNewlayer 8)
