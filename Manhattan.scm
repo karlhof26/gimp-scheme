@@ -30,7 +30,7 @@
                                 conserve
         )
             
-    (gimp-image-undo-group-start image)						  
+    (gimp-image-undo-group-start image)
     
  (let* (
             (width (car (gimp-image-width image)))
@@ -82,8 +82,8 @@
             0.0 1.0 0.0          ; 2nd axis
             0.0 hrot vrot        ; axis rotation
             0 '(255 255 255)     ; Type of lightsource (0=point,1=directional,2=none)and Lightsource color (r,g,b) 
-            -0.5 -0.5 2		     ; light position
-            -1.0 -1.0 1.0	     ; light direction
+            -0.5 -0.5 2          ; light position
+            -1.0 -1.0 1.0        ; light direction
             0.3 1.2 0.7 0.0 27.0 ; material (amb, diff, refl, spec, high)
             TRUE                 ; antialias
             FALSE                ; tile
@@ -123,7 +123,7 @@
         
         ;;;;create the mask	
         
-        (let ((blur-mask (car (gimp-layer-create-mask blur-layer ADD-WHITE-MASK)))) 
+        (let ((blur-mask (car (gimp-layer-create-mask blur-layer ADD-MASK-WHITE)))) 
             (gimp-layer-add-mask blur-layer blur-mask)
             
             (gimp-edit-blend blur-mask  BLEND-FG-TRANSPARENT LAYER-MODE-NORMAL GRADIENT-RADIAL 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE x1 y1 x2 y2)	

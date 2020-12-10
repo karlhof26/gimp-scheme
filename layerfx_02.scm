@@ -1702,7 +1702,7 @@
 
 
 (script-fu-register "script-fu-layerfx-drop-shadow"
-            "<Image>/Script-Fu/Layer Effects/Drop Shadow..."
+            "<Toolbox>/Script-Fu/Layer Effects/Drop Shadow..."
             "Adds a drop shadow to a layer. Does not add a shadow to an unfilled or drawn selection. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
@@ -1724,8 +1724,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-inner-shadow"
-            "<Image>/Script-Fu/Layer Effects/Inner Shadow..."
-            "Adds an inner shadow to a layer"
+            "<Toolbox>/Script-Fu/Layer Effects/Inner Shadow..."
+            "Adds an inner shadow to a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1746,8 +1746,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-outer-glow"
-            "<Image>/Script-Fu/Layer Effects/_Outer Glow..."
-            "Creates an outer glow effect around a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/_Outer Glow..."
+            "Creates an outer glow effect around a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1766,8 +1766,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-inner-glow"
-            "<Image>/Script-Fu/Layer Effects/_Inner Glow..."
-            "Creates an inner glow effect around a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/_Inner Glow..."
+            "Creates an inner glow effect around a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1786,8 +1786,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-bevel-emboss"
-            "<Image>/Script-Fu/Layer Effects/Bevel and Emboss..."
-            "Creates beveling and embossing effects over a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/Bevel and Emboss..."
+            "Creates beveling and embossing effects over a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1814,8 +1814,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-satin"
-            "<Image>/Script-Fu/Layer Effects/_Satin..."
-            "Creates a satin effect over a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/_Satin..."
+            "Creates a satin effect over a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1834,8 +1834,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-stroke"
-            "<Image>/Script-Fu/Layer Effects/Stroke..."
-            "Creates a stroke around a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/Stroke..."
+            "Creates a stroke around a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1851,8 +1851,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-color-overlay"
-            "<Image>/Script-Fu/Layer Effects/Color Overlay..."
-            "Overlays a color over a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/Color Overlay..."
+            "Overlays a color over a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1866,7 +1866,7 @@
 )
 
 (script-fu-register "script-fu-layerfx-gradient-overlay"
-            "<Image>/Script-Fu/Layer Effects/Gradient Overlay"
+            "<Toolbox>/Script-Fu/Layer Effects/Gradient Overlay"
             "Overlays a gradient over a layer. \n file:layerfx_02.scm"
             "Jonathan Stipe JonStipe@prodigy.net"
             "Jonathan Stipe"
@@ -1891,8 +1891,8 @@
 ;;   0       1           3          6           4         5        16      17     18            19             20              21           6            7         8            9            10          11      12          13      14
 
 (script-fu-register "script-fu-layerfx-pattern-overlay"
-    "<Image>/Script-Fu/Layer Effects/Pattern Overlay..."
-    "Overlays a pattern over a layer."
+    "<Toolbox>/Script-Fu/Layer Effects/Pattern Overlay..."
+    "Overlays a pattern over a layer. \nfile:layerfx_02.scm"
     "Jonathan Stipe <JonStipe@prodigy.net>"
     "Jonathan Stipe"
     "January 2008"
