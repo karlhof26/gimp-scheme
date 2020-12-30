@@ -63,7 +63,7 @@
         img
         drawable
         length
-        angle	
+        angle
         number
         threshold
         inMerge
@@ -150,7 +150,7 @@
     SF-DRAWABLE     "Drawable"                              0
     SF-ADJUSTMENT   "Light Length"                          '(40 1 255 1 10 0 0)
     SF-ADJUSTMENT   "Start Angle"                           '(30 0 360 1 10 0 0)
-    SF-ADJUSTMENT   "Number of Lights"                      '(4 1 16 1 2 0 1)
+    SF-ADJUSTMENT   "Number of Lights"                      '(3 1 16 1 2 0 1)
     SF-ADJUSTMENT   "Threshold (Bigger 1<-->255 Smaller)"   '(223 1 255 1 10 0 0)
     SF-TOGGLE       "Merge layers when complete?"           FALSE
 )
