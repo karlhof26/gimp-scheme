@@ -22,7 +22,7 @@
 ; along with this program; if not, see <http://www.gnu.org/licenses>.
 ;
 
-(define (script-fu-infrared-effect-schr inImage inLayer inColor inRadius inDelta)
+(define (script-fu-infrared-effect-schr inImage inLayer inColor inRadius inDelta useGrad mapGrad pixelizeSize)
     
     (gimp-image-undo-group-start inImage)
     
@@ -33,9 +33,21 @@
         (gimp-item-set-name CopyLayer "ColorLayer")
         (gimp-item-set-name inLayer "Infrared-Image")
         (gimp-layer-set-opacity CopyLayer inColor)
-        (gimp-layer-set-mode CopyLayer LAYER-MODE-GRAIN-MERGE-LEGACY) ; was 21
+        (gimp-layer-set-mode CopyLayer LAYER-MODE-GRAIN-MERGE) ; was 21
         (plug-in-sel-gauss TRUE inImage inLayer inRadius inDelta)
-        (plug-in-colors-channel-mixer TRUE inImage inLayer TRUE 1.0 1.0 -1.0 0 0 0 0 0 0)
+        (plug-in-colors-channel-mixer 1 inImage inLayer TRUE 1.5 1.2 -1.3 0 0 0 0 0 0) ; was TRUE 1.0 1.0 -1.0 0 0 0 0 0 0
+        
+        (gimp-displays-flush)
+        (plug-in-pixelize2 1 inImage inLayer pixelizeSize pixelizeSize)
+        
+        (if (= useGrad TRUE)
+            (begin
+                (gimp-context-set-gradient mapGrad)
+                (plug-in-gradmap 1 inImage inLayer)
+            )
+        )
+        
+        (gimp-displays-flush)
         (gimp-image-merge-visible-layers inImage 2)
     )
     (gimp-image-undo-group-end inImage)
@@ -45,7 +57,7 @@
 (script-fu-register
     "script-fu-infrared-effect-schr"
     "Infrared effect"
-    "Infrared effect. \nfile:schrottie-infrared_v1.2.scm"
+    "Infrared effect. 21 is a good value for pixelize. \nfile:schrottie-infrared_v1.2.scm"
     "Maik Bischoff"
     "copyright 2015, Maik Bischoff"
     "August 18, 2015" 
@@ -55,6 +67,9 @@
     SF-ADJUSTMENT   "Intensity Amount (Farbintensität festlegen)" '(30.0 15.0 40.0 1.0 0 2 0)
     SF-ADJUSTMENT   "Radius (Weichzeichner)"            '(5.0 1.0 20.0 1.0 0 2 0)
     SF-ADJUSTMENT   "Delta (Weichzeichner)"             '(25.0 10.0 60.0 1.0 0 2 0)
+    SF-TOGGLE       "Use Gradient" TRUE
+    SF-GRADIENT     "Gradient"  "Full saturation spectrum CW"
+    SF-ADJUSTMENT   "Pixelise size"             '(21 1 60 1 5 0 0)
 )
 
 (script-fu-menu-register "script-fu-infrared-effect-schr" "<Toolbox>/Script-Fu/Effects/")
