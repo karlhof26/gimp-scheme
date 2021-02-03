@@ -1,5 +1,6 @@
 ; 
 ; V1.0 - Feb-2011 - First working version! (still learning language) - Brian Hahn
+; V1.1 - Nov 2020 - Updated to work with Gimp-2.10.22
 ;
 ; Script to copy, shift and rotate a path
 ;
@@ -53,15 +54,15 @@
         "Brian Hahn"
         "2011"
         "*"
-        SF-IMAGE        "Image"             0
-        SF-VECTORS      "Vector Object"     0
-        SF-ADJUSTMENT   "Offset X (px)"     '(3 -1000 1000 1 10 0 1)
-        SF-ADJUSTMENT   "Offset Y (px)"     '(3 -1000 1000 1 10 0 1)
-        SF-ADJUSTMENT   "Rotation Angle"    '(0.5 -180 180 0.1 10 2 0)
+        SF-IMAGE        "Image"               0
+        SF-VECTORS      "Vector Object"       0
+        SF-ADJUSTMENT   "Offset X (px)"       '(3 -1000 1000 1 10 0 1)
+        SF-ADJUSTMENT   "Offset Y (px)"       '(3 -1000 1000 1 10 0 1)
+        SF-ADJUSTMENT   "Rotation Angle"      '(0.5 -180 180 0.1 10 2 0)
         SF-ADJUSTMENT   "Rotation Center X"   '(500 0 5000 1 10 0 1)
         SF-ADJUSTMENT   "Rotation Center Y"   '(500 0 5000 1 10 0 1)
         SF-TOGGLE       "Use image center"    TRUE
         SF-ADJUSTMENT   "Number of copies"    '(20 1 1000 1 10 0 1)
 )
 
-;emd of script
+;end of script

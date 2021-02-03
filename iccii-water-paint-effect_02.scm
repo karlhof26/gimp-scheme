@@ -49,7 +49,10 @@
     )
     (gimp-drawable-set-name theNewlayer "New layer")
     (gimp-image-insert-layer inImage theNewlayer 0 -1)
-    ;; not working (plug-in-laplace 1 inImage theNewlayer)
+
+    ;; not working (plug-in-laplace 1 inImage theNewlayer) 
+
+
     (plug-in-edge 1 inImage theNewlayer 5 2 0)
     (gimp-layer-set-mode theNewlayer LAYER-MODE-SUBTRACT)
     (gimp-drawable-posterize theNewlayer 8)
@@ -62,7 +65,7 @@
 
 (script-fu-register
     "script-fu-water-paint-effect"
-    "<Image>/Script-Fu/Effects/Water Paint Effect Iccii"
+    "<Toolbox>/Script-Fu/Effects/Water Paint Effect Iccii"
     "Draw with water paint effect. Version de abcdugimp.free.fr. \nfile:iccii-water-paint-effect_02.scm"
     "Iccii <iccii@hotmail.com>"
     "Iccii"

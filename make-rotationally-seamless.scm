@@ -42,6 +42,8 @@
 ; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 ; See the License for the specific language governing permissions and
 ; limitations under the License.
+;
+
 (define (script-fu-make-rotationally-seamless image
             layerBase
             sideStart
@@ -221,7 +223,7 @@
         
         (if (> blend 0)
             (begin
-                (gimp-message "blend not eq to 0")
+                ;(gimp-message "blend not eq to 0")
                 (gimp-selection-all image)
                 (gimp-selection-shrink image (ceiling (/ blend 2)))
                 (gimp-selection-feather image blend)
@@ -239,7 +241,7 @@
         
         (if (or (not (= tilesX 1)) (not (= tilesY 1)))
             (begin
-                (gimp-message "do tile random rotation")
+                ;(gimp-message "do tile random rotation")
                 (gimp-image-undo-group-end image)
                 (gimp-image-undo-group-start image)
                 (set! layerBase (car (gimp-image-merge-down image layerComplete CLIP-TO-IMAGE)))

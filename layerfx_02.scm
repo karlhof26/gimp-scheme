@@ -26,13 +26,13 @@
             (modenumbers #(0 1 3 6 4 5 16 17 18 19 20 21 6 7 8 9 10 11 12 13 14 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63))
             
           )
-          (gimp-message "in get blending mode")
+          ;(gimp-message "in get blending mode")
           ;; (modenumbers '#(0 1 3 15 4 5 16 17 18 19 20 21 6 7 8 9 10 11 12 13 14; extras added by karlhof26 just a numerical sequence
           ;; (modenumbers (list->vector '(0 1 3 6 4 5 16 17 18 19 20 21 6 7 8 9 10 11 12 13 14
           ;;   0 1  3  6  4  5  16  17  18  19  20  21  6  7  8  9  10  11  12  13  14
-        (gimp-message "crashing here maybe ")
+        ;(gimp-message "crashing here maybe ")
         (set! result (vector-ref modenumbers mode))
-        (gimp-message "crashing here maybe not...returning")
+        ;(gimp-message "crashing here maybe not...returning")
         result
     )
 )
@@ -44,7 +44,7 @@
             (result 0)
             
           )
-          (gimp-message "in grad blending mode")
+          ;(gimp-message "in grad blending mode")
           (set! result (vector-ref modenumberss modep))
           result
     )
@@ -88,7 +88,7 @@
             (oldposit2 -1) ; was 0
           )
         (set! oldposit2 (get-layer-pos img oldlayer))
-        (gimp-message "attempting to add add the layer")
+        ;(gimp-message "attempting to add add the layer")
         ;; was (gimp-image-insert-layer img newlayer (+ oldposit2 1) oldposit2)
         (gimp-image-insert-layer img newlayer 0 oldposit2)
     )
@@ -104,7 +104,7 @@
             (set! finalposit (+ oldposit 1))
         )
         (gimp-image-insert-layer img newlayer oldposit finalposit)
-        (gimp-message "insert done")
+        ;(gimp-message "insert done")
     )
 )
 
@@ -197,23 +197,23 @@
           )
          
          
-         (gimp-message "in contours")
-         (gimp-message (number->string contour))
+         ;(gimp-message "in contours")
+         ;(gimp-message (number->string contour))
          (set! dummy-var 3)
          
         (if (= (vector-ref contourtypes (- contour 1)) 0)
             (begin
-                (gimp-message "contour type0")
+                ;(gimp-message "contour type0")
                 ;;(gimp-drawable-curves-spline drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
                 (gimp-drawable-curves-spline drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
             )
             (begin
-                (gimp-message "contour type1")
+                ;(gimp-message "contour type1")
                 (gimp-drawable-curves-explicit drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
             )
         )
         
-        (gimp-message "leaving countours")
+        ;(gimp-message "leaving countours")
         
         
     )
@@ -229,7 +229,7 @@
             (noiselayer (car (gimp-layer-new img drwwidth drwheight (cond ((= (car (gimp-image-base-type img)) 0) 1) ((= (car (gimp-image-base-type img)) 1) 3)) (string-append layername "-noise") 100 0)))
             (blanklayer (car (gimp-layer-new img drwwidth drwheight (cond ((= (car (gimp-image-base-type img)) 0) 1) ((= (car (gimp-image-base-type img)) 1) 3)) (string-append layername "-noise") 100 0)))
           )
-        (gimp-message "apply noise start row 193")
+        ;(gimp-message "apply noise start row 232")
         (add-over-layer img noiselayer srclayer)
         (add-over-layer img blanklayer noiselayer)
         (gimp-layer-set-offsets noiselayer (car drwoffsets) (cadr drwoffsets))
@@ -239,7 +239,7 @@
         (gimp-edit-fill noiselayer FILL-FOREGROUND)
         (gimp-edit-fill blanklayer FILL-FOREGROUND)
         (gimp-context-set-foreground '(255 255 255))
-        (gimp-message "apply noise row 203")
+        ;(gimp-message "apply noise row 203")
         
         (gimp-selection-load srcmask)
         (gimp-selection-invert img)
@@ -268,7 +268,7 @@
         (gimp-layer-set-mode noiselayer LAYER-MODE-OVERLAY-LEGACY)
                  
         (gimp-image-remove-layer img noiselayer)
-        (gimp-message "noise layer finish row 232")
+        ;(gimp-message "noise layer finish row 271")
     )
 )
 
@@ -317,48 +317,48 @@
             (opacity 0)
             (tempcolor '(0 0 0))
         )
-        (gimp-message "drop shadow row 320")
+        ;(gimp-message "drop shadow row 320")
         ; there is a bug passing opacity through; don't use opacitykh anywhere as a result.
         (set! opacity 100.0)
         
         ;(gimp-message (number->string (cdr (colorkh))))
-        (gimp-message (number->string opacity))
-        (gimp-message (number->string offsetdist))
-        (gimp-message (number->string offsetX))
-        (gimp-message (number->string lyrgrowamt))
+        ;(gimp-message (number->string opacity))
+        ;(gimp-message (number->string offsetdist))
+        ;(gimp-message (number->string offsetX))
+        ;(gimp-message (number->string lyrgrowamt))
         
         (add-under-layer img shadowlayer drawable)
         (gimp-layer-set-offsets shadowlayer (- (+ (car drwoffsets) offsetX) lyrgrowamt) (- (+ (cadr drwoffsets) offsetY) lyrgrowamt))
-        (gimp-message "drop shadow row 332")
+        ;(gimp-message "drop shadow row 332")
         (gimp-layer-set-opacity shadowlayer opacity) ; was opacitykh
         
         (gimp-selection-all img)
-        (gimp-message "drop shadow row 336")
+        ;(gimp-message "drop shadow row 336")
         (gimp-context-set-foreground '(0 0 50))
-        (gimp-message "drop shadow row 338")
+        ;(gimp-message "drop shadow row 338")
         (set! tempcolor '(0 0 10))
         (gimp-context-set-foreground tempcolor)
-        (gimp-message "drop shadow row 341")
+        ;(gimp-message "drop shadow row 341")
         (gimp-drawable-edit-fill shadowlayer FILL-FOREGROUND)
-        (gimp-message "drop shadow row 343")
+        ;(gimp-message "drop shadow row 343")
         (gimp-selection-none img)
-        (set! shadowmask (car (gimp-layer-create-mask shadowlayer 1)))
+        (set! shadowmask (car (gimp-layer-create-mask shadowlayer ADD-MASK-BLACK))) ; was 1
         (gimp-layer-add-mask shadowlayer shadowmask)
-        (gimp-message "drop shadow row 347")
+        ;(gimp-message "drop shadow row 347")
         ; deprecated(gimp-selection-layer-alpha drawable)
         (gimp-image-select-item img CHANNEL-OP-ADD drawable)
         
-        (gimp-message "drop shadow row 351")
+        ;(gimp-message "drop shadow row 351")
         (if (> (car (gimp-layer-get-mask drawable)) -1) ; was drawable
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3) ; was drawable
         )
         
         (gimp-selection-translate img offsetX offsetY)
         (set! alphaSel (car (gimp-selection-save img)))
-        (gimp-message "drop shadow row 358")
+        ;(gimp-message "drop shadow row 358")
         (draw-blurshape img shadowmask steps growamt alphaSel 0)
         (gimp-selection-none img)
-        (gimp-message "drop shadow row 361")
+        ;(gimp-message "drop shadow row 361")
         (if (> contour 0)
             (begin
                 ;(gimp-displays-flush)
@@ -376,16 +376,16 @@
                 (apply-contour-kh shadowmask 0 contour)
                 ;(gimp-displays-flush)
                 (gimp-selection-load alphaSel)
-                (gimp-message "drop shadow row 379")
+                ;(gimp-message "drop shadow row 379")
                 (gimp-selection-grow img growamt)
                 (gimp-selection-invert img)
                 (gimp-context-set-foreground '(0 0 0))
                 (gimp-drawable-edit-fill shadowmask FILL-FOREGROUND)
                 (gimp-selection-none img)
-                (gimp-message "drop shadow row 374")
+                ;(gimp-message "drop shadow row 374")
             )
         )
-        (gimp-message "drop shadow row 387")
+        ;(gimp-message "drop shadow row 387")
         (if (> noise 0)
             (apply-noise img drawable shadowlayer noise)
         )
@@ -398,13 +398,13 @@
                 (gimp-drawable-edit-fill shadowmask FILL-FOREGROUND)
             )
         )
-        (gimp-message "drop shadow row 400")
+        ;(gimp-message "drop shadow row 400")
         (gimp-layer-remove-mask shadowlayer 0)
         (gimp-selection-none img)
         ;(gimp-displays-flush)
         (if (= merge TRUE)
             (begin
-                (gimp-message "drop shadow row 405")
+                ;(gimp-message "drop shadow row 407")
                 (set! origmask (car (gimp-layer-get-mask drawable)))
                 (if (> origmask -1)
                     (gimp-layer-remove-mask drawable 0)
@@ -420,7 +420,7 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gc) ; garbage collection
-        (gimp-message "drop shadow good end")
+        ;(gimp-message "drop shadow good end")
     )
     (gimp-image-undo-group-end img)
 )
@@ -464,7 +464,7 @@
         (gimp-context-set-foreground color)
         (gimp-edit-fill shadowlayer 0)
         (gimp-selection-none img)
-        (set! shadowmask (car (gimp-layer-create-mask shadowlayer 1)))
+        (set! shadowmask (car (gimp-layer-create-mask shadowlayer ADD-MASK-BLACK)))
         (gimp-layer-add-mask shadowlayer shadowmask)
         ;(gimp-selection-layer-alpha drawable)
         (gimp-image-select-item img CHANNEL-OP-ADD drawable)
@@ -510,7 +510,7 @@
                             (gimp-layer-remove-mask drawable 1)
                         )
                     )
-                    (set! alphamask (car (gimp-layer-create-mask drawable 3)))
+                    (set! alphamask (car (gimp-layer-create-mask drawable ADD-MASK-ALPHA-TRANSFER))) ; was 3
                     (set! shadowlayer (car (gimp-image-merge-down img shadowlayer 0)))
                     (gimp-drawable-set-name shadowlayer layername)
                     (gimp-layer-add-mask shadowlayer alphamask)
@@ -580,7 +580,7 @@
         (gimp-context-set-foreground color)
         (gimp-edit-fill glowlayer 0)
         (gimp-selection-none img)
-        (set! glowmask (car (gimp-layer-create-mask glowlayer 1)))
+        (set! glowmask (car (gimp-layer-create-mask glowlayer ADD-MASK-BLACK))) ; was 1
         (gimp-layer-add-mask glowlayer glowmask)
         ;(gimp-selection-layer-alpha drawable)
         (gimp-image-select-item img CHANNEL-OP-ADD drawable)
@@ -668,7 +668,7 @@
         (gimp-context-set-foreground color)
         (gimp-edit-fill glowlayer FILL-FOREGROUND)
         (gimp-selection-none img)
-        (set! glowmask (car (gimp-layer-create-mask glowlayer 1)))
+        (set! glowmask (car (gimp-layer-create-mask glowlayer ADD-MASK-BLACK))) ; was 1
         (gimp-layer-add-mask glowlayer glowmask)
         ;(gimp-selection-layer-alpha drawable)
         (gimp-image-select-item img CHANNEL-OP-ADD drawable)
@@ -712,7 +712,7 @@
                             (gimp-layer-remove-mask drawable 1)
                         )
                     )
-                    (set! alphamask (car (gimp-layer-create-mask drawable 3)))
+                    (set! alphamask (car (gimp-layer-create-mask drawable ADD-MASK-ALPHA-TRANSFER))) ; was 3
                     (set! glowlayer (car (gimp-image-merge-down img glowlayer 0)))
                     (gimp-drawable-set-name glowlayer layername)
                     (gimp-layer-add-mask glowlayer alphamask)
@@ -850,8 +850,8 @@
         (gimp-edit-fill shadowlayer 0)
         (gimp-context-set-foreground '(0 0 0))
         (gimp-edit-fill bumpmaplayer 0)
-        (set! highlightmask (car (gimp-layer-create-mask highlightlayer 1)))
-        (set! shadowmask (car (gimp-layer-create-mask shadowlayer 1)))
+        (set! highlightmask (car (gimp-layer-create-mask highlightlayer ADD-MASK-BLACK)))
+        (set! shadowmask (car (gimp-layer-create-mask shadowlayer ADD-MASK-BLACK))) ; was 1
         (gimp-layer-add-mask highlightlayer highlightmask)
         (gimp-layer-add-mask shadowlayer shadowmask)
         ;(gimp-selection-layer-alpha drawable)
@@ -892,7 +892,7 @@
         (if (> surfacecontour 0)
             (apply-contour-kh bumpmaplayer 0 surfacecontour)
         )
-        (gimp-message "emboss line 764")
+        ;(gimp-message "emboss line 895")
         (if (< angle 0)
             (set! angle (+ angle 360))
         )
@@ -906,7 +906,7 @@
         (if (> invert 0) 
             (gimp-invert highlightmask)
         )
-        (gimp-message "emboss line 778")
+        ;(gimp-message "emboss line 909")
         (gimp-channel-combine-masks shadowmask highlightmask 2 0 0)
         (gimp-drawable-levels highlightmask HISTOGRAM-VALUE 0.5 1.0 TRUE 1.0 0.0 1.0 TRUE)  ; was 0 127 255 1.0 0 255
         (gimp-drawable-levels shadowmask HISTOGRAM-VALUE 0.0 0.49 TRUE 1.0 0.0 1.0 TRUE) ; was 0 0 127 1.0 255 0
@@ -917,7 +917,7 @@
                 (gimp-selection-grow img halfsizec)
             )
         )
-        (gimp-message "emboss line 789")
+        ;(gimp-message "emboss line 920")
         (gimp-selection-invert img)
         (gimp-context-set-foreground '(0 0 0))
         (gimp-edit-fill shadowmask 0)
@@ -926,7 +926,7 @@
         (if (= merge 1)
             (if (= style 1)
                 (begin
-                    (gimp-message "emboss line 798")
+                    ;(gimp-message "emboss line 929")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (begin
@@ -934,12 +934,12 @@
                             (gimp-layer-remove-mask drawable 1)
                         )
                     )
-                    (set! alphamask (car (gimp-layer-create-mask drawable 3)))
+                    (set! alphamask (car (gimp-layer-create-mask drawable ADD-MASK-ALPHA-TRANSFER))) ; was 3
                     (set! shadowlayer (car (gimp-image-merge-down img shadowlayer 0)))
                     (set! highlightlayer (car (gimp-image-merge-down img highlightlayer 0)))
                     (gimp-drawable-set-name highlightlayer layername)
                     (gimp-layer-add-mask highlightlayer alphamask)
-                    (gimp-message "emboss line 811")
+                    ;(gimp-message "emboss line 811")
                     (gimp-layer-remove-mask highlightlayer 0)
                     
                     (if (> origmask -1)
@@ -947,7 +947,7 @@
                     )
                 )
                 (begin
-                    (gimp-message "emboss line 817")
+                    ;(gimp-message "emboss line 817")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (gimp-layer-remove-mask drawable 0)
@@ -1066,7 +1066,7 @@
                         (gimp-layer-remove-mask drawable 1)
                     )
                 )
-                (set! alphamask (car (gimp-layer-create-mask drawable 3)))
+                (set! alphamask (car (gimp-layer-create-mask drawable ADD-MASK-ALPHA-TRANSFER))) ; was 3
                 (set! satinlayer (car (gimp-image-merge-down img satinlayer 0)))
                 (gimp-drawable-set-name satinlayer layername)
                 (gimp-layer-add-mask satinlayer alphamask)
@@ -1089,7 +1089,7 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
-        (gimp-message "OK")
+        ;(gimp-message "OK line 1092")
   )
 )
 
@@ -1145,7 +1145,7 @@
                                 (gimp-layer-remove-mask drawable 1)
                             )
                         )
-                        (set! alphamask (car (gimp-layer-create-mask drawable 3)))
+                        (set! alphamask (car (gimp-layer-create-mask drawable ADD-MASK-ALPHA-TRANSFER))) ; was 3
                         (gimp-selection-none img)
                         (gimp-threshold alphaselection 1 255)
                         (gimp-selection-load alphaselection)
@@ -1248,7 +1248,7 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
-        (gimp-message "Ok")
+        ;(gimp-message "Ok line 1251")
   )
 )
 
@@ -1287,7 +1287,7 @@
                         (gimp-layer-remove-mask drawable 1)
                     )
                 )
-                (set! alphamask (car (gimp-layer-create-mask drawable 3)))
+                (set! alphamask (car (gimp-layer-create-mask drawable ADD-MASK-ALPHA-TRANSFER)))
                 (set! colorlayer (car (gimp-image-merge-down img colorlayer 0)))
                 (gimp-drawable-set-name colorlayer layername)
                 (gimp-layer-add-mask colorlayer alphamask)
@@ -1302,7 +1302,7 @@
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
                     (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
                 )
-                (set! alphamask (car (gimp-layer-create-mask colorlayer 4)))
+                (set! alphamask (car (gimp-layer-create-mask colorlayer ADD-MASK-SELECTION))) ; was 4
                 (gimp-layer-add-mask colorlayer alphamask)
                 (gimp-layer-remove-mask colorlayer 0)
             )
@@ -1312,7 +1312,7 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
-        ;;(gimp-message "Ok")
+        ;;(gimp-message "Ok line 1315")
     )
 )
 
@@ -1374,43 +1374,43 @@
           )
           
         (gimp-image-undo-group-start img)
-        (gimp-message "layerfx gradover start")
+        ;(gimp-message "layerfx gradover start")
         (if (> newopacity 100)
             (set! newopacity 100)
         )
         (if (< newopacity 0)
             (begin
-                (gimp-message "opacity passed is somehow negative")
+                ;(gimp-message "opacity passed is somehow negative")
                 (set! newopacity 50.0)
             )
         )            
         
-        (gimp-message "layerfx gradover start2")
+        ;(gimp-message "layerfx gradover start2")
         (set! basetypecalc
            (cond 
                ((= (car (gimp-image-base-type img)) 0) 1)
                ((= (car (gimp-image-base-type img)) 1) 3))
         )
         
-        (gimp-message (number->string drwwidth))
-        (gimp-message (number->string drwheight))
-        (gimp-message (number->string cx))
-        (gimp-message (number->string cy))
-        (gimp-message (number->string gradangle))
-        (gimp-message (number->string ang))
-        (gimp-message (number->string angkh))
-        (gimp-message "G x calcs")
-        (gimp-message (number->string offsetX))
+        ;(gimp-message (number->string drwwidth))
+        ;(gimp-message (number->string drwheight))
+        ;(gimp-message (number->string cx))
+        ;(gimp-message (number->string cy))
+        ;(gimp-message (number->string gradangle))
+        ;(gimp-message (number->string ang))
+        ;(gimp-message (number->string angkh))
+        ;(gimp-message "G x calcs")
+        ;(gimp-message (number->string offsetX))
         (if (< (abs offsetX) (/ gradsize 15))
             (begin
-                (gimp-message "G offset v close to zero so add a bit=1") ; this messes with the angle a bit but enables a difference
+                ;(gimp-message "G offset v close to zero so add a bit=1") ; this messes with the angle a bit but enables a difference
                 (set! offsetX (+ offsetX 1))
                 (set! x1 (+ (- cx offsetX) (car drwoffsets)))
                 (set! x2 (+ (+ cx offsetX) (car drwoffsets)))
             )
         )
-        (gimp-message (number->string dxkh))
-        (gimp-message (number->string dykh))
+        ;(gimp-message (number->string dxkh))
+        ;(gimp-message (number->string dykh))
        ; (while (and (< (abs dxkh) gradsize) (< (abs dykh) (/ gradsize 1)) (< counterkh 5) (> x1 (/ gradsize 2)) (> y1 (/ gradsize 2)))
        ;     ;(begin
        ;         (gimp-message "G expand the difference but may not work")
@@ -1422,36 +1422,37 @@
        ;     ;)
        ; )
         
-        (gimp-message (number->string (car drwoffsets)))
-        (gimp-message (number->string x1))
-        (gimp-message (number->string x2))
-        (gimp-message "G Y calcs")
-        (gimp-message (number->string offsetY))
-        (gimp-message (number->string (cadr drwoffsets)))
-        (gimp-message (number->string y1))
-        (gimp-message (number->string y2))
-        (gimp-message (number->string (* 4 (atan 1.0))))
-        (gimp-message "break 1")
+        ;(gimp-message (number->string (car drwoffsets)))
+        ;(gimp-message (number->string x1))
+        ;(gimp-message (number->string x2))
+        ;(gimp-message "G Y calcs")
+        ;(gimp-message (number->string offsetY))
+        ;(gimp-message (number->string (cadr drwoffsets)))
+        ;(gimp-message (number->string y1))
+        ;(gimp-message (number->string y2))
+        ;(gimp-message (number->string (* 4 (atan 1.0))))
+        ;(gimp-message "break 1")
+        
         ; given an angle in radians
         ;x = Cos(angle) * radius + CenterX;
         ;y = Sin(angle) * radius + CenterY;
         ; radians = degress x pi / 180
-        (gimp-message "HH Hay-ch H")
-        (gimp-message (number->string (* gradangle (/ 3.141593 180))))
-        (gimp-message (number->string (+ (* (cos 1.5) 100) 500)))
+        ;(gimp-message "HH Hay-ch H")
+        ;(gimp-message (number->string (* gradangle (/ 3.141593 180))))
+        ;(gimp-message (number->string (+ (* (cos 1.5) 100) 500)))
     ;    (gimp-message (number->string (* ang (/ 3.141593 180))))
     ;    (gimp-message (number->string (cos (* ang (/ 3.141593 180)))))
     ;    (gimp-message (number->string (* gradsize (cos (* ang (/ 3.141593 180)))))) 
     ;    ;
-        (gimp-message "II eye eye")
-        (gimp-message (number->string gradsize))
-        (gimp-message (number->string opacityd))
-        (gimp-message (number->string repeattype))
-        (gimp-message (number->string basetypecalc))
-        (gimp-message (number->string newopacity))
+        ;(gimp-message "II eye eye")
+        ;(gimp-message (number->string gradsize))
+        ;(gimp-message (number->string opacityd))
+        ;(gimp-message (number->string repeattype))
+        ;(gimp-message (number->string basetypecalc))
+        ;(gimp-message (number->string newopacity))
         
-        (gimp-message "JJ jay jay")
-        (gimp-message "toets")
+        ;(gimp-message "JJ jay jay")
+        ;(gimp-message "toets")
         ;(gimp-message "gradtype check")
         ;(if (= gradtype 1)
         ;    (gimp-message "Ok")
@@ -1459,69 +1460,73 @@
         ;)
         ;(gimp-message (number->string gradtype))
         
-        (gimp-message (number->string gradblendmode))
+        ;(gimp-message (number->string gradblendmode))
     
         (set! fingrad (get-grad-blending-mode gradblendmode))
     
-        (gimp-message (number->string fingrad))
-        (gimp-message "paintmode=")
-        (gimp-message (number->string paintmode))
+        ;(gimp-message (number->string fingrad))
+        ;(gimp-message "paintmode=")
+        ;(gimp-message (number->string paintmode))
     
         (set! mappaintmode (get-blending-mode paintmode))
-        (gimp-message "mappedpaintmode=")
-       (gimp-message (number->string mappaintmode))
-        (gimp-message "about to gimp context set") 
+        ;(gimp-message "mappedpaintmode=")
+        ;(gimp-message (number->string mappaintmode))
+        ;(gimp-message "about to gimp context set") 
+        
         (gimp-context-set-gradient grad)
-        (gimp-message "gimp context set OK")
-        (gimp-message (number->string repeattype))
-        (gimp-message "JJpt2")
+        
+        ;(gimp-message "gimp context set OK")
+        ;(gimp-message (number->string repeattype))
+        ;(gimp-message "JJpt2")
         
         (set! finalname (string-append layername "-gradient"))
         
-        (gimp-message (number->string mode))
-        (gimp-message "JJpt3")
+        ;(gimp-message (number->string mode))
+        ;(gimp-message "JJpt3")
+        
         (set! finblendmode (get-blending-mode mode))
-        (gimp-message (number->string finblendmode))
+        
+        ;(gimp-message (number->string finblendmode))
         ;(set! finblendmode (get-blending-mode mode))
-        (gimp-message "JJ2")
+        ;(gimp-message "JJ2")
         ; (gimp-message (number->string finblendmode))
-        (gimp-message "KK")
+        ;(gimp-message "KK")
         (set! gradientlayer (car (gimp-layer-new img drwwidth drwheight basetypecalc finalname newopacity mappaintmode)))
-        (gimp-message " two")
+        ;(gimp-message " two")
         
         ;(add-over-layer img gradientlayer drawable)
         (gimp-image-insert-layer img gradientlayer 0 -1)
         
-        (gimp-message " three")
+        ;(gimp-message " three")
         (gimp-layer-set-offsets gradientlayer (car drwoffsets) (cadr drwoffsets))
         
-        (gimp-message " three a")
+        ;(gimp-message " three a")
         (gimp-selection-none img)
-        (gimp-message " three b")
+        ;(gimp-message " three b")
         (gimp-edit-clear gradientlayer)
-        (gimp-message " three c")
+        ;(gimp-message " three c")
         (gimp-context-set-gradient "Fruit15Apple")
-        (gimp-message " three c1")
+        ;(gimp-message " three c1")
         (gimp-context-set-gradient "2 ton Gold 03")
-        (gimp-message " three d")
-        (gimp-message grad)
-        (gimp-message " three d1")
+        ;(gimp-message " three d")
+        ;(gimp-message grad)
+        ;(gimp-message " three d1")
         (gimp-context-set-gradient grad)
-        (gimp-message " three d2")
+        ;(gimp-message " three d2")
         (if (and (>= gradtype 6) (<= gradtype 8))
             (begin
-                (gimp-message "type 6 , 7 or 8 ie Symmetrical")
+                ;(gimp-message "type 6 , 7 or 8 ie Symmetrical")
                 ;(gimp-selection-layer-alpha drawable)
                 (gimp-image-select-item img CHANNEL-OP-ADD drawable)
             )
             (begin
-                (gimp-message "type 1 to 5 or 9 plus (ie not symmetrical)")
+                ;(gimp-message "type 1 to 5 or 9 plus (ie not symmetrical)")
             )
         )
-        (gimp-message " four")
+        ;(gimp-message " four")
         (if (or (= gradtype 2) (= gradtype 3))
             (begin
-                (gimp-message "grad type 2 or 3")
+                ;(gimp-message "grad type 2 or 3")
                 (set! x1 (+ (+ cx 0) (car drwoffsets)))
                 (set! y1 (+ (- cy (/ gradsize 5)) (cadr drwoffsets)))
                 (set! x2 (+ (+ cx (* gradsize 0.8)) (car drwoffsets)))
@@ -1541,43 +1546,43 @@
                 
             )
             (begin
-                (gimp-message "grad type 0,1 or more than 3")
+                ;(gimp-message "grad type 0,1 or more than 3")
             )
         )
-        (gimp-message " maths done")
+        ;(gimp-message " maths done")
         
-        (gimp-message (number->string cx))
-        (gimp-message (number->string cy))
-        (gimp-message (number->string x1))
-        (gimp-message (number->string y1))
-        (gimp-message (number->string x2))
-        (gimp-message (number->string y2))
-        (gimp-message (number->string offsetX))
-        (gimp-message (number->string offsetY))
+        ;(gimp-message (number->string cx))
+        ;(gimp-message (number->string cy))
+        ;(gimp-message (number->string x1))
+        ;(gimp-message (number->string y1))
+        ;(gimp-message (number->string x2))
+        ;(gimp-message (number->string y2))
+        ;(gimp-message (number->string offsetX))
+        ;(gimp-message (number->string offsetY))
         
         (gimp-image-set-active-layer img gradientlayer)
         
         ;;(gimp-edit-blend gradientlayer fingrad paintmode gradtype newopacity gradslopeoffsetpercent repeattype reversetrue FALSE 1 0 FALSE x1 y1 x2 y2) ; was 100 for opacity
         (gimp-edit-blend gradientlayer fingrad finblendmode gradtype newopacity gradslopeoffsetpercent repeattype reversetrue FALSE 1 0 FALSE x1 y1 x2 y2) ; was 100 for opacity
         
-        (gimp-message "five")
+        ;(gimp-message "five")
         
         (gimp-selection-none img)
-        (gimp-message "layerfx gradover ready merge")
+        ;(gimp-message "layerfx gradover ready merge")
         
         
         (if (= merge TRUE)
             (begin
-                    (gimp-message " six merge true")
+                    ;(gimp-message " six merge true")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (begin
-                            (gimp-message " six a")
+                            ;(gimp-message " six a")
                             (set! origmask (car (gimp-channel-copy origmask)))
                             (gimp-layer-remove-mask drawable 1)
                         )
                     )
-                    (gimp-message " six b")
+                    ;(gimp-message " six b")
                     (set! alphamask (car (gimp-layer-create-mask drawable ADD-MASK-ALPHA-TRANSFER))) ; was 3
                     (set! gradientlayer (car (gimp-image-merge-down img gradientlayer 0)))
                     (gimp-drawable-set-name gradientlayer layername)
@@ -1585,49 +1590,49 @@
                     (gimp-layer-remove-mask gradientlayer MASK-APPLY) ; was 0
                     (if (> origmask -1)
                         (begin
-                            (gimp-message " six c")
+                            ;(gimp-message " six c")
                             (gimp-layer-add-mask gradientlayer origmask)
                         )
                     )
-                    (gimp-message " six d")
+                    ;(gimp-message " six d")
             )
             (begin
-                (gimp-message " six e- no merge")
+                ;(gimp-message " six e- no merge")
                 ;(gimp-selection-layer-alpha drawable)
                 (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
                     (begin
-                        (gimp-message " six f")
+                        ;(gimp-message " six f")
                         ;(gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
                         (gimp-image-select-item img CHANNEL-OP-INTERSECT (car (gimp-layer-get-mask drawable)) )
                     )
                     (begin
-                        (gimp-message "six f no mask")
+                        ;(gimp-message "six f no mask")
                     )
                 )
-                (gimp-message "six g")
+                ;(gimp-message "six g")
                 (set! alphamask (car (gimp-layer-create-mask gradientlayer ADD-MASK-SELECTION)))
                 (gimp-layer-add-mask gradientlayer alphamask)
                 
                 
                 (gimp-layer-remove-mask gradientlayer MASK-APPLY) ; was 0
-                (gimp-message " six h")
+                ;(gimp-message " six h")
                 
                 (gimp-displays-flush)
                 ;(quit)
             )
         )
         
-        (gimp-message "seven")
+        ;(gimp-message "seven")
         (gimp-displays-flush)
         (gimp-context-set-gradient origgradient)
         (gimp-selection-load origselection)
-        (gimp-message "eight")
+        ;(gimp-message "eight")
        ; (gimp-image-remove-channel img origselection)
         (gimp-image-undo-group-end img)
         
         (gimp-displays-flush)
-        (gimp-message "OKk")
+        ;(gimp-message "OKk")
     )   
 )
 
@@ -1665,7 +1670,7 @@
                         (gimp-layer-remove-mask drawable 1)
                     )
                 )
-                (set! alphamask (car (gimp-layer-create-mask drawable 3)))
+                (set! alphamask (car (gimp-layer-create-mask drawable ADD-MASK-ALPHA-TRANSFER))) ; was 3
                 (set! patternlayer (car (gimp-image-merge-down img patternlayer 0)))
                 (gimp-drawable-set-name patternlayer layername)
                 (gimp-layer-add-mask patternlayer alphamask)
@@ -1680,7 +1685,7 @@
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
                     (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
                 )
-                (set! alphamask (car (gimp-layer-create-mask patternlayer 4)))
+                (set! alphamask (car (gimp-layer-create-mask patternlayer ADD-MASK-SELECTION))) ;was 4
                 (gimp-layer-add-mask patternlayer alphamask)
                 (gimp-layer-remove-mask patternlayer 0)
             )
@@ -1690,14 +1695,14 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
-        (gimp-message "Ok")
+        ;(gimp-message "Ok")
   )
   
 )
 
 
 (script-fu-register "script-fu-layerfx-drop-shadow"
-            "<Image>/Script-Fu/Layer Effects/Drop Shadow..."
+            "<Toolbox>/Script-Fu/Layer Effects/Drop Shadow..."
             "Adds a drop shadow to a layer. Does not add a shadow to an unfilled or drawn selection. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
@@ -1719,8 +1724,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-inner-shadow"
-            "<Image>/Script-Fu/Layer Effects/Inner Shadow..."
-            "Adds an inner shadow to a layer"
+            "<Toolbox>/Script-Fu/Layer Effects/Inner Shadow..."
+            "Adds an inner shadow to a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1741,8 +1746,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-outer-glow"
-            "<Image>/Script-Fu/Layer Effects/_Outer Glow..."
-            "Creates an outer glow effect around a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/_Outer Glow..."
+            "Creates an outer glow effect around a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1761,8 +1766,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-inner-glow"
-            "<Image>/Script-Fu/Layer Effects/_Inner Glow..."
-            "Creates an inner glow effect around a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/_Inner Glow..."
+            "Creates an inner glow effect around a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1781,8 +1786,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-bevel-emboss"
-            "<Image>/Script-Fu/Layer Effects/Bevel and Emboss..."
-            "Creates beveling and embossing effects over a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/Bevel and Emboss..."
+            "Creates beveling and embossing effects over a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1809,8 +1814,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-satin"
-            "<Image>/Script-Fu/Layer Effects/_Satin..."
-            "Creates a satin effect over a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/_Satin..."
+            "Creates a satin effect over a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1829,8 +1834,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-stroke"
-            "<Image>/Script-Fu/Layer Effects/Stroke..."
-            "Creates a stroke around a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/Stroke..."
+            "Creates a stroke around a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1846,8 +1851,8 @@
 )
 
 (script-fu-register "script-fu-layerfx-color-overlay"
-            "<Image>/Script-Fu/Layer Effects/Color Overlay..."
-            "Overlays a color over a layer."
+            "<Toolbox>/Script-Fu/Layer Effects/Color Overlay..."
+            "Overlays a color over a layer. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1861,7 +1866,7 @@
 )
 
 (script-fu-register "script-fu-layerfx-gradient-overlay"
-            "<Image>/Script-Fu/Layer Effects/Gradient Overlay"
+            "<Toolbox>/Script-Fu/Layer Effects/Gradient Overlay"
             "Overlays a gradient over a layer. \n file:layerfx_02.scm"
             "Jonathan Stipe JonStipe@prodigy.net"
             "Jonathan Stipe"
@@ -1886,8 +1891,8 @@
 ;;   0       1           3          6           4         5        16      17     18            19             20              21           6            7         8            9            10          11      12          13      14
 
 (script-fu-register "script-fu-layerfx-pattern-overlay"
-    "<Image>/Script-Fu/Layer Effects/Pattern Overlay..."
-    "Overlays a pattern over a layer."
+    "<Toolbox>/Script-Fu/Layer Effects/Pattern Overlay..."
+    "Overlays a pattern over a layer. \nfile:layerfx_02.scm"
     "Jonathan Stipe <JonStipe@prodigy.net>"
     "Jonathan Stipe"
     "January 2008"

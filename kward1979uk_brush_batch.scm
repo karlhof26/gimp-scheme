@@ -40,6 +40,8 @@
         (filename2 0)
         (s 0)
         (filelist 0)
+        
+        (tot-files 0)
     )
     
     (set! a
@@ -55,7 +57,9 @@
             (num-files (car (file-glob (string-append load "\\*" a)  1)))
             (filelist (cadr (file-glob (string-append load "\\*" a)  1)))
             (s 1)
+            
           )
+        (set! tot-files num-files)
         (while (> num-files 0) ; was while filelist
             (let* (
                     
@@ -80,7 +84,7 @@
                 (set! swidth  (- sx2 sx1))
                 (set! sheight (- sy2 sy1))
                 (set! newimage (gimp-image-new swidth sheight 0))
-                (gimp-message "line 81")
+                ;(gimp-message "line 81")
                 (set! newlayer (gimp-layer-new (car newimage) swidth sheight 1 "newlayer" 100 0))
                 (gimp-image-insert-layer (car newimage) (car newlayer) 0 0)
                 (gimp-drawable-fill (car newlayer) 3)
@@ -90,7 +94,7 @@
                 (gimp-drawable-desaturate (car active) DESATURATE-LUMINANCE)
                 (gimp-image-convert-grayscale (car newimage))
                 (gimp-displays-flush)
-                (gimp-message "line 90")
+                ;(gimp-message "line 90")
                 (gimp-selection-all (car newimage))
                 (set! filename2 (string-append location "/" filename (string-append (number->string s))".gbr"))
                 (file-gbr-save 1 (car newimage) (car active) filename2 (string-append name (number->string s)) spacing (string-append name (number->string s)))
@@ -100,10 +104,18 @@
             (gimp-image-delete (car newimage))
             (set! filelist (cdr filelist))
             (set! num-files (- num-files 1))
-            (gimp-message "line 103")
+            ;(gimp-message "line 103")
+            
+            
+            
         )
+        (gimp-message (string-append "Number of files processed:" (number->string tot-files)))
+        (if (= tot-files 0)
+            (gimp-message "Check that brush extension is correct for the source files e.g. set png for .png files. Also check source and target folders.")
+        )
+        (gimp-message "Good finish OK")
+        (gc) ; garbage collect
     )
-    (gimp-message "Good finish OK")
  )
 )
 

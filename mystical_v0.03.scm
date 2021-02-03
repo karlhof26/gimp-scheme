@@ -707,7 +707,7 @@
                             ;;
                             ;; *********************************************************************************************************
                             ;(python-layerfx-gradient-overlay RUN-NONINTERACTIVE img contrast-layer (if (= inGradientName 0) "FG to BG (RGB)" (if (= inGradientName 1) "VG nach HG (RGB)")) GRADIENT-LINEAR REPEAT-NONE TRUE 100 NORMAL-MODE (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 0 (- ImageWidth (/ ImageWidth 3)) TRUE)
-                            (script-fu-layerfx-gradient-overlay img (car (gimp-image-get-layer-by-name img "main object (tmp)")) BLEND-FG-BG-RGB LAYER-MODE-NORMAL-LEGACY "FG to BG (RGB)" GRADIENT-LINEAR REPEAT-NONE TRUE 100 LAYER-MODE-NORMAL-LEGACY (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 0 (- ImageWidth (/ ImageWidth 3)) TRUE)
+                            (script-fu-layerfx-gradient-overlay img (car (gimp-image-get-layer-by-name img "main object")) BLEND-FG-BG-RGB LAYER-MODE-NORMAL-LEGACY "FG to BG (RGB)" GRADIENT-LINEAR REPEAT-NONE TRUE 100 LAYER-MODE-NORMAL-LEGACY (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 0 (- ImageWidth (/ ImageWidth 3)) TRUE)
                         )
                     )
                 )
@@ -720,7 +720,7 @@
         
         ;;
         ;; ************************************************************************************************************************************
-        (gimp-image-add-layer img clouds-layer 5)
+        (gimp-image-insert-layer img clouds-layer 0 5)
         (set! seed (if (number? seed) seed (realtime)))
         (if (< seed 1)
             (set! seed (srand 4500))

@@ -9,7 +9,7 @@
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
-;	Windows Vista/7/8)
+;	Windows Vista/7/8) 
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;	or
 ;	C:\Users\YOUR-NAME\.gimp-2.8\scripts

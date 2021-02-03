@@ -11,6 +11,11 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;
+; Updated to GIMP-2.10.22 by karlhof26 (Nov 2020)
+; Depends upon 
+;   script-fu-add-bevel
+;   script-fu-drop-shadow
 
 (define (blend-text inimage inlayer text font font-size)
     (set! inimage inimage)
