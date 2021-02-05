@@ -19,7 +19,7 @@
 ;
 ; version 1.0 par samj (  http://www.aljacom.com/~gimp       http://samjcreations.blogspot.com  ) 15 juin 2012
 ; version 1.1 par samj 23 juin 2012 : ajout de dégradé pour obtenir un feu avec des couleurs concentriques
-;
+; version 1.2 by karlhof26 - 5 Feb 2021 for GIMP-2.10.22
 ;
 ; --------------------------------------------------------------------
 ;
@@ -482,7 +482,7 @@
 (script-fu-register
     "feu_d_artifice_fireworks"
     "<Image>/File/Create/Patterns/Feu d artifice - Fireworks..."
-    "Créer un feu d artifice (Fireworks). View and hide layers to see variations."
+    "Créer un feu d artifice (Fireworks). View and hide layers to see variations. \nfile:feu_d_artifice_fireworks_2_8.scm"
     "samj"
     "samj"
     "2012-06-15"
@@ -492,7 +492,7 @@
     SF-COLOR        "Couleur"                           '(232 122 106) ; e87a6a
     SF-GRADIENT     "Degrade / Gradient (Couleurs concentriques)"   "Abstract 2"
     SF-OPTION       "Intensite"                 '("Normale" " + + + + " " + + + " " + + " " + " " - ") ; intensite
-    SF-OPTION       "Options couleur(s)"        '(" 1 couleur " " Couleurs concentriques (degrade) " " Multicolore ") ; Options_couleurs intensite
+    SF-OPTION       "Options couleur(s)"        '(" 1 couleur " " Couleurs concentriques (Gradient Concentric colours) " " Multicolore ") ; Options_couleurs intensite
     SF-TOGGLE       "Aplatir / Flatten"             FALSE
 
 )
