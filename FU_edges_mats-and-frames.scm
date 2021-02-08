@@ -9,23 +9,25 @@
 ;
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
-;
-;	Windows Vista/7/8)
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
-;	
-;	Windows XP
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;   
+;   Windows Vista/7/8)
+;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;   or
+;   C:\Users\YOUR-NAME\.gimp-2.8\scripts
+;   C:\Users\YOUR-NAME\.gimp-2.10\scripts
+;   C:\Users\YOUR-NAME\AppData\Roaming\GIMP\2.10\scripts
+;   
+;   Windows XP
+;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;   or
+;   C:\Documents and Settings\yourname\.gimp-2.8\scripts   
 ;    
-;	Linux
-;	/home/yourname/.gimp-2.8/scripts  
-;	or
-;	Linux system-wide
-;	/usr/share/gimp/2.0/scripts
-;
+;   Linux
+;   /home/yourname/.gimp-2.8/scripts  
+;   or
+;   Linux system-wide
+;   /usr/share/gimp/2.0/scripts
+;   
 ;==============================================================
 ;
 ; LICENSE
@@ -354,7 +356,7 @@
         (gimp-image-undo-group-start image)
         (if (not (= RGB (car (gimp-image-base-type image))))
             (gimp-image-convert-rgb image)
-        )	
+        )
         
   (let* (   (img (car (gimp-item-get-image drawable)))
             (pattern (if (= texturep TRUE) mattexture '()))
@@ -539,7 +541,7 @@
 ; Obligatory script registrations...
 
 (script-fu-register "FU-add-mat"
-            "<Image>/Script-Fu/Edges/Add Matte"
+            "<Toolbox>/Script-Fu/Edges/Add Matte Frame"
             "Add a single mat around an image. \nfile:FU_edges_mats-and-frames.scm"
             "Eric Jeschke <eric@redskiesatnight.com>"
             "Eric Jeschke"
@@ -567,7 +569,7 @@
 )
 
 (script-fu-register "FU-add-frame-kh"
-            "<Image>/Script-Fu/Edges/Frame with Bevel"
+            "<Toolbox>/Script-Fu/Edges/Frame with Bevel"
             "Add a frame around an image, ability to adjust bevel and shadow. Uses current pattern. \nfile:FU_edges_mats-and-frames.scm"
             "Eric Jeschke <eric@redskiesatnight.com>"
             "Eric Jeschke"

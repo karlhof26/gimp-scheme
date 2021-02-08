@@ -127,7 +127,7 @@
 ; Register the function with the GIMP
 ;
 (script-fu-register "script-fu-eg-blackandwhite"
-    "<Image>/Script-Fu/Effects/Black and White Conversions"
+    "<Image>/Script-Fu/Colors/Black and White Conversions"
     "Black and White conversions. \nfile:egger-black-and-white.scm"
     "Martin Egger martin.egger@gmx.net"
     "2005, Martin Egger, and karlhof26"
