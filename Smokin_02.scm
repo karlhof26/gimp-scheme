@@ -31,14 +31,14 @@
                                line-spacing
                                font-in 
                                font-size
-                               color							   
+                               color
                                warp
                                length 
                                angle
                                breeze
-							   trans-in
-							   conserve)
-							   
+                               trans-in
+                               conserve)
+    
   (let* (
             (width 100)
             (height 100)
@@ -114,7 +114,7 @@
                                 trans
                                 conserve)
     
-    ;;;;Scale Image to it's original size;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;Scale Image to it's original size;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (gimp-image-scale image final-width final-height)
     (set! width (car (gimp-image-width image)))
     (set! height (car (gimp-image-height image)))   
@@ -161,15 +161,15 @@
                                warp
                                length 
                                angle
-							   breeze
-							   trans
-							   conserve
-							   )
-							  
+                               breeze
+                               trans
+                               conserve
+        )
+        
     (if (and (= trans 0) (> (car (gimp-image-get-layers image)) 1)) (set! trans 2))
-	(gimp-image-undo-group-start image)
-	(gimp-layer-resize-to-image-size layer)
-	
+    (gimp-image-undo-group-start image)
+    (gimp-layer-resize-to-image-size layer)
+    
  (let* (
             (smoke-layer (car (gimp-layer-copy layer TRUE)))
             (width (car (gimp-drawable-width layer)))
@@ -205,7 +205,7 @@
     (gimp-context-set-foreground '(0 0 0))
     (gimp-context-set-background '(255 255 255))
     
-    ;;;;scale image to given area if required	
+    ;;;;scale image to given area if required
     (gimp-image-scale image 
         (max 1 (min 262144 (round (* width (sqrt (/ area (* width height)))))))
         (max 1 (min 262144 (round (* height (sqrt (/ area (* width height))))))))
@@ -215,7 +215,7 @@
     
     (if (= alpha FALSE) (gimp-layer-add-alpha smoke-layer))
     
-    ;;;;check that a selection was made if not attempt to make one	
+    ;;;;check that a selection was made if not attempt to make one
     (if (= sel TRUE) (gimp-selection-layer-alpha smoke-layer))
     
     ;;;; create the breeze
@@ -238,7 +238,7 @@
     (gimp-image-set-active-layer image smoke-layer)
     
     
-    ;;;;begin the script;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+    ;;;;begin the script;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (gimp-context-set-background color)
     (gimp-drawable-fill bkg-layer FILL-FOREGROUND)
     (gimp-drawable-fill smoke-layer  FILL-TRANSPARENT)
@@ -347,4 +347,4 @@
 
 (script-fu-menu-register "script-fu-smokin" "<Image>/Script-Fu/Alpha-to-Logo")
 
-
+; end of script
