@@ -66,6 +66,7 @@
                 (mapA (car (gimp-layer-new img W H RGBA-IMAGE "Map" 100 LAYER-MODE-NORMAL)))
                 (noise (car (gimp-layer-new img W H 1 "Noise Layer" 100 0)))
                 (blurred)
+                (grid)
            )
            
         ;varible set up
@@ -116,7 +117,7 @@
         (plug-in-gauss 1 img blurred blur blur 0)
         
         ;make grid layer
-        (define grid (car (gimp-layer-new img W H 1 "Grid Layer" 100 0)))
+        (set! grid (car (gimp-layer-new img W H 1 "Grid Layer" 100 0)))
         (gimp-image-insert-layer img grid 0 -1)
         (gimp-edit-clear grid)
         (plug-in-grid 1 img grid 1 16 8 '(0 0 0) 255 1 16 8 '(0 0 0) 255 0 2 6 '(0 0 0) 255)
@@ -141,8 +142,10 @@
         )
         
         ;fill, flatten, flush
-        (gimp-drawable-fill mapA 0)
-        (if (= TRUE flatten) (gimp-image-flatten img))
+        (gimp-drawable-fill mapA FILL-FOREGROUND)
+        (if (= TRUE flatten)
+            (gimp-image-flatten img)
+        )
         (gimp-displays-flush)
         (gimp-image-clean-all img)
         (gc)
@@ -161,7 +164,7 @@
     SF-ADJUSTMENT "Height" '(600 150 1200 100 1 0 1)
     SF-TOGGLE "Use Thumbnail Sizes" FALSE
     SF-ADJUSTMENT "Seed 1" '(26999 0 99999 1 1 0 1)
-    SF-ADJUSTMENT "Seed 2" '(74999 0 99999 1 1 0 1)
+    SF-ADJUSTMENT "Seed 2" '(85199 0 99999 1 1 0 1)
     SF-ADJUSTMENT "Balance" '(80 -127 127 1 1 0 1)
     SF-ADJUSTMENT "Detail" '(15 1 15 1 1 0 1)
     SF-ADJUSTMENT "Depth" '(55 5 65 1 1 0 1)
