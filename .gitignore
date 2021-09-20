@@ -1,15 +1,4 @@
-*
-
-!.gitignore
-
-!*/
-
-!*.md
 
 
-!*.pro
 
-!*.h
-!*.c
-!*.cpp
-!*.hpp
+.DS_Store
