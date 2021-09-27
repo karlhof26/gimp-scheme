@@ -92,7 +92,7 @@
         (gimp-edit-bucket-fill calque1 BUCKET-FILL-FG LAYER-MODE-NORMAL-LEGACY 100 0 FALSE 0 0)
         
         ;(gimp-displays-flush)
-        (gimp-display-new img)
+        ;(gimp-display-new img)
         ;(gimp-message "line 96")
         ;; TEMP QUIT TO DEBUG
         ; plasma
@@ -168,10 +168,10 @@
             
             ; Bumping the letters
             (plug-in-gauss 1 img Bump-Layer 10 10 0)
-            (plug-in-bump-map TRUE img Bunped_layer Bump-Layer  125 30 bumpmap_depth 0 0 0 0 TRUE TRUE 0)
+            (plug-in-bump-map TRUE img Bunped_layer Bump-Layer  125 30 bumpmap_depth 0 0 0 0 TRUE TRUE 1)
             ; bumpmap on layer 2
-            (plug-in-bump-map TRUE img calque2 Bump-Layer     125 30 bumpmap_depth 0 0 0 0 TRUE TRUE 0)
-            (plug-in-bump-map TRUE img calque2 calque2     125 45 bumpmap_depth 0 0 0 0 TRUE FALSE 0)
+            (plug-in-bump-map TRUE img calque2 Bump-Layer     125 30 bumpmap_depth 0 0 0 0 TRUE TRUE 1)
+            (plug-in-bump-map TRUE img calque2 calque2     125 45 bumpmap_depth 0 0 0 0 TRUE FALSE 1)
             ;(gimp-message "line 175")
             ;Light efect
             (plug-in-lighting 1 img calque2 calque2 0 TRUE FALSE 0 0 blanc LightPX LightPY    

@@ -14,7 +14,7 @@
 ;     - Added some code (if selection exists...)
 ; version 0.2a by Iccii 2001/10/02 <iccii@hotmail.com>
 ;     - Fixed bug in keeping transparent area
-; version 0.2b by Iccii 2001/10/02 <iccii@hotmail.com>
+; version 0.2b by Iccii 2001/10/02 <iccii@hotmail.com> 
 ;     - Fixed bug (get error when drawable doesn't have alpha channel)
 ;
 ; --------------------------------------------------------------------
@@ -51,7 +51,9 @@
     (gimp-selection-none img)
     (gimp-image-insert-layer img layer-copy1 0 -1)
     (gimp-image-insert-layer img layer-copy2 0 -1)
-    (gimp-drawable-desaturate layer-copy2 DESATURATE-LIGHTNESS)
+    (gimp-layer-set-name layer-copy1 "Layer copy1")
+    (gimp-layer-set-name layer-copy2 "Layer copy2")
+    (gimp-drawable-desaturate layer-copy2 DESATURATE-LUMINANCE)
     (gimp-drawable-desaturate layer-copy1 DESATURATE-LIGHTNESS)
     
     (cond
@@ -87,9 +89,9 @@
         (gimp-drawable-threshold layer-copy2 HISTOGRAM-VALUE (/ threshold1 255) (/ threshold2 256))
     )
     (gimp-edit-copy layer-copy2)
-    (plug-in-bump-map 1 img layer-copy1 layer-copy1 135 35 3 0 0 0 0 TRUE FALSE 0)
-    (plug-in-bump-map 1 img layer-copy1 layer-copy2 135 35 3 0 0 0 0 FALSE invertY 0)
-    (gimp-drawable-brightness-contrast layer-copy2 0.5 0.0)
+    (plug-in-bump-map 1 img layer-copy1 layer-copy1 135 35 3 0 0 0 0 TRUE FALSE 1)
+    (plug-in-bump-map 1 img layer-copy1 layer-copy2 135 35 3 0 0 0.5 0.5 FALSE invertY 1); was 0 0 FALSE invertY 0
+    (gimp-drawable-brightness-contrast layer-copy2 0.45 0.0) ; was 0.5 0.0
     
     ;;
     (gimp-image-insert-layer img layer-color1 0 -1)
@@ -107,13 +109,16 @@
     (gimp-image-insert-layer img final-layer2 0 -1)
     
     ;; レイヤー後始末
-    (gimp-layer-set-mode layer-copy2 LAYER-MODE-SCREEN-LEGACY)
-    (gimp-layer-set-opacity layer-copy2 75)
-    (gimp-image-merge-down img layer-copy2 EXPAND-AS-NECESSARY)
-    (gimp-image-merge-down img layer-color1 EXPAND-AS-NECESSARY)
-    (gimp-image-merge-down img layer-color2 EXPAND-AS-NECESSARY)
+    ;(gimp-layer-set-mode layer-copy2 LAYER-MODE-SCREEN-LEGACY)
+    (gimp-layer-set-mode layer-copy2 LAYER-MODE-SOFTLIGHT)
+    (gimp-layer-set-opacity layer-copy2 55.0) ; was 75
+    
+    ;(gimp-image-merge-down img layer-copy2 EXPAND-AS-NECESSARY)
+    ;(gimp-image-merge-down img layer-color1 EXPAND-AS-NECESSARY)
+    ;(gimp-image-merge-down img layer-color2 EXPAND-AS-NECESSARY)
+    
     (set! final-layer2 (car (gimp-image-get-active-layer img)))
-    (plug-in-bump-map 1 img final-layer2 final-layer2 135 45 3 0 0 0 0 TRUE FALSE 0) ; added ev
+    (plug-in-bump-map 1 img final-layer2 final-layer2 135 45 3 0 0 0 0 TRUE FALSE 3) ; added ev;  was true faLSE 0
     (if (eqv? (car (gimp-drawable-has-alpha drawable)) TRUE)
         (gimp-selection-layer-alpha drawable)
     )
@@ -152,7 +157,7 @@
     SF-ADJUSTMENT "Threshold (Bigger 1<-->255 Smaller)"    '(255 0 255 1 10 0 0)
     SF-COLOR      "Base Color"            '(255 255 255)
     SF-COLOR      "Background Color"      '(221 221 221)
-    SF-OPTION     "Background Texture"    '("Plane" "Sand" "Paper" "Cloud")
+    SF-OPTION     "Background Texture"    '("Plain" "Sand" "Paper" "Cloud")
 )
 
 (script-fu-menu-register "script-fu-note-paper-gb" "<Toolbox>/Script-Fu/Artistic")
@@ -160,7 +165,7 @@
 ;*************************************************************************************** 
 ; Pastel image script  for GIMP 1.2
 ; Copyright (C) 2001 Iccii <iccii@hotmail.com>
-; 
+;  
 ; This script is based on pastel-windows100.scm
 ; 
 ; --------------------------------------------------------------------
@@ -283,7 +288,7 @@
 (script-fu-register
   "script-fu-pastel-image-ga"
   "Pastel Line Mix..."
-  "Creates a Pastel Line Mix image. Lines are enphasized in pastel colors. \nfile:ev_iccii_photoeffects_246_02_part2.scm"
+  "Creates a Pastel Line Mix image. Lines are emphasized in pastel colors. \nfile:ev_iccii_photoeffects_246_02_part2.scm"
   "Iccii <iccii@hotmail.com>"
   "Iccii"
   "2001, Oct"
@@ -292,8 +297,8 @@
   SF-DRAWABLE   "Drawable"       0
   SF-OPTION     "Edge detection" '("Differential" "Sobel" "Prewitt" "Gradient" "Roberts" "Laplace")
   SF-ADJUSTMENT "Detail Level"   '(12.0 0 20.0 0.1 0.5 1 1)
-  SF-ADJUSTMENT "Scketch Length" '(10 0 32 1 1 0 1)
-  SF-ADJUSTMENT "Scketch Amount" '(5.0 0 5.0 0.1 0.5 1 1)
+  SF-ADJUSTMENT "Sketch Length" '(10 0 32 1 1 0 1)
+  SF-ADJUSTMENT "Sketch Amount" '(5.0 0 5.0 0.1 0.5 1 1)
   SF-ADJUSTMENT "Angle"          '(45 0 180 1 15 0 0)
   SF-TOGGLE     "Add a canvas texture" FALSE
 )

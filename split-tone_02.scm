@@ -9,8 +9,8 @@
 ;; --------------------------------------------------------------------
 ;; - Changelog -
 ;; Changelog:
-;; Version 1.8 (10 November 2020)
-;; - Added to be compatible with Gimp-2.10.22
+;; Version 1.8 (27 September 2021)
+;; - Made compatible with Gimp-2.10.24 
 ;; Version 1.7 (5th August 2007)
 ;; - Added GPL3 licence
 ;; - Menu location at the top of the script
@@ -117,7 +117,7 @@
         (gimp-progress-update 0.82)
         ;Add a new layer
         (set! newLayer (car (gimp-layer-new theImage imageWidth imageHeight 0 "Overlay" 100 5)))
-        (gimp-image-add-layer theImage newLayer 0)
+        (gimp-image-insert-layer theImage newLayer 0 0)
         ;Fill the layer with FG colour
         (gimp-edit-fill newLayer 0)
         ;Merge the layer down
@@ -133,10 +133,10 @@
         ;Set the FG and BG colours back to what they were
         (gimp-context-set-foreground myForeground)
         (gimp-context-set-background myBackground)
-        ;(gimp-message "line128")
+        ;(gimp-message "line136")
         (gimp-progress-update 0.99)
         ;(gimp-message "Good finish OK")
-        ;Ensure the updated image is displayed now
+        ;Ensure the updated image is displayed now 
         (gimp-displays-flush)
     )
 )
@@ -148,12 +148,12 @@
     "Harry Phillips"
     "Feb. 03 2006"
     "*"
-    SF-IMAGE        "Image" 0
-    SF-DRAWABLE     "Drawable" 0
+    SF-IMAGE        "Image"            0
+    SF-DRAWABLE     "Drawable"         0
     SF-COLOR        "Highlight colour" '(255 144 0)
     SF-ADJUSTMENT   "Highlight opacity:" '(100 0 100 5 10 1 0)
-    SF-COLOR        "Shadows colour" '(0 204 255)
-    SF-ADJUSTMENT   "Shadow opacity:" '(100 0 100 5 10 1 0)
+    SF-COLOR        "Shadows colour"     '(0 204 255)
+    SF-ADJUSTMENT   "Shadow opacity:"    '(100 0 100 5 10 1 0)
 )
 
 ;end of script
