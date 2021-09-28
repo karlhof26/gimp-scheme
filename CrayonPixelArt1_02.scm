@@ -103,7 +103,7 @@
 
 (script-fu-register "script-fu-crayon-pixel-art"
     "Crayon Pixel Art"
-    "Processes an image creating a pixelized image given a palette. Creates pixilized image. \nfile:CrayonPixelArt_02.scm"
+    "Processes an image creating a pixelized image given a palette. Creates pixilized image. \nfile:CrayonPixelArt1_02.scm"
     "InkyDinky"
     "InkyDinky"
     "2011 11 28"
