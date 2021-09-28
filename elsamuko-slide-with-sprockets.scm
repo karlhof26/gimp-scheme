@@ -16,7 +16,7 @@
 ; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ; http://www.gnu.org/licenses/gpl-3.0.html
 ;
-; Copyright (C) 2008 elsamuko <elsamuko@web.de>
+; Copyright (C) 2008 elsamuko <elsamuko@web.de> 
 ;
 ; Version 0.1 - Simulating a complete exposed film strip.
 ; Version 0.2 - Optional sh shade thanks to Frank Ludwig
