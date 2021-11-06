@@ -5,7 +5,7 @@
 ; pixel gradient script  for GIMP 2.10.22
 ; Original author: Jeff Trefftzs <trefftzs@tcsn.net>
 ;
-; Tags: effect
+; Tags: effect 
 ;
 ; Author statement:
 ;
@@ -130,9 +130,9 @@
             ;(gimp-message (number->string width)) 
             ;(gimp-message (number->string x1)) 
             ;(gimp-message (number->string x0)) 
-            (gimp-message (number->string stepwidth)) 
+            ;(gimp-message (number->string stepwidth)) 
             ;(gimp-message (number->string startx)) 
-            (gimp-message (number->string pixstep)) 
+            ;(gimp-message (number->string pixstep)) 
             ;(gimp-message (number->string karltemp)) 
             
             (gimp-progress-pulse)
@@ -189,11 +189,11 @@
     "Copyright 2003, Jeff Trefftzs"
     "November 17, 2003"
     "RGB* GRAY* INDEXED*"
-    SF-IMAGE      "The Image"       0
-    SF-DRAWABLE   "The Layer"       0
-    SF-ADJUSTMENT "Minimum Pixel Size"  '(5 1 256 1 5 0 1)
-    SF-ADJUSTMENT "Maximum Pixel Size"  '(64 1 256 1 5 0 1)
-    SF-ADJUSTMENT "Number of Steps"     '(7 1 256 1 5 0 1)
+    SF-IMAGE      "The Image"               0
+    SF-DRAWABLE   "The Layer"               0
+    SF-ADJUSTMENT "Minimum Pixel Size"      '(5 1 256 1 5 0 1)
+    SF-ADJUSTMENT "Maximum Pixel Size"      '(64 1 256 1 5 0 1)
+    SF-ADJUSTMENT "Number of Steps"         '(7 1 256 1 5 0 1)
 )
 
 ; end of script
