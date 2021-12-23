@@ -17,23 +17,33 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define (get-blending-mode mode)
+(define (get-blending-mode modesk)
+    
     (let* (
             
-            (v (list->vector '(1 2 3)))
+            ; (v (list->vector '(1 2 3)))
             (result 0)
             ;dropped 'leading the #
-            (modenumbers #(0 1 3 6 4 5 16 17 18 19 20 21 6 7 8 9 10 11 12 13 14 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63))
+            ; must allocate memory for the vectors - or they will be limited to 10
             
+            (modenumbersk '(0 1 3 6 4 5 16 17 18 19 20 37 38 39 8 9 10 11 12 13 14 33 26 31 63 63))
+            
+            (k '(1 2 3 45))
+            (res 0)
           )
-          ;(gimp-message "in get blending mode")
-          ;; (modenumbers '#(0 1 3 15 4 5 16 17 18 19 20 21 6 7 8 9 10 11 12 13 14; extras added by karlhof26 just a numerical sequence
+          (gimp-message "in get blending mode")
+          ;; (modenumbers '#(0 1 3 15 4 5 16 17 18 19 20 21 6 7 8 9 10 11 12 13 14; extras added by karlhof26 just a numerical sequence; 28 = item 21 from drop down
           ;; (modenumbers (list->vector '(0 1 3 6 4 5 16 17 18 19 20 21 6 7 8 9 10 11 12 13 14
           ;;   0 1  3  6  4  5  16  17  18  19  20  21  6  7  8  9  10  11  12  13  14
         ;(gimp-message "crashing here maybe ")
-        (set! result (vector-ref modenumbers mode))
+        (set! result (list-ref modenumbersk modesk))
+        ;(set! result (vector-ref modenumbers mode))
+        ;(gimp-message (number->string result))
         ;(gimp-message "crashing here maybe not...returning")
-        result
+        ;(set! res (+ res 24))
+        
+        (result)
+        
     )
 )
 
@@ -143,21 +153,44 @@
             (dummy-var 0)
              ; (0 0 127 255 255 0)
             ;dropped leading' before the #
-            (contourtypes #(0 0 0 0 0 0 0 0 0 1 1))
-            (contourlengths #(6 6 10 14 18 10 18 18 10 256 256))
-            (contours #(#(0.0 0.0 0.5 1.0 1.0 0.0)
+            (contourtypes '(0 0 0 0 0 0 0 0 0 1 1))
+            (contourlengths '(6 6 10 14 18 10 18 18 10 256 256))
+            (contours #(#(0.0 0.0 0.5 1.0 1.0 0.0) ;is a space needed
                         #(0.0 1.0 0.5 0.0 0.99 1.0) ; was 0.0 1.0 1.0 at end
-                        #(0.0 0.25 0.368 0.29 0.588 0.45 0.701 0.701 0.749 1.00)
+                        #(0.0 0.25 0.368 0.29 0.588 0.45 0.701 0.701 0.749 1.00) 
                         #(0.0 0.0 0.196 0.4901 0.0235 0.04901 0.188 0.5803 0.3098 0.7019 0.4196 0.8509 0.509 1.000) ;0 0 5 125 6 125 48 148 79 179 107 217 130 255
                         #(0.0 0.0 0.129 0.031 0.250 0.149 0.380 0.400 0.501 0.650 0.619 0.819 0.749 0.921 0.870 0.968 1.000 1.000) ;;(0 0 33 8 64 38 97 102 128 166 158 209 191 235 222 247 255 255)
                         #(0.0 0.0 0.109 0.278 0.341 0.650 0.760 0.941 1.000 1.000) ;; 0 0 28 71 87 166 194 240 255 255)
                         #(0.0 0.0 0.129 0.431 0.250 0.929 0.380 0.941 0.501 0.541 0.619 0.129 0.749 0.019 0.870 0.388 1.000 1.000) ;; 0 0 33 110 64 237 97 240 128 138 158 33 191 5 222 99 255 255)
                         #(0.0 0.0 0.129 0.290 0.250 0.858 0.380 0.729 0.501 0.000 0.619 0.690 0.749 0.788 0.870 0.011 1.000 1.000) ;;(0 0 33 74 64 219 97 186 128 0 158 176 191 201 222 3 255 255)
-                        #(0.011 1.000 0.211 0.388 0.380 0.419 0.701 0.600 0.988 0.000) ;; 3 255 54 99 97 107 179 153 252 0)
-            ;#(0.000 0.019 0.035 0.050 0.062 0.074 0.086 0.098 0.105 0.112 0.117 0.125 0.129 0.133 0.137 0.141 0.149 0.152 0.156 0.160 0.168 0.172 0.180 0.184 0.188 0.192 0.196 0.200 0.203 0.207 0.211 0.215 0.215 0.219 0.219
-            ;   0.223 0.223 0.227 0.227 0.231 0.231 0.231 0.235 0.235 0.235 0.239 0.239 0.239 0.239 0.243 0.243 0.243 0.243 0.243 0.247 0.247 0.247 0.247 0.247 0.247 0.250 0.250 0.250 0.250 0.250 0.278 0.294 0.305 0.317 
-            ;   0.329 0.337 0.349 0.356 0.364 0.372 0.376 0.384 0.388 0.396 0.400 0.403 0.407 0.411 0.419 0.419 0.423 0.431 0.435 0.439 0.443 0.447 0.450 0.454 0.458 0.462 0.466 0.466
-            ;   0.470 0.474 0.474 0.478 0.482 0.482 0.482 0.486 0.486 0.486 0.490 0.490 0.490 0.490 0.490 0.490 0.490 0.494 0.494 0.494 0.494 0.494 0.494 0.494 0.490
+                        #(0.011 1.000 0.211 0.388 0.380 0.419 0.701 0.600 0.988 1.000) ;; 3 255 54 99 97 107 179 153 252 0); was 0 at end
+             #(0.000 0.019 0.035 0.050 0.062 0.074 0.086 0.098 0.105 0.112
+               0.117 0.125 0.129 0.133 0.137 0.141 0.149 0.152 0.156 0.160
+               0.168 0.172 0.180 0.184 0.188 0.192 0.196 0.200 0.203 0.207
+               0.211 0.215 0.215 0.219 0.219 0.223 0.223 0.227 0.227 0.231
+               0.231 0.231 0.235 0.235 0.235 0.239 0.239 0.239 0.239 0.243
+               0.243 0.243 0.243 0.243 0.247 0.247 0.247 0.247 0.247 0.247
+               0.250 0.250 0.250 0.250 0.250 0.278 0.294 0.305 0.317 0.329
+               0.337 0.349 0.356 0.364 0.372 0.376 0.384 0.388 0.396 0.400
+               0.403 0.407 0.411 0.419 0.419 0.423 0.431 0.435 0.439 0.443
+               0.447 0.450 0.454 0.458 0.462 0.466 0.466 0.470 0.474 0.474
+               0.478 0.482 0.482 0.482 0.486 0.486 0.486 0.490 0.490 0.490
+               0.490 0.490 0.490 0.490 0.494 0.494 0.494 0.494 0.494 0.494
+               0.494 0.490 0.500 0.500 0.500 0.500 0.500 0.500 0.500 0.501
+               0.502 0.503 0.504 0.505 0.506 0.507 0.508 0.509 0.510 0.511
+               0.512 0.513 0.514 0.514 0.515 0.516 0.517 0.500 0.500 0.500
+               0.500 0.500 0.500 0.500 0.501 0.502 0.503 0.504 0.505 0.506
+               0.507 0.508 0.509 0.510 0.511 0.512 0.513 0.514 0.514 0.515
+               0.516 0.517 0.500 0.500 0.500 0.500 0.500 0.500 0.500 0.501
+               0.502 0.503 0.504 0.505 0.506 0.507 0.508 0.509 0.510 0.511
+               0.512 0.513 0.514 0.514 0.515 0.516 0.517 0.500 0.500 0.500
+               0.500 0.500 0.500 0.500 0.501 0.502 0.503 0.504 0.505 0.506
+               0.507 0.508 0.509 0.510 0.511 0.512 0.513 0.514 0.514 0.515
+               0.816 0.817 0.817 0.817 0.817 0.818 0.818 0.819 0.820 0.821
+               0.902 0.903 0.904 0.905 0.906 0.907 0.908 0.909 0.910 0.911
+               0.912 0.913 0.914 0.914 0.915 0.916 0.917 0.997 0.997 0.997
+               0.997 0.997 0.997 0.997 0.998 1.000) 
+            
             ; 125 125 125 125 125 125 125 130 134 137 141 145 148 151 153 156 158 160 162 163 165 166 167 168 170
             ; 171 171 172 173 174 175 176 177 178 178 179 180 181 181 182 183 183 184 184 185 185 186 186 187 187
             ; 188 188 189 189 189 189 190 190 190 190 191 191 191 191 191 191 191 191 191 191 193 194 196 197 198
@@ -197,19 +230,25 @@
           )
          
          
-         ;(gimp-message "in contours")
-         ;(gimp-message (number->string contour))
+         (gimp-message "in contours")
+         (gimp-message (number->string contour))
          (set! dummy-var 3)
-         
-        (if (= (vector-ref contourtypes (- contour 1)) 0)
+         (if (< (- contour 1) 0)
             (begin
-                ;(gimp-message "contour type0")
+                (gimp-message "contour error")
+                (quit)
+            )
+          )
+         
+        (if (= (list-ref contourtypes (- contour 1)) 0)
+            (begin
+                (gimp-message "contour type0")
                 ;;(gimp-drawable-curves-spline drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
-                (gimp-drawable-curves-spline drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
+                (gimp-drawable-curves-spline drawable channel (list-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
             )
             (begin
-                ;(gimp-message "contour type1")
-                (gimp-drawable-curves-explicit drawable channel (vector-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
+                (gimp-message "contour type1")
+                (gimp-drawable-curves-explicit drawable channel (list-ref contourlengths (- contour 1)) (vector-ref contours (- contour 1)))
             )
         )
         
@@ -268,6 +307,9 @@
         (gimp-layer-set-mode noiselayer LAYER-MODE-OVERLAY-LEGACY)
                  
         (gimp-image-remove-layer img noiselayer)
+        
+        (gimp-displays-flush)
+        (gc)
         ;(gimp-message "noise layer finish row 271")
     )
 )
@@ -337,7 +379,7 @@
         (gimp-context-set-foreground '(0 0 50))
         ;(gimp-message "drop shadow row 338")
         (set! tempcolor '(0 0 10))
-        (gimp-context-set-foreground tempcolor)
+        (gimp-context-set-foreground colorkh)
         ;(gimp-message "drop shadow row 341")
         (gimp-drawable-edit-fill shadowlayer FILL-FOREGROUND)
         ;(gimp-message "drop shadow row 343")
@@ -401,7 +443,7 @@
         ;(gimp-message "drop shadow row 400")
         (gimp-layer-remove-mask shadowlayer 0)
         (gimp-selection-none img)
-        ;(gimp-displays-flush)
+        (gimp-displays-flush)
         (if (= merge TRUE)
             (begin
                 ;(gimp-message "drop shadow row 407")
@@ -419,10 +461,11 @@
         (gimp-image-remove-channel img alphaSel)
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
+        (gimp-image-undo-group-end img)
         (gc) ; garbage collection
         ;(gimp-message "drop shadow good end")
     )
-    (gimp-image-undo-group-end img)
+    
 )
 
 (define (script-fu-layerfx-inner-shadow img
@@ -440,7 +483,7 @@
                     merge)
     (gimp-image-undo-group-start img)
     (let* (
-            (origfgcolor (car (gimp-palette-get-foreground)))
+            (origfgcolor (car (gimp-context-get-foreground)))
             (origselection (car (gimp-selection-save img)))
             (drwwidth (car (gimp-drawable-width drawable)))
             (drwheight (car (gimp-drawable-height drawable)))
@@ -541,8 +584,10 @@
         (gimp-image-remove-channel img alphaSel)
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
+        (gimp-image-undo-group-end img)
+        (gc)
     )
-    (gimp-image-undo-group-end img)
+    
 )
  
 
@@ -559,7 +604,7 @@
                         merge)
     (gimp-image-undo-group-start img)
     (let* (
-            (origfgcolor (car (gimp-palette-get-foreground)))
+            (origfgcolor (car (gimp-context-get-foreground)))
             (origselection (car (gimp-selection-save img)))
             (drwwidth (car (gimp-drawable-width drawable)))
             (drwheight (car (gimp-drawable-height drawable)))
@@ -629,8 +674,10 @@
         (gimp-image-remove-channel img alphaSel)
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
+        (gimp-image-undo-group-end img)
+        (gc)
     )
-    (gimp-image-undo-group-end img)
+    
 )
 
 (define (script-fu-layerfx-inner-glow img
@@ -646,13 +693,20 @@
                     merge)
     (gimp-image-undo-group-start img)
     (let* (
-            (origfgcolor (car (gimp-palette-get-foreground)))
+            (origfgcolor (car (gimp-context-get-foreground)))
             (origselection (car (gimp-selection-save img)))
             (drwwidth (car (gimp-drawable-width drawable)))
             (drwheight (car (gimp-drawable-height drawable)))
             (layername (car (gimp-drawable-get-name drawable)))
             (drwoffsets (gimp-drawable-offsets drawable))
-            (glowlayer (car (gimp-layer-new img drwwidth drwheight (cond ((= (car (gimp-image-base-type img)) 0) 1) ((= (car (gimp-image-base-type img)) 1) 3)) (string-append layername "-innerglow") opacity (get-blending-mode mode))))
+            (glowlayer (car (gimp-layer-new img drwwidth drwheight 
+                        (cond ((= (car (gimp-image-base-type img)) 0) 1)
+                         ((= (car (gimp-image-base-type img)) 1) 3))
+                        ;RGBA-IMAGE
+                        (string-append layername "-innerglow") opacity 
+                        (get-blending-mode mode)
+                        )))
+            
             (glowmask 0)
             (alphaSel 0)
             (shrinkamt (* (/ choke 100) size))
@@ -662,12 +716,17 @@
             (origmask 0)
             (alphamask 0)
         )
+        (gimp-message "inner glow - line669")
+        (gimp-message (number->string (get-blending-mode mode)))
+        (gimp-message (number->string mode))
+        
         (add-over-layer img glowlayer drawable)
         (gimp-layer-set-offsets glowlayer (car drwoffsets) (cadr drwoffsets))
         (gimp-selection-all img)
         (gimp-context-set-foreground color)
         (gimp-edit-fill glowlayer FILL-FOREGROUND)
         (gimp-selection-none img)
+        (gimp-message "inner glow - line676")
         (set! glowmask (car (gimp-layer-create-mask glowlayer ADD-MASK-BLACK))) ; was 1
         (gimp-layer-add-mask glowlayer glowmask)
         ;(gimp-selection-layer-alpha drawable)
@@ -676,8 +735,10 @@
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
         (set! alphaSel (car (gimp-selection-save img)))
+        (gimp-message "inner glow - line685")
         (if (= source 0)
             (begin
+                (gimp-message "inner glow - line692 - inside source=0")
                 (gimp-selection-all img)
                 (gimp-context-set-foreground '(255 255 255))
                 (gimp-edit-fill glowmask FILL-FOREGROUND)
@@ -686,6 +747,7 @@
             )
             (draw-blurshape img glowmask steps (* shrinkamt -1) alphaSel 0)
         )
+        (gimp-message "inner glow - line700")
         (gimp-selection-none img)
         (if (> contour 0)
             (apply-contour-kh glowmask 0 contour)
@@ -698,6 +760,7 @@
                 (gimp-edit-fill glowmask 0)
             )
         )
+        (gimp-message "inner glow - line713")
         (if (> noise 0)
             (apply-noise img drawable glowlayer noise)
         )
@@ -737,14 +800,19 @@
                 )
             )
         )
+        (gimp-message "inner glow - line753")
         (gimp-selection-none img)
         (gimp-context-set-foreground origfgcolor)
         (gimp-selection-load origselection)
         (gimp-image-remove-channel img alphaSel)
         (gimp-image-remove-channel img origselection)
+        (gimp-message "inner glow - line759")
+        (gimp-message "inner glow - ending")
+        (gimp-image-undo-group-end img)
         (gimp-displays-flush)
+        (gc)
     )
-    (gimp-image-undo-group-end img)
+    
 )
 
 (define (script-fu-layerfx-bevel-emboss img
@@ -768,7 +836,7 @@
                     merge)
     (gimp-image-undo-group-start img)
     (let* (
-            (origfgcolor (car (gimp-palette-get-foreground)))
+            (origfgcolor (car (gimp-context-get-foreground)))
             (origselection (car (gimp-selection-save img)))
             (drwwidth (car (gimp-drawable-width drawable)))
             (drwheight (car (gimp-drawable-height drawable)))
@@ -788,6 +856,7 @@
             (origmask 0)
             (alphamask 0)
         )
+        (gimp-message "emboss line 830")
         (cond
             ((= style 0)
                 (begin
@@ -843,26 +912,73 @@
         (gimp-layer-set-offsets bumpmaplayer (caddr layersize) (cadddr layersize))
         (gimp-layer-set-offsets shadowlayer (caddr layersize) (cadddr layersize))
         (gimp-layer-set-offsets highlightlayer (caddr layersize) (cadddr layersize))
-        (gimp-selection-all img)
+        
+        (gimp-message "emboss line 887")
+        (gimp-displays-flush)
+        
+        
+        ; was (gimp-selection-all img)
+        (gimp-image-select-item img CHANNEL-OP-ADD drawable)
+        
+        
+        ;added by kh to enable colours to expand correctly
+        (set! halfsizec (floor (/ size 2)))
+        (gimp-message (number->string halfsizec))
+        (if (= style 0)
+            (gimp-selection-grow img size)
+            (if (or (= style 2) (= style 3))
+                (gimp-selection-grow img halfsizec)
+            )
+        )
+        
+        
         (gimp-context-set-foreground highlightcolor)
         (gimp-edit-fill highlightlayer 0)
         (gimp-context-set-foreground shadowcolor)
         (gimp-edit-fill shadowlayer 0)
         (gimp-context-set-foreground '(0 0 0))
-        (gimp-edit-fill bumpmaplayer 0)
-        (set! highlightmask (car (gimp-layer-create-mask highlightlayer ADD-MASK-BLACK)))
-        (set! shadowmask (car (gimp-layer-create-mask shadowlayer ADD-MASK-BLACK))) ; was 1
+        (gimp-displays-flush)
+        (gimp-edit-fill bumpmaplayer FILL-FOREGROUND)
+        (gimp-message "emboss line 901")
+        (gimp-displays-flush)
+        
+        ;added by kh to enable colours to expand correctly
+        (if (= style 0)
+            (gimp-selection-shrink img size)
+            (if (or (= style 2) (= style 3))
+                (gimp-selection-shrink img halfsizec)
+            )
+        )
+        
+        
+        (set! highlightmask (car (gimp-layer-create-mask highlightlayer ADD-MASK-SELECTION)))
+        (set! shadowmask (car (gimp-layer-create-mask shadowlayer ADD-MASK-SELECTION))) ; was 1
         (gimp-layer-add-mask highlightlayer highlightmask)
         (gimp-layer-add-mask shadowlayer shadowmask)
+        
+        (gimp-displays-flush)
+        
+        
         ;(gimp-selection-layer-alpha drawable)
         (gimp-image-select-item img CHANNEL-OP-ADD drawable)
+        (gimp-message "emboss line 915")
+        
+        
+        
         (if (> (car (gimp-layer-get-mask drawable)) -1)
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
         (set! alphaSel (car (gimp-selection-save img)))
+        (gimp-displays-flush)
+        (gimp-message "emboss line 941")
+        
+        
         (cond
             ((= style 0)
-                (draw-blurshape img bumpmaplayer size size alphaSel 0)
+                (begin
+                    (gimp-message "style 0")
+                    (draw-blurshape img bumpmaplayer size size alphaSel 0)
+                )
             )
             ((= style 1)
                 (draw-blurshape img bumpmaplayer size 0 alphaSel 0)
@@ -885,48 +1001,118 @@
                 )
             )
         )
-        (gimp-selection-all img)
+        (gimp-message "emboss line 1003")
+        (gimp-displays-flush)
+        ;(quit)
+        
+        (gimp-image-select-item img CHANNEL-OP-ADD bumpmaplayer)
+        (gimp-message "emboss line 1008")
+        ;(gimp-selection-all img)
+        
         (gimp-context-set-foreground '(127 127 127))
         (gimp-edit-fill highlightmask 0)
-        (gimp-selection-none img)
+        
+        ;(gimp-selection-all img)
+        
+        
         (if (> surfacecontour 0)
-            (apply-contour-kh bumpmaplayer 0 surfacecontour)
+            (begin
+                (gimp-message "line1019")
+                (apply-contour-kh bumpmaplayer 0 surfacecontour)
+            )
         )
-        ;(gimp-message "emboss line 895")
+        (gimp-message "emboss line 1023")
+        (gimp-message (number->string surfacecontour))
+        
+        (gimp-message (number->string angle))
+        (gimp-message (number->string altitude))
+        (gimp-message (number->string depth))
+        (gimp-message (number->string direction))
+        (gimp-message "emboss line 1030")
+        (gimp-displays-flush)
+        ;(quit)
+        (gimp-selection-none img)
+        ;(gimp-image-select-item img CHANNEL-OP-ADD bumpmaplayer)
+        
         (if (< angle 0)
-            (set! angle (+ angle 360))
+            (begin
+                (gimp-message "angle change")
+                (set! angle (+ angle 360))
+            )
         )
+        ;(plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 0)
         (plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 0)
+        (gimp-displays-flush)
+        
+        
+        (gimp-image-select-item img CHANNEL-OP-ADD bumpmaplayer)
+        (gimp-message "emboss line 1048")
         (if (> glosscontour 0)
-            (apply-contour-kh highlightmask 0 glosscontour)
+            (begin
+                (gimp-message "gloss contour")
+                (apply-contour-kh highlightmask 0 glosscontour)
+                (apply-contour-kh highlightlayer 0 glosscontour)
+            )
         )
         (if (> soften 0)
-            (plug-in-gauss-rle 1 img highlightmask soften 1 1)
+            (begin
+                (gimp-message "soften blur")
+                (plug-in-gauss-rle 1 img highlightmask soften 1 1)
+            )
         )
         (if (> invert 0) 
-            (gimp-invert highlightmask)
+            (begin
+                (gimp-message "invert")
+                (gimp-drawable-invert highlightmask FALSE)
+            )
         )
-        ;(gimp-message "emboss line 909")
-        (gimp-channel-combine-masks shadowmask highlightmask 2 0 0)
-        (gimp-drawable-levels highlightmask HISTOGRAM-VALUE 0.5 1.0 TRUE 1.0 0.0 1.0 TRUE)  ; was 0 127 255 1.0 0 255
-        (gimp-drawable-levels shadowmask HISTOGRAM-VALUE 0.0 0.49 TRUE 1.0 0.0 1.0 TRUE) ; was 0 0 127 1.0 255 0
+        (gimp-message "emboss line 1036")
+        (gimp-displays-flush)
+        ;(quit)
+        
+        (gimp-channel-combine-masks shadowmask highlightmask CHANNEL-OP-SUBTRACT 0 0)
+        ;(gimp-channel-combine-masks shadowmask bumpmaplayer CHANNEL-OP-ADD 0 0)
+        
+        (gimp-message "emboss line 1042")
+        
+        
+        (gimp-drawable-levels highlightmask HISTOGRAM-VALUE 0.4 1.0 TRUE 1.0 0.0 1.0 TRUE)  ; was 0 127 255 1.0 0 255 ; 0.5 1.0 TRUE 1.0...
+        (gimp-drawable-levels shadowmask HISTOGRAM-VALUE 0.0 0.55 TRUE 1.3 0.0 1.0 TRUE) ; was 0 0 127 1.0 255 0; 0.0 0.49 TRUE 1.0...
+        (gimp-drawable-levels highlightmask HISTOGRAM-VALUE 0.0 1.0 TRUE 1.9 0.0 1.0 TRUE)
+        (gimp-displays-flush)
+        ;(quit)
+        
         (gimp-selection-load alphaSel)
+        (gimp-displays-flush)
+        ;(quit)
+        
         (if (= style 0)
             (gimp-selection-grow img size)
             (if (or (= style 2) (= style 3))
                 (gimp-selection-grow img halfsizec)
             )
         )
-        ;(gimp-message "emboss line 920")
+        
+        (gimp-displays-flush)
+        ;(quit)
+        
+        (gimp-message "emboss line 1066")
         (gimp-selection-invert img)
         (gimp-context-set-foreground '(0 0 0))
         (gimp-edit-fill shadowmask 0)
+        (gimp-displays-flush)
+        ;(quit)
+        
         (gimp-selection-none img)
+        
+        
         (gimp-image-remove-layer img bumpmaplayer)
+        ;(gimp-image-remove-layer img shadowlayer)
+        
         (if (= merge 1)
             (if (= style 1)
                 (begin
-                    ;(gimp-message "emboss line 929")
+                    (gimp-message "emboss line 1081 style 1")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (begin
@@ -947,7 +1133,7 @@
                     )
                 )
                 (begin
-                    ;(gimp-message "emboss line 817")
+                    (gimp-message "emboss line 1102 merge style 0 & >=2")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (gimp-layer-remove-mask drawable 0)
@@ -955,9 +1141,14 @@
                     (set! shadowlayer (car (gimp-image-merge-down img shadowlayer 0)))
                     (set! highlightlayer (car (gimp-image-merge-down img highlightlayer 0)))
                     (gimp-drawable-set-name highlightlayer layername)
+                    
+                    ;(gimp-drawable-brightness-contrast img highlightlayer 1.5 1.5)
                 )
             )
         )
+        
+        (gimp-drawable-brightness-contrast highlightlayer 0.48 0.45)
+        
         (gimp-context-set-foreground origfgcolor)
         (gimp-selection-load origselection)
         (gimp-image-remove-channel img alphaSel)
@@ -965,6 +1156,7 @@
         (gimp-displays-flush)
     )
     (gimp-image-undo-group-end img)
+    (gc)
 )
 
 (define (script-fu-layerfx-satin img
@@ -980,7 +1172,7 @@
                     merge)
     
   (let* (
-            (origfgcolor (car (gimp-palette-get-foreground)))
+            (origfgcolor (car (gimp-context-get-foreground)))
             (origselection (car (gimp-selection-save img)))
             (layername (car (gimp-drawable-get-name drawable)))
             (growamt (math-ceil (/ size 2)))
@@ -1090,6 +1282,7 @@
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
         ;(gimp-message "OK line 1092")
+        (gc)
   )
 )
 
@@ -1103,7 +1296,7 @@
                     merge)
     (gimp-image-undo-group-start img)
   (let* (
-            (origfgcolor (car (gimp-palette-get-foreground)))
+            (origfgcolor (car (gimp-context-get-foreground)))
             (origselection (car (gimp-selection-save img)))
             (drwwidth (car (gimp-drawable-width drawable)))
             (drwheight (car (gimp-drawable-height drawable)))
@@ -1248,6 +1441,7 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
+        (gc)
         ;(gimp-message "Ok line 1251")
   )
 )
@@ -1261,7 +1455,7 @@
                         merge)
         (gimp-image-undo-group-start img)
     (let* (
-            (origfgcolor (car (gimp-palette-get-foreground)))
+            (origfgcolor (car (gimp-context-get-foreground)))
             (origselection (car (gimp-selection-save img)))
             (drwwidth (car (gimp-drawable-width drawable)))
             (drwheight (car (gimp-drawable-height drawable)))
@@ -1312,7 +1506,8 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
-        ;;(gimp-message "Ok line 1315")
+        (gc)
+        ;;(gimp-message "Ok line 1358")
     )
 )
 
@@ -1370,17 +1565,27 @@
             (mappaintmode 22)
             (gradslopeoffsetpercent 0)
             
+            (listk '(1 2 5 11 21 34 12 18 2 4 11 12 13 14 13 133 1333 12 11 8 4))
+            (modekk '(0 1 3 6 4 5 16 17 18 19 20 37 38 39 40 32 42 43 44 45 46 47 57 58 62 63 28 27))
+            
             
           )
-          
+          (gc) ; garbage clean
         (gimp-image-undo-group-start img)
-        ;(gimp-message "layerfx gradover start")
+        (gimp-message "layerfx gradover start")
+        
+        (gimp-message "list-ref test")
+        (gimp-message "in= 15")
+        (gimp-message (number->string (list-ref listk 15)))
+        (gimp-message (number->string (list-ref modekk 15)))
+        (gimp-message (number->string (list-ref modekk 22)))
+        
         (if (> newopacity 100)
-            (set! newopacity 100)
+            (set! newopacity 100.0)
         )
         (if (< newopacity 0)
             (begin
-                ;(gimp-message "opacity passed is somehow negative")
+                (gimp-message "opacity passed is somehow negative")
                 (set! newopacity 50.0)
             )
         )            
@@ -1452,7 +1657,7 @@
         ;(gimp-message (number->string newopacity))
         
         ;(gimp-message "JJ jay jay")
-        ;(gimp-message "toets")
+        (gimp-message "toets")
         ;(gimp-message "gradtype check")
         ;(if (= gradtype 1)
         ;    (gimp-message "Ok")
@@ -1463,15 +1668,18 @@
         ;(gimp-message (number->string gradblendmode))
     
         (set! fingrad (get-grad-blending-mode gradblendmode))
-    
-        ;(gimp-message (number->string fingrad))
-        ;(gimp-message "paintmode=")
+        
+        (gimp-message (number->string gradblendmode))
+        (gimp-message (number->string fingrad))
+        (gimp-message "paintmode=")
         ;(gimp-message (number->string paintmode))
     
-        (set! mappaintmode (get-blending-mode paintmode))
-        ;(gimp-message "mappedpaintmode=")
-        ;(gimp-message (number->string mappaintmode))
-        ;(gimp-message "about to gimp context set") 
+        ;(set! mappaintmode (get-blending-mode paintmode))
+        (set! mappaintmode (list-ref modekk paintmode))
+        (gimp-message (number->string paintmode))
+        (gimp-message "mappedpaintmode=")
+        (gimp-message (number->string mappaintmode))
+        (gimp-message "about to gimp context set") 
         
         (gimp-context-set-gradient grad)
         
@@ -1485,19 +1693,23 @@
         ;(gimp-message "JJpt3")
         
         (set! finblendmode (get-blending-mode mode))
-        
-        ;(gimp-message (number->string finblendmode))
+        ;(set! finblendmode (list-ref modekk mode))
+        (gimp-message "JJpt4")
+        (gimp-message (number->string finblendmode))
         ;(set! finblendmode (get-blending-mode mode))
         ;(gimp-message "JJ2")
         ; (gimp-message (number->string finblendmode))
         ;(gimp-message "KK")
-        (set! gradientlayer (car (gimp-layer-new img drwwidth drwheight basetypecalc finalname newopacity mappaintmode)))
+        (set! gradientlayer (car (gimp-layer-new img drwwidth drwheight basetypecalc finalname newopacity LAYER-MODE-NORMAL)))
+        (gimp-layer-set-mode gradientlayer mappaintmode)
         ;(gimp-message " two")
         
         ;(add-over-layer img gradientlayer drawable)
         (gimp-image-insert-layer img gradientlayer 0 -1)
         
-        ;(gimp-message " three")
+        (gimp-message " three")
+        (gimp-message (number->string (car drwoffsets)))
+        (gimp-message (number->string (cadr drwoffsets)))
         (gimp-layer-set-offsets gradientlayer (car drwoffsets) (cadr drwoffsets))
         
         ;(gimp-message " three a")
@@ -1505,9 +1717,9 @@
         ;(gimp-message " three b")
         (gimp-edit-clear gradientlayer)
         ;(gimp-message " three c")
-        (gimp-context-set-gradient "Fruit15Apple")
+        ;(gimp-context-set-gradient "Fruit15Apple")
         ;(gimp-message " three c1")
-        (gimp-context-set-gradient "2 ton Gold 03")
+        ;(gimp-context-set-gradient "2 ton Gold 03")
         ;(gimp-message " three d")
         ;(gimp-message grad)
         ;(gimp-message " three d1")
@@ -1563,17 +1775,21 @@
         (gimp-image-set-active-layer img gradientlayer)
         
         ;;(gimp-edit-blend gradientlayer fingrad paintmode gradtype newopacity gradslopeoffsetpercent repeattype reversetrue FALSE 1 0 FALSE x1 y1 x2 y2) ; was 100 for opacity
-        (gimp-edit-blend gradientlayer fingrad finblendmode gradtype newopacity gradslopeoffsetpercent repeattype reversetrue FALSE 1 0 FALSE x1 y1 x2 y2) ; was 100 for opacity
         
-        ;(gimp-message "five")
+        (gimp-edit-blend gradientlayer fingrad finblendmode gradtype newopacity gradslopeoffsetpercent repeattype reversetrue FALSE 1 0 FALSE x1 y1 x2 y2) ; was 100 for opacity
+        (gimp-displays-flush)
+        (gimp-message "five")
+        
+        
         
         (gimp-selection-none img)
+        
         ;(gimp-message "layerfx gradover ready merge")
         
         
         (if (= merge TRUE)
             (begin
-                    ;(gimp-message " six merge true")
+                    (gimp-message " six merge true")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (begin
@@ -1597,7 +1813,7 @@
                     ;(gimp-message " six d")
             )
             (begin
-                ;(gimp-message " six e- no merge")
+                (gimp-message " six e- no merge")
                 ;(gimp-selection-layer-alpha drawable)
                 (gimp-image-select-item img CHANNEL-OP-ADD drawable)
                 (if (> (car (gimp-layer-get-mask drawable)) -1)
@@ -1616,10 +1832,11 @@
                 
                 
                 (gimp-layer-remove-mask gradientlayer MASK-APPLY) ; was 0
-                ;(gimp-message " six h")
+                (gimp-message " six h")
                 
+                ;(gimp-layer-set-mode gradientlayer finblendmode)
                 (gimp-displays-flush)
-                ;(quit)
+                
             )
         )
         
@@ -1628,10 +1845,11 @@
         (gimp-context-set-gradient origgradient)
         (gimp-selection-load origselection)
         ;(gimp-message "eight")
-       ; (gimp-image-remove-channel img origselection)
+        (gimp-image-remove-channel img origselection)
         (gimp-image-undo-group-end img)
         
         (gimp-displays-flush)
+        (gc)
         ;(gimp-message "OKk")
     )   
 )
@@ -1778,7 +1996,7 @@
             SF-ADJUSTMENT   "Opacity"       '(75 0 100 1 10 1 0)
             SF-OPTION       "Contour"       '("Linear" "Cone" "Cone - Inverted" "Cove - Deep" "Cove-Shallow" "Gaussian" "Half Round" "Ring" "Ring - Double" "Rolling Slope - Descending" "Rounded Steps" "Sawtooth 1")
             SF-ADJUSTMENT   "Noise"         '(0 0 100 1 10 1 0)
-            SF-OPTION       "Blending Mode"     '("Normal" "Dissolve" "Multiply" "Divide" "Screen" "Overlay" "Dodge" "Burn" "Hard Light" "Soft Light" "Grain Extract" "Grain Merge" "Difference" "Addition" "Subtract" "Darken Only" "Lighten Only" "Hue" "Saturation" "Color" "Value")
+            SF-OPTION       "Blending Mode"     '("Normal" "Dissolve" "Multiply" "Difference" "Screen" "Overlay" "Dodge" "Burn" "Hard Light" "Soft Light" "Grain Extract" "Grain Merge" "Difference" "Addition" "Subtract" "Darken Only" "Lighten Only" "Hue" "Saturation" "Color" "Value")
             SF-OPTION       "Source"        '("Edge" "Center")
             SF-ADJUSTMENT   "Choke"         '(0 0 100 1 10 1 0)
             SF-ADJUSTMENT   "Size"          '(5 0 999 1 10 1 1)
@@ -1867,7 +2085,7 @@
 
 (script-fu-register "script-fu-layerfx-gradient-overlay"
             "<Toolbox>/Script-Fu/Layer Effects/Gradient Overlay"
-            "Overlays a gradient over a layer. \n file:layerfx_02.scm"
+            "Overlays a gradient over a layer.  Paint Layer Modes sets mode of the resulting layer. Blend mode only works if Paint Layer mode is normal.\n file:layerfx_02.scm"
             "Jonathan Stipe JonStipe@prodigy.net"
             "Jonathan Stipe"
             "January 2008"
@@ -1875,13 +2093,13 @@
             SF-IMAGE        "Image"             0
             SF-DRAWABLE     "Drawable"          0
             SF-OPTION       "Grad Blend Mode"   '("Custom" "FG BG RGB" "FG BG HSV" "FG Trans")
-            SF-OPTION       "Paint Mode"        '("Normal" "Dissolve" "Behind" "Multiply" "Screen" "Overlay" "Difference" "Addition" "Subtract" "Darken Only" "Lighten only" "Hue" "Saturation" "Color" "Value" "Divide" "Dodge" "Burn" "HardLight" "Soft Light" "Grain extract" "Grain merge" "Color Erase" "Erase mode" "Replace mode" "anti erase mode")
+            SF-OPTION       "Paint Layer Mode (Layer mode is set to this) "        '("Normal" "Dissolve" "Multiply" "Difference" "Screen" "Overlay" "Dodge" "Burn" "Hard Light" "Soft Light" "Grain Extract" "Hue2" "Saturation2" "Color2" "Value2" "Divide2" "Dodge2" "Burn2" "HardLight2" "Soft Light2" "Grain extract2" "Grain merge2" "Color Erase2" "Erase mode2" "Replace mode2" "anti erase mode2")
             SF-GRADIENT     "Gradient"          "Default"
             SF-OPTION       "Gradient Type"     '("Linear" "Bi-linear" "Radial" "Square" "Conical (sym)" "Conical (asym)" "Shaped (angular)" "Shaped (spherical)" "Shaped (dimpled)" "Spiral (cw)" "Spiral (ccw)")
             SF-OPTION       "Repeat"            '("None" "Sawtooth Wave" "Triangular Wave")
             SF-TOGGLE       "Reverse"            FALSE
             SF-ADJUSTMENT   "Opacity"           '(100 1 100 1 1 0 1)
-            SF-OPTION       "Blending Mode"     '("Normal" "Dissolve" "Multiply" "Difference" "Screen" "Overlay" "Dodge" "Burn" "Hard Light" "Soft Light" "Grain Extract" "Grain Merge" "Difference" "Addition" "Subtract" "Darken Only" "Lighten Only" "Hue" "Saturation" "Color" "Value")
+            SF-OPTION       "Blending Mode - only works if Paint Layer mode=Normal"     '("Normal" "Dissolve" "Multiply" "Difference" "Screen" "Overlay" "Dodge" "Burn" "Hard Light" "Soft Light" "Grain Extract" "Grain Merge" "Difference" "Addition" "Subtract" "Darken Only" "Lighten Only" "Hue" "Saturation" "Color" "Value")
             SF-ADJUSTMENT   "Center X"          '(500 1 262144 1 10 0 1)
             SF-ADJUSTMENT   "Center Y"          '(400 1 262144 1 10 0 1)
             SF-ADJUSTMENT   "Gradient Angle"    '(90 -180 180 1 10 0 1)
