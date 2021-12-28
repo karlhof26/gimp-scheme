@@ -115,7 +115,7 @@
                     (set! b (rand 255))
                     (set! l-new (sqrt (+ (pow (* r Re) 2) (pow (* g Gr) 2)  (pow (* b Bl) 2))))
                     (set! difference (abs (- l-new l-original)))
-                    (gimp-message "Picking....")
+                    ;(gimp-message "Picking....")
                     ;(gimp-message (number->string (rand 10)))
                     (set! counter (+ counter 1))
               )
@@ -125,6 +125,7 @@
               (gimp-image-set-active-layer image layer)
               (gimp-image-select-color image CHANNEL-OP-REPLACE layer (list red green blue))
               (gimp-image-set-active-layer image floating)
+              
               (gimp-context-set-foreground (list r g b))
               (gimp-drawable-edit-fill floating FILL-FOREGROUND)
               
@@ -141,7 +142,7 @@
               (set! y (- y 1))
           );end of while 
         (gimp-selection-none image)
-        ;(gimp-image-undo-enable image) ;DN = NO UNDO
+        ;(gimp-image-undo-enable image) ;DN = NO UNDO 
         (gimp-image-undo-group-end image)                     ;undo group in one step
         (gimp-displays-flush)
     )

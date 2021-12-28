@@ -1,5 +1,5 @@
 ; GPLv3
-;; This script was tested with Gimp 2.10.22
+;; This script was tested with Gimp 2.10.24 
 ;;
 ;; New versions will be distributed from <http://github.com/> only
 ;;
@@ -235,9 +235,9 @@
                                                     (begin
                                                         (if (> l-original 245)
                                                             (begin
-                                                                (set! r (+ (rand 20) 236))
-                                                                (set! g (+ (rand 20) 236))
-                                                                (set! b (+ (rand 20) 236))
+                                                                (set! r (+ (rand 20) 235))
+                                                                (set! g (+ (rand 20) 235))
+                                                                (set! b (+ (rand 20) 235))
                                                                 
                                                             )
                                                             (begin
@@ -263,9 +263,9 @@
                                                     (begin
                                                         (if (> l-original 245)
                                                             (begin
-                                                                (set! r (+ (rand 20) 236))
-                                                                (set! g (+ (rand 20) 236))
-                                                                (set! b (+ (rand 20) 236))
+                                                                (set! r (+ (rand 20) 235))
+                                                                (set! g (+ (rand 20) 235))
+                                                                (set! b (+ (rand 20) 235))
                                                                 
                                                             )
                                                             (begin
@@ -345,7 +345,7 @@
 (script-fu-register
     "script-fu-auto-colorize-flavor0"                                           ;function name
     "<Image>/Script-Fu2/Create from Image/Auto Colorize flavour0..."    ;menu register
-    "Randomly colorize image with specified number of colors."       ;description
+    "Randomly colorize image with specified number of colors. \nfile:AutoColorize_flavor0_02.scm"       ;description
     "Tin Tran"                          ;author name
     "copyright info and description"         ;copyright info or description
     "2015"                          ;date

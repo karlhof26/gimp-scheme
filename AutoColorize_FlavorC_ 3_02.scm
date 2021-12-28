@@ -86,8 +86,9 @@
             (floating)
             (difference)
             (try 0)
-            (tries 10) ; was 1000
+            (tries 20) ; was 1000
             (counter)
+            (bigcounter 2300)
           )
         ;(gimp-image-undo-disable image); DN = NO UNDO
         (gimp-image-undo-group-start image)                   ;undo-group in one step
@@ -113,8 +114,8 @@
         (gimp-context-set-sample-threshold 0)
         (while (> y 0) ;; was 0
               ;do work here
-              (gimp-message "main loop")
-              (gimp-message (number->string y))
+              ;(gimp-message "main loop")
+              ;(gimp-message (number->string y))
               (set! red (car colors))
               (set! green (cadr colors))
               (set! blue (caddr colors))
@@ -147,26 +148,31 @@
               ;absolutely not the ideal way of getting a color
               (set! try 255)
               (set! counter tries)
-            (while (> difference 1.5) ; was 1
-                (if (= counter 0)
+              (set! bigcounter 2300)
+              
+            (while (and (> difference 1.5) (>= counter 1) (>= bigcounter 1)) ; was 1
+                (if (= counter 1)
                     (begin
                         (set! try (- try 1))
-                        (if (< try 0)
+                        (if (< try 0) ; 
                             (begin
                                 (set! try 255) ;retry from 255
                             )
                             (begin)
                         )
+                        ;(gimp-message "reset counter and decrement try")
                         (set! counter tries)
                     )
                     (begin
                         
                     )
                 )
+                
+                
                 (if (< l-original 56.8)
                     (begin
-                        (set! r (rand 255))
-                        (set! g (rand 255))
+                        (set! r (- (rand 256) 1))
+                        (set! g (- (rand 256) 1))
                         (set! b try)        ;try blueish
                     )
                     (begin
@@ -174,29 +180,36 @@
                             (begin
                                 (set! r (- (rand 256) 1))
                                 (set! g try)       ;try greenish
-                                (set! b (rand 255))
+                                (set! b (- (rand 256) 1))
                             )
                             (begin
                                 (set! r try)       ;try red
-                                (set! g (rand 255))      
-                                (set! b (rand 255))
+                                (set! g (- (rand 256) 1))      
+                                (set! b (- (rand 256) 1))
                             )
                         )
                     )
                 )
                 (set! l-new (sqrt(+ (pow(* r R) 2) (pow (* g G) 2)  (pow (* b B) 2))))
                 (set! difference (abs (- l-new l-original)))
-                (gimp-message (number->string difference))
+                ;(gimp-message "difference=")
+                ;(gimp-message (number->string difference))
                 
                 (set! counter (- counter 1))
+                ; decrement big counter no matter what
+                (set! bigcounter (- bigcounter 1))
+                (gimp-progress-update (/ bigcounter 2300))
             )
-            (gimp-message "out of the counter one")
+            ;(gimp-message "out of the counter one")
             
                 ;(script-fu-colorize image floating (list r g b) 100)
                 (gimp-image-set-active-layer image layer)
                 (gimp-image-select-color image CHANNEL-OP-REPLACE layer (list red green blue))
                 
                 (gimp-image-set-active-layer image floating)
+                ;(gimp-message "r found =")
+                ;(gimp-message (number->string r))
+                
                 (gimp-context-set-foreground (list r g b))
                 (gimp-drawable-edit-fill floating FILL-FOREGROUND)
               
@@ -212,7 +225,7 @@
             
             ;loop control
             (set! y (- y 1))
-            (gimp-message "end main loop")
+            ;(gimp-message "end main loop")
         );end of while 
         
         (gimp-selection-none image)
