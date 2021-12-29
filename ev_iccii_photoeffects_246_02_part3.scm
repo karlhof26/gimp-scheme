@@ -3,7 +3,7 @@
 ; Copyright (C) 1995 Spencer Kimball and Peter Mattis
 ; 
 ; Patchwork effect script  for GIMP 1.2
-; Copyright (C) 2001 Iccii <iccii@hotmail.com> 
+; Copyright (C) 2001 Iccii <iccii@hotmail.com>  
 ; 
 ; --------------------------------------------------------------------
 ; version 0.1  by Iccii 2001/07/12
@@ -41,13 +41,13 @@
 
 	;; パッチワークスクリプト
 (define (script-fu-patchwork-ga
-            img		;; 対象画像
-            drawable	;; 対象レイヤー
-            type		;; タイルの種類
-            size		;; タイルの大きさ
-            depth		;; タイルの深度
-            angle		;; バンプマップの角度
-            level		;; タイルのばらつき度
+            img         ;
+            drawable    ;
+            type        ;
+            size       ; 
+            depth       ;
+            angle       ;
+            level       ;
     )
     
    (gimp-image-undo-group-start img)
@@ -221,4 +221,4 @@
     SF-ADJUSTMENT "Cell Size (pixels)"   '(18 5 100 1 10 0 1)
 )
 
-;end of script 
+;end of script  
