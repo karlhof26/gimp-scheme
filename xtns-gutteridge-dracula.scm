@@ -10,7 +10,7 @@
 ;
 ; Author statement:
 ;I've got a new script, but I've not been able to publish it due it
-;network faults + firewalls...
+;network faults + firewalls... 
 ;
 ;I include it here, should you find a way to publish it for me.
 ;I appologise for how cheesy it is.
@@ -46,10 +46,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(define (script-fu-blood-logo inText inFont inFontSize inBorder inDrip)
+(define (script-fu-blood-logo inText inFont inFontSize inBorder inDrip inFlatten)
   (let* (
-            (oldFore (car(gimp-palette-get-foreground)) )
-            (oldBack (car(gimp-palette-get-background)) )
+            (oldFore (car(gimp-context-get-foreground)) )
+            (oldBack (car(gimp-context-get-background)) )
             
             (theImage (car(gimp-image-new 100 100 RGB)) )
             (textLayer (car(gimp-layer-new theImage 10 10 RGBA-IMAGE "text layer" 100 LAYER-MODE-NORMAL)) )
@@ -109,15 +109,19 @@
         (gimp-selection-none theImage)
         (plug-in-gauss-iir TRUE theImage bloodLayer 1 TRUE TRUE)
         
-        (define oneLayer (car(gimp-image-flatten theImage)) )
-        (plug-in-autocrop TRUE theImage oneLayer)
+        (if (= inFlatten TRUE)
+            (begin
+                (define oneLayer (car (gimp-image-flatten theImage)) )
+                (plug-in-autocrop TRUE theImage oneLayer)
+            )
+        )
         
         (gimp-context-set-foreground oldFore)
         (gimp-context-set-background oldBack)
         
         (gimp-display-new theImage)
         (gimp-displays-flush)
-        (gimp-image-undo-group-end theImage)
+        (gimp-image-undo-group-end theImage) 
   )
 )
 
@@ -137,6 +141,7 @@
     SF-ADJUSTMENT   "Font size (pixels)"  '(150 2 1000 1 10 0 1)
     SF-ADJUSTMENT   "Boder Size"          '(4 1 99 1 1 0 1)
     SF-ADJUSTMENT   "Drip Size"           '(10 5 99 1 1 0 1)
+    SF-TOGGLE       "Flatten image"         TRUE
 )
 
 (script-fu-menu-register "script-fu-blood-logo" "<Toolbox>/Script-Fu/Logos/")

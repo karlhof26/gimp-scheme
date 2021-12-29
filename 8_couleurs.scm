@@ -1,5 +1,5 @@
 ; Script-Fu 8_couleurs.scm
-; Download :  
+; Download :   
 ;
 ;   Copyright (C) 2013 samj ( http://aljacom.com/~gmic/ )
 ;   
