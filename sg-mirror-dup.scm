@@ -105,7 +105,7 @@
   )
 
 (script-fu-register "script-fu-sg-mirror-dup"
-    "Mirror..."
+    "Mirror Duplicates and Reflections..."
     "Duplicates the image with mirror images. \nfile:sg-mirror-dup.scm"
     "Saul Goode"
     "Saul Goode"

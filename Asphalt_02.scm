@@ -7,7 +7,7 @@
 ; License: GPLv3
 ;    This program is free software: you can redistribute it and/or modify
 ;    it under the terms of the GNU General Public License as published by
-;    the Free Software Foundation, either version 3 of the License, or
+;    the Free Software Foundation, either version 3 of the License, or  
 ;    (at your option) any later version.
 ;
 ;    This program is distributed in the hope that it will be useful,
@@ -67,6 +67,7 @@
     (gimp-edit-fill asphalt FILL-FOREGROUND)
     
     (asphalt-difference-clouds image asphalt)
+    (gimp-displays-flush)
     (set! asphalt (car (gimp-image-get-active-layer image)))
     
     (plug-in-hsv-noise 1 image asphalt 1 180 0 224)
@@ -95,7 +96,7 @@
     
   (if (not (defined? 'plug-in-gmic-qt))        ;Check for [G'MIC]
     (begin
-      (display_message "Your pattern is incomplete because\nThe plugin G'MIC is not installed\nG'MIC is available at\nhttp://gmic.eu" 0)
+      (gimp-message "Your pattern is incomplete because\nThe plugin G'MIC is not installed\nG'MIC is available at http:gmic.eu")
     )
     (begin ;else
             
@@ -150,14 +151,14 @@
     ;;(gimp-message "finishing")
     (gimp-displays-flush)
     (gimp-context-pop)
- 
+    
  ) ;end variables
-	(gimp-image-undo-group-end image)
+    (gimp-image-undo-group-end image)
 ) ;endprocedure
 
 (script-fu-register "script-fu-asphalt"              
   "Asphalt"
-  "creates a pattern of Asphalt on drawable or within selection if one exists, requires the GMIC plugin to complete the pattern. \nfile:Asphalt_02.scm"
+  "Creates a pattern of Asphalt on drawable or within selection if one exists, requires the GMIC plugin to complete the pattern. \nfile:Asphalt_02.scm"
   "Graechan"
   "Graechan - http://gimpchat.com"
   "Feb 2014"
@@ -182,7 +183,7 @@
           (height        (caddr (cddr (gimp-drawable-mask-intersect drawable))))
           (type          (car (gimp-drawable-type-with-alpha drawable)))
           (diff-clouds   (car (gimp-layer-new image width height type
-                                              "Clouds" 100 DIFFERENCE-MODE)))
+                                              "Clouds" 100 LAYER-MODE-DIFFERENCE)))
           (offset-x      0)
           (offset-y      0)
         )
