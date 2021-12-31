@@ -46,7 +46,7 @@
 )
 
 (script-fu-register "script-fu-golden-guides-kh"
-  "Golden Ratio Guides VerKH"
+  "Golden Ratio plus Rule of Thirds Guides VerKH"
   "Adds Golden Ratio guides. Includes rule of thirds guides too. \nfile:golden-guides.scm"
   "Karl Hofmeyr"
   "Karl Hofmeyr, 2021"
@@ -57,4 +57,4 @@
 )
 
 (script-fu-menu-register "script-fu-golden-guides-kh"
-                         "<Image>/Image/Guides")
+                         "<Toolbox>/Script-Fu/Setup/Guides")
