@@ -20,7 +20,7 @@
 ;
 ; Version 0.1 - Simulating a complete exposed film strip.
 ; Version 0.2 - Optional sh shade thanks to Frank Ludwig
-
+; Version 0.3 - Updated by karlhof26 for Gimp-2.10.24
 
 (define (elsamuko-sprocketholes aimg adraw phototext dx1 dx2 font framenumber framenumberhole firstsh shcolor letteringcolor)
   (let* ((img (car (gimp-item-get-image adraw)))
@@ -48,7 +48,7 @@
                                        1
                                        "Sprocket Holes" 
                                        100 
-                                       LAYER-MODE-NORMAL-LEGACY)))
+                                       LAYER-MODE-NORMAL)))
          (smearlayer (car (gimp-layer-new img
                                           owidth 
                                           oheight
@@ -303,13 +303,14 @@
     (gimp-image-undo-group-end img)
     (gimp-displays-flush)
     (gimp-context-pop)
+    (gc) ; memory cleanup
   )
 )
 
 (script-fu-register "elsamuko-sprocketholes"
                     "Photo with Sprocketholes"
                     "Simulating a complete exposed film strip.
-Newest version can be downloaded from http://registry.gimp.org/ \nfile:elsamuko-slide-with-sprockets.scm"
+Newest version can be downloaded from GitHub \nfile:elsamuko-slide-with-sprockets.scm"
                     "elsamuko <elsamuko@web.de>"
                     "elsamuko"
                     "13/08/08"
