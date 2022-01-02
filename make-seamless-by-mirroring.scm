@@ -7,7 +7,7 @@
 ; It creates a tileable image in perhaps the simplest way possible: by mirroring
 ; the image in both the x and y direction, leaving an image that is twice the
 ; original width and height.
-;
+; 
 ; Preview X tiles:
 ; Preview Y tiles:
 ; If either (or both) of these are greater than '1', it will create a preview

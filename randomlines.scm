@@ -144,7 +144,7 @@
                       )
 
   (script-fu-menu-register "script-fu-randomlines"
-                           "<Image>/Script-Fu/Artistic/")
+                           "<Image>/Script-Fu2/Artistic/")
 
 
 ;end of script

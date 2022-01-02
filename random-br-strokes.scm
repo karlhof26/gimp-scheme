@@ -1,14 +1,14 @@
-;; random.scm -*-scheme-*- 
+;; random.scm -*-scheme-*-  
 ;; Use a brush to paint to paint random pixels a nominated number
-;; of times to produce a "random" pattern/.
-;; More info at http://members.optusnet.com.au/~charles57/GIMP
-;; Version 1.0
+;; of times to produce a "random" pattern.
 ;;
-;; Copyright (C) 2008 by Charles Cave <charlesweb@optusnet.com.au>
+;; Version 2.0
+;;
+;; 
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 2
+;; as published by the Free Software Foundation; either version 3
 ;; of the License, or (at your option) any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful,
@@ -23,7 +23,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(define (script-fu-random   img drw
+(define (script-fu-random-br-strokes
+                            img drw
                             margin
                             brush
                             brushsize
@@ -59,13 +60,16 @@
         (gimp-context-set-brush-size brushsize)
         (gimp-context-set-opacity (car (cdr brush)))
         (gimp-context-set-paint-mode (car (cdr (cdr (cdr brush)))))
+        (gimp-context-set-brush-hardness 1.00)
+        (gimp-context-set-brush-aspect-ratio 1.60)
+        (gimp-context-set-dynamics "Dynamics Off")
         
         (gimp-progress-set-text "Rendering Random brush strokes")
         
         (while (< ctr iterations)
             (set! ctr (+ ctr 1))
-            (aset *randompoint* 0 (+ x1 (random drw-width )))
-            (aset *randompoint* 1 (+ y1 (random drw-height)))
+            (aset *randompoint* 0 (+ x1 (rand drw-width )))
+            (aset *randompoint* 1 (+ y1 (rand drw-height)))
             (gimp-pencil drw 2 *randompoint*)
         )
         
@@ -77,12 +81,12 @@
     )
 )
 
-(script-fu-register "script-fu-random"
+(script-fu-register "script-fu-random-br-strokes"
                     "Random Points using brush"
-                    "Draws a specified number of random points using a nominated brush. \nfile:random.scm"
-                    "Charles Cave <charlesweb@optusnet.com.au>"
+                    "Draws a specified number of random points using a nominated brush in pencil mode. \nfile:random-br-strokes.scm"
+                    "karlhof26"
                     "Charles Cave"
-                    "February 2008"
+                    "March 2020"
                     "RGB* INDEXED* GRAY*"
                     SF-IMAGE        "Image"         0
                     SF-DRAWABLE     "Drawable"      0
@@ -90,10 +94,10 @@
                     SF-BRUSH        "Brush"         '("Circle (01)" 100 1 0)
                     SF-ADJUSTMENT   "Brush size"     '(10 1 100 1 1 0 0)
                     SF-COLOR        "Color"          "black"
-                    SF-ADJUSTMENT   "Iterations"     '(10 1 10000 10 100 0 0) 
+                    SF-ADJUSTMENT   "Iterations"     '(150 1 10000 10 100 0 0) 
     )
 
-(script-fu-menu-register "script-fu-random"
+(script-fu-menu-register "script-fu-random-br-strokes"
                          "<Image>/Script-Fu2/Artistic")
 
 ;end of script

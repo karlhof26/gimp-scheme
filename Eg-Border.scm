@@ -4,7 +4,7 @@
 ; Martin Egger (martin.egger@gmx.net)
 ; (C) 2012, Bern, Switzerland
 ;
-; This script was tested with Gimp 2.8
+; This script was tested with Gimp 2.10.24
 ;
 ; New versions will be distributed from http://registry.gimp.org/ only
 ;
@@ -67,7 +67,7 @@
         (gimp-image-resize TheImage image-width image-height outer-border-width outer-border-top-height)
         ;
         (let* (
-                (BorderLayer (car (gimp-layer-new TheImage image-width image-height RGBA-IMAGE "TempLayer" 100 NORMAL-MODE)))
+                (BorderLayer (car (gimp-layer-new TheImage image-width image-height RGBA-IMAGE "TempLayer" 100 LAYER-MODE-NORMAL)))
               )
             (gimp-image-insert-layer TheImage BorderLayer 0 -1)
             (gimp-edit-clear BorderLayer)

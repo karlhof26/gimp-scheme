@@ -1,4 +1,4 @@
-; Copyright (c) 2008 Thomas Baruchel ; 
+; Copyright (c) 2008 Thomas Baruchel ;  
 ; 
 ; Permission is hereby granted, free of charge, to any person obtaining a copy
 ; of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@
         (gimp-drawable-set-visible (aref (cadr new-layers2) 1) 0)
         (gimp-drawable-set-visible (aref (cadr new-layers2) 2) 0)
         (gimp-image-set-active-layer new-img2 (aref (cadr new-layers2) 0))
-        (gimp-image-add-layer new-img2 mylayer -1)
+        (gimp-image-insert-layer new-img2 mylayer 0 -1)
         (gimp-image-set-active-layer new-img (aref (cadr new-layers) 1))
         (gimp-selection-none new-img)
         (gimp-edit-copy (aref (cadr new-layers) 1))
@@ -47,21 +47,22 @@
         (let ((result (car (gimp-layer-new-from-drawable
                   (car (gimp-image-merge-visible-layers new-img2 2)) img)))
              )
-            (gimp-image-add-layer img result -1)
+            (gimp-image-insert-layer img result 0 -1)
             (gimp-drawable-set-name result "BW Labs - HSV / HSV")
         )
         (gimp-image-delete new-img)
         (gimp-image-delete new-img2)
-        (gimp-message "Done!")
+        ;(gimp-message "Done!")
         
-        (gimp-displays-flush)
         (gimp-image-undo-group-end img)
+        (gimp-displays-flush)
+        
    )
 )
 
 (script-fu-register "script-fu-bw-labs0"
-                    "Black & White HSV / HSV Lab 0"
-                    "Black & White HSV / HSV"
+                    "Black & White HSV - HSV Lab 0"
+                    "Black & White HSV / HSV \nfile:bw-labs_0.scm"
                     "Thomas Baruchel"
                     "Thomas Baruchel"
                     "2008"
@@ -69,7 +70,7 @@
                     SF-IMAGE    "Image"         0
                     SF-DRAWABLE "Layer to convert" 0)
 (script-fu-menu-register "script-fu-bw-labs0"
-                         "<Image>/Script-Fu/Photography/BW Labs")
+                         "<Image>/Script-Fu/Colors/BW Labs")
     
 
 
@@ -91,7 +92,7 @@
         (gimp-drawable-set-visible (aref (cadr new-layers2) 1) 0)
         (gimp-drawable-set-visible (aref (cadr new-layers2) 2) 0)
         (gimp-image-set-active-layer new-img2 (aref (cadr new-layers2) 0))
-        (gimp-image-add-layer new-img2 mylayer -1)
+        (gimp-image-insert-layer new-img2 mylayer 0 -1)
         (gimp-image-delete new-img3)
         (gimp-image-set-active-layer new-img (aref (cadr new-layers) 1))
         (gimp-selection-none new-img)
@@ -109,25 +110,25 @@
         (gimp-image-delete new-img)
         (gimp-image-delete new-img2)
         
-        (gimp-message "Done!")
-        
-        (gimp-displays-flush)
+        ;(gimp-message "Done!")
         (gimp-image-undo-group-end img)
+        (gimp-displays-flush)
+        
   )
 )
 
 (script-fu-register "script-fu-bw-labs1"
-                    "Black & White HSV / LAB Lab 1"
-                    "Black & White HSV / LAB"
+                    "Black & White HSV - LAB Lab 1"
+                    "Black & White HSV / LAB  \nfile:bw-labs_0.scm"
                     "Thomas Baruchel"
                     "Thomas Baruchel"
                     "2008"
                     "RGB*, GRAY*"
-                    SF-IMAGE        "Image"         0
-                    SF-DRAWABLE     "Layer to convert" 0
+                    SF-IMAGE        "Image"                 0
+                    SF-DRAWABLE     "Layer to convert"      0
 )
 (script-fu-menu-register "script-fu-bw-labs1"
-                         "<Image>/Script-Fu/Photography/BW Labs")
+                         "<Image>/Script-Fu/Colors/BW Labs")
 
 
 
@@ -150,7 +151,7 @@
         (gimp-drawable-set-visible (aref (cadr new-layers2) 1) 0)
         (gimp-drawable-set-visible (aref (cadr new-layers2) 2) 0)
         (gimp-image-set-active-layer new-img2 (aref (cadr new-layers2) 0))
-        (gimp-image-add-layer new-img2 mylayer -1)
+        (gimp-image-insert-layer new-img2 mylayer 0 -1)
         (gimp-image-delete new-img3)
         (gimp-image-set-active-layer new-img (aref (cadr new-layers) 1))
         (gimp-selection-none new-img)
@@ -168,7 +169,7 @@
         (gimp-image-delete new-img)
         (gimp-image-delete new-img2)
         
-        (gimp-message "Done!")
+        ;(gimp-message "Done!")
          
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
@@ -176,16 +177,16 @@
 )
 
 (script-fu-register "script-fu-bw-labs2"
-                    "Black & White HSV / HSL Labs 2"
-                    "Black & White HSV / HSL"
+                    "Black & White HSV - HSL Labs 2"
+                    "Black & White HSV / HSL \nfile:bw-labs_0.scm"
                     "Thomas Baruchel"
                     "Thomas Baruchel"
                     "2008"
                     "RGB*, GRAY*"
-                    SF-IMAGE    "Image"         0
-                    SF-DRAWABLE "Layer to convert" 0)
+                    SF-IMAGE    "Image"                 0
+                    SF-DRAWABLE "Layer to convert"      0)
 (script-fu-menu-register "script-fu-bw-labs2"
-                         "<Image>/Script-Fu/Photography/BW Labs")
+                         "<Image>/Script-Fu/Colors/BW Labs")
 
 
 
@@ -226,7 +227,7 @@
         )
         (gimp-image-delete new-img)
         (gimp-image-delete new-img2)
-        (gimp-message "Done!")
+        ;(gimp-message "Done!")
         
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
@@ -234,16 +235,17 @@
 )
 
 (script-fu-register "script-fu-bw-labs3"
-                    "Black & White HSL / HSL Labs 3"
-                    "Black & White HSL / HSL"
+                    "Black & White HSL - HSL Labs 3"
+                    "Black & White HSL / HSL \nfile:bw-labs_0.scm"
                     "Thomas Baruchel"
                     "Thomas Baruchel"
                     "2008"
                     "RGB*, GRAY*"
-                    SF-IMAGE    "Image"         0
-                    SF-DRAWABLE "Layer to convert" 0)
+                    SF-IMAGE    "Image"             0
+                    SF-DRAWABLE "Layer to convert"  0
+                    )
 (script-fu-menu-register "script-fu-bw-labs3"
-                         "<Image>/Script-Fu/Photography/BW Labs")
+                         "<Image>/Script-Fu/Colors/BW Labs")
                             
 
 
@@ -265,7 +267,7 @@
         (gimp-drawable-set-visible (aref (cadr new-layers2) 1) 0)
         (gimp-drawable-set-visible (aref (cadr new-layers2) 2) 0)
         (gimp-image-set-active-layer new-img2 (aref (cadr new-layers2) 0))
-        (gimp-image-add-layer new-img2 mylayer -1)
+        (gimp-image-insert-layer new-img2 mylayer 0 -1)
         (gimp-image-delete new-img3)
         (gimp-image-set-active-layer new-img (aref (cadr new-layers) 1))
         (gimp-selection-none new-img)
@@ -288,16 +290,17 @@
 )
 
 (script-fu-register "script-fu-bw-labs4"
-                    "Black & White HSL / LAB Lab 4"
-                    "Black & White HSL / LAB"
+                    "Black & White HSL - LAB Lab 4"
+                    "Black & White HSL / LAB. \nfile:bw-labs_0.scm"
                     "Thomas Baruchel"
                     "Thomas Baruchel"
                     "2008"
                     "RGB*, GRAY*"
                     SF-IMAGE    "Image"         0
-                    SF-DRAWABLE "Layer to convert" 0)
+                    SF-DRAWABLE "Layer to convert" 0
+                    )
 (script-fu-menu-register "script-fu-bw-labs4"
-                         "<Image>/Script-Fu/Photography/BW Labs")
+                         "<Image>/Script-Fu/Colors/BW Labs")
 
 
 
@@ -320,7 +323,7 @@
         (gimp-drawable-set-visible (aref (cadr new-layers2) 1) 0)
         (gimp-drawable-set-visible (aref (cadr new-layers2) 2) 0)
         (gimp-image-set-active-layer new-img2 (aref (cadr new-layers2) 0))
-        (gimp-image-add-layer new-img2 mylayer -1)
+        (gimp-image-insert-layer new-img2 mylayer 0 -1)
         (gimp-image-delete new-img3)
         (gimp-image-set-active-layer new-img (aref (cadr new-layers) 1))
         (gimp-selection-none new-img)
@@ -343,16 +346,17 @@
 )
 
 (script-fu-register "script-fu-bw-labs5"
-                    "Black & White HSL / HSV Lab 5"
-                    "Black & White HSL / HSV"
+                    "Black & White HSL - HSV Lab 5"
+                    "Black & White HSL / HSV. \nfile:bw-labs_0.scm"
                     "Thomas Baruchel"
                     "Thomas Baruchel"
                     "2008"
                     "RGB*, GRAY*"
                     SF-IMAGE    "Image"         0
-                    SF-DRAWABLE "Layer to convert" 0)
+                    SF-DRAWABLE "Layer to convert" 0
+                    )
 (script-fu-menu-register "script-fu-bw-labs5"
-                         "<Image>/Script-Fu/Photography/BW Labs")
+                         "<Image>/Script-Fu/Colors/BW Labs")
 
                                  
 ;end of script

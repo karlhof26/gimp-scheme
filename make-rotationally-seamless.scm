@@ -4,7 +4,7 @@
 ; This is Script-Fu program written for GIMP 2.8.
 ;
 ; Updated for Gimp-2.10.20
-;
+; 
 ; Its purpose is to help create texture images that can not only be tiled
 ; through translation, but also when combined with flipping and rotation. It
 ; works by taking one half of one side and flipping and rotating it around the

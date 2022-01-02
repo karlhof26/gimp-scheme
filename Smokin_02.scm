@@ -25,6 +25,8 @@
 ; Rel 0.02 - Added transparency fill to smoke layer so it's less like to fail using a selection
 ; Rel 0.03 - Added a 'Breeze distortion' setting and a transparent background option
 ; Rel O.04 - added 'Background Type' options to script and included some bugfixes to make the script more intuitive
+;
+;
 (define (script-fu-smokin-logo 
                                text
                                letter-spacing
@@ -327,7 +329,7 @@
  )
 )
 
-(script-fu-register "script-fu-smokin"           
+(script-fu-register "script-fu-smokin" 
     "Smokin"
     "Can create smoke in the shape of your image. \nfile:Smokin_02.scm"
     "Graechan"

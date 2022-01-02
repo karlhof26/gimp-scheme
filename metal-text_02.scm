@@ -843,14 +843,14 @@
     
     ;;;;create the background layer    
     (set! bkg-layer (car (gimp-layer-new image width height RGBA-IMAGE "Background" 100 LAYER-MODE-NORMAL)))
-    (gimp-image-add-layer image bkg-layer 1)		
+    (gimp-image-insert-layer image bkg-layer 0 1)
     
     ;(gimp-message "start two")
     ;;;;apply the image effects
     (gimp-context-set-foreground '(0 0 0))
     (gimp-context-set-background '(255 255 255))
     (plug-in-gauss-rle2 RUN-NONINTERACTIVE image img-layer 12 12)
-    (plug-in-emboss RUN-NONINTERACTIVE image img-layer 225 84 10 TRUE)	
+    (plug-in-emboss RUN-NONINTERACTIVE image img-layer 225 84 10 TRUE)
     (gimp-selection-invert image)
     (gimp-edit-clear img-layer)
     (gimp-selection-invert image)
