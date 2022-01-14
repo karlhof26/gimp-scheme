@@ -5,7 +5,7 @@
 ;
 ; Vintage Film Effect script for GIMP 2.4
 ; Original author: Alexia Death
-;
+; 
 ; Tags: photo, vintage
 ;
 ; Author statement:
@@ -116,7 +116,7 @@
     (gimp-image-insert-layer theImage sepia 0 -1)
     (gimp-floating-sel-anchor (car (gimp-edit-paste sepia TRUE)))
     
-    (gimp-colorize sepia 25 25 30)
+    (gimp-drawable-colorize-hsl sepia 25 25 30)
     (gimp-drawable-brightness-contrast sepia 0.156 0.117) ; was 40 30
     (gimp-layer-set-opacity sepia 50.0)
     
@@ -129,7 +129,7 @@
                                         100
                                         LAYER-MODE-SCREEN)))
     
-    (gimp-image-add-layer theImage magenta -1)
+    (gimp-image-insert-layer theImage magenta 0 -1)
     
     (gimp-context-push)
     (gimp-context-set-foreground '(255 0 220))
@@ -157,6 +157,7 @@
     )
     
     (gimp-displays-flush)
+    (gc) ; arrays were used - memory cleanup
   )
 )
 
