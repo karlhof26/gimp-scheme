@@ -1,6 +1,6 @@
 ; Début du script-fu Bokeh_Effect_By_Starlight86_V2_Gimp_2_8.scm
 ;
-; Accès par :   Fichier > Créer > Motifs > Bokeh Effect Version 2.3 ...
+; Accès par :   Fichier > Créer > Motifs > Bokeh Effect Version 2.3 ... 
 ;               File > Create > Patterns > Bokeh Effect Version 2.3 ...
 ;
 ;                __________________________________________________________
@@ -69,49 +69,52 @@
                 Remplissage_des_bulles_fonction
     )
     
+    (let* (
+            (guessedPatternNo 0)
+          )
     
-    
-    
+                ;(gimp-message "line 76")
                 ;; Créer l'image de la brosse ***************************************************************************
                     
                     ; valeurs pour créer les bulles et l'image de la brosse
-                    (set! diametre_exterieur_bulle_a_creer_fonction (round (random diametre_maxi_bulle_fonction)))
+                    (set! diametre_exterieur_bulle_a_creer_fonction (round (rand diametre_maxi_bulle_fonction)))
                     
                     ; vérifier que diametre_exterieur_bulle_a_creer_fonction est inférieur à 512 - 4 (512 semble être le max)
                     (if (> diametre_exterieur_bulle_a_creer_fonction 508)
                         (set! diametre_exterieur_bulle_a_creer_fonction 508)
-                    )					
+                    )
                     
-					; vérifier que le minimum est respecté
-					(if
-						(< diametre_exterieur_bulle_a_creer_fonction diametre_mini_bulle_fonction)
-							(set! diametre_exterieur_bulle_a_creer_fonction diametre_mini_bulle_fonction)
-					)					
-
-					; valeur du diamètre intérieur plus foncé
-					(set! diametre_interieur_bulle_a_creer_fonction (round (* diametre_exterieur_bulle_a_creer_fonction 0.916666)))				
-
-					; créer une image pour la brosse
-					(set! img_brosse_fonction (car (gimp-image-new (+ 4 diametre_exterieur_bulle_a_creer_fonction) (+ 4 diametre_exterieur_bulle_a_creer_fonction) 0)))
-
-					; modifier couleur de premier plan
-					(if
-						(or (= Options_rendu_fonction 1) (= Remplissage_des_bulles_fonction 2) )
-							(begin
-								; mode bulles multicolores
-								(gimp-context-set-foreground (list (round (random 255)) (round (random 255)) (round (random 255))))
-							)
-							;else
-							(begin
-								(gimp-context-set-foreground Couleur_contour_des_bulles_fonction)
-							)
-					)
+                    ; vérifier que le minimum est respecté
+                    (if (< diametre_exterieur_bulle_a_creer_fonction diametre_mini_bulle_fonction)
+                        (set! diametre_exterieur_bulle_a_creer_fonction diametre_mini_bulle_fonction)
+                    )
                     
+                    ; valeur du diamètre intérieur plus foncé
+                    (set! diametre_interieur_bulle_a_creer_fonction (round (* diametre_exterieur_bulle_a_creer_fonction 0.916666)))				
+                    
+                    ; créer une image pour la brosse
+                    ;(gimp-message "line 96")
+                    (set! img_brosse_fonction (car (gimp-image-new (+ 4 diametre_exterieur_bulle_a_creer_fonction) (+ 4 diametre_exterieur_bulle_a_creer_fonction) 0)))
+                    
+                    ; modifier couleur de premier plan
+                    (if
+                        (or (= Options_rendu_fonction 1) (= Remplissage_des_bulles_fonction 2) )
+                            (begin
+                                ; mode bulles multicolores
+                                (gimp-context-set-foreground (list (round (rand 255)) (round (rand 255)) (round (rand 255))))
+                            )
+                            ;else
+                            (begin
+                                (gimp-context-set-foreground Couleur_contour_des_bulles_fonction)
+                            )
+                    )
+                    
+                    ;(gimp-message "line112")
                     ; modifier couleur d'arrière plan
                     (if
                         (= Remplissage_des_bulles_fonction 2) ; couleurs aléatoires
                             (begin
-                                (gimp-context-set-background (list (round (random 255)) (round (random 255)) (round (random 255))))
+                                (gimp-context-set-background (list (rand 255) (rand 255) (rand 255)))
                             )
                             ;else
                             (begin
@@ -119,6 +122,7 @@
                             )
                     )
                     
+                    ;(gimp-message "line125")
                     ; créer le calque calque_brosse_fonction
                     (set! calque_brosse_fonction (car (gimp-layer-new img_brosse_fonction (+ 4 diametre_exterieur_bulle_a_creer_fonction) (+ 4 diametre_exterieur_bulle_a_creer_fonction) 1 "calque_brosse_fonction" 100 0)))
                     
@@ -175,8 +179,8 @@
                                 
                                 ; créer des valeurs aléatoires entre 0.5 et 1
                                 ;(gimp-message "line 177")
-                                (set! Coeff_X_fonction  (+ 0.5 ( / (random 5) 10)  ) ) ; was (+ 0.5 ( / (random 6) 10)  ) )
-                                (set! Coeff_Y_fonction  (+ 0.5 ( / (random 5) 10)  ) ) ; was (+ 0.5 ( / (random 6) 10)  ) )
+                                (set! Coeff_X_fonction  (+ 0.5 ( / (rand 5) 10)  ) ) ; was (+ 0.5 ( / (random 6) 10)  ) )
+                                (set! Coeff_Y_fonction  (+ 0.5 ( / (rand 5) 10)  ) ) ; was (+ 0.5 ( / (random 6) 10)  ) )
                                 
                                 ; sélection elliptique
                                 (gimp-image-select-ellipse 
@@ -205,7 +209,7 @@
                                     ; ne rien sélectionner
                                     (gimp-selection-none img_brosse_fonction)
                                     
-                                    (set! Choix_Melange_fonction (random Choix_Melange_fonction) )
+                                    (set! Choix_Melange_fonction (rand Choix_Melange_fonction) )
                                     
                                     (if
                                         (or (= Choix_Melange_fonction 1) (= Choix_Melange_fonction 1)) ; renvoie 0 ou 1 ; was (= Choix_Melange_fonction 0)
@@ -220,17 +224,17 @@
                                                 ; forme elliptique
                                                 ; créer des valeurs aléatoires entre 0.5 et 1
                                                 ;(gimp-message "line 222")
-                                                (set! Coeff_X_fonction  (+ 0.5 ( / (random 5) 10)  ) )
-                                                (set! Coeff_Y_fonction  (+ 0.5 ( / (random 5) 10)  ) )
+                                                (set! Coeff_X_fonction  (+ 0.5 ( / (rand 5) 10)  ) )
+                                                (set! Coeff_Y_fonction  (+ 0.5 ( / (rand 5) 10)  ) )
                                                 
                                                 ; sélection elliptique
                                                 (gimp-image-select-ellipse 
-                                                    img_brosse_fonction					; image 
-                                                    0									; operation 
-                                                    2									; x 
-                                                    2									; y 
-                                                    (round (* diametre_exterieur_bulle_a_creer_fonction Coeff_X_fonction))	; width 
-                                                    (round (* diametre_exterieur_bulle_a_creer_fonction Coeff_Y_fonction))	; height
+                                                    img_brosse_fonction                 ; image 
+                                                    0                                   ; operation 
+                                                    2                                   ; x 
+                                                    2                                   ; y 
+                                                    (round (* diametre_exterieur_bulle_a_creer_fonction Coeff_X_fonction))  ; width 
+                                                    (round (* diametre_exterieur_bulle_a_creer_fonction Coeff_Y_fonction))  ; height
                                                 )
                                                 
                                             )
@@ -241,29 +245,30 @@
                         )   
                     )
                     
-                    ; remplir la sélection de PP	
+                    ;(gimp-message "line 245")
+                    ; remplir la sélection de PP    
                     (gimp-edit-fill calque_brosse_fonction 0)
                     
                     
-;					; remplissage extérieur des bulles
-;					(if (= Remplissage_des_bulles_fonction 1)
-;						(begin
-;							
-;							; choix aléatoire du motif 
-;							(gimp-context-set-pattern (list-ref (cadr (gimp-patterns-get-list "")) (round (random Nombre_total_de_motifs_fonction))  ) )
-;							
-;							; remplir de motif
-;							(gimp-edit-fill calque_brosse_fonction 4)
+;                   ; remplissage extérieur des bulles
+;                   (if (= Remplissage_des_bulles_fonction 1)
+;                       (begin
 ;                           
-;						)
-;					)					
+;                           ; choix aléatoire du motif 
+;                           (gimp-context-set-pattern (list-ref (cadr (gimp-patterns-get-list "")) (round (random Nombre_total_de_motifs_fonction))  ) )
+;                           
+;                           ; remplir de motif
+;                           (gimp-edit-fill calque_brosse_fonction 4)
+;                           
+;                       )
+;                   )					
                     
                     ; modifier couleur de premier plan
                     (if
                         (= Remplissage_des_bulles_fonction 2)
                             (begin
                                 ; mode bulles multicolores
-                                (gimp-context-set-foreground (list (round (random 255)) (round (random 255)) (round (random 255))))
+                                (gimp-context-set-foreground (list (rand 255) (rand 255) (rand 255)))
                             )
                             ;else
                             (begin
@@ -322,7 +327,7 @@
                             )
                     )
                     
-                    
+                    ;(gimp-message "327")
                     ; forme carrée
                     (if
                         (= Forme_des_bulles_fonction 2)
@@ -351,8 +356,8 @@
                                             (begin
                                                 ; forme carrée
                                                 (gimp-image-select-rectangle 
-                                                    img_brosse_fonction							; image 
-                                                    0											; operation 
+                                                    img_brosse_fonction                         ; image 
+                                                    0                                           ; operation 
                                                     (round (/ (- (+ 4 diametre_exterieur_bulle_a_creer_fonction) diametre_interieur_bulle_a_creer_fonction) 2 ))		; x 
                                                     (round (/ (- (+ 4 diametre_exterieur_bulle_a_creer_fonction) diametre_interieur_bulle_a_creer_fonction) 2 ))		; y 
                                                     diametre_interieur_bulle_a_creer_fonction	; width 
@@ -364,10 +369,10 @@
                                             (begin
                                                 ; forme elliptique
                                                 (gimp-image-select-ellipse 
-                                                    img_brosse_fonction							; image 
-                                                    0											; operation 
-                                                    (+ 2 (round (* Coeff_X_fonction (/ (- diametre_exterieur_bulle_a_creer_fonction diametre_interieur_bulle_a_creer_fonction) 2 ))	))	; x 
-                                                    (+ 2 (round (* Coeff_Y_fonction (/ (- diametre_exterieur_bulle_a_creer_fonction diametre_interieur_bulle_a_creer_fonction) 2 ))	))	; y 
+                                                    img_brosse_fonction                         ; image 
+                                                    0                                           ; operation 
+                                                    (+ 2 (round (* Coeff_X_fonction (/ (- diametre_exterieur_bulle_a_creer_fonction diametre_interieur_bulle_a_creer_fonction) 2 )) ))	; x 
+                                                    (+ 2 (round (* Coeff_Y_fonction (/ (- diametre_exterieur_bulle_a_creer_fonction diametre_interieur_bulle_a_creer_fonction) 2 )) ))	; y 
                                                     (round (* diametre_interieur_bulle_a_creer_fonction Coeff_X_fonction)) 	; width 
                                                     (round (* diametre_interieur_bulle_a_creer_fonction Coeff_Y_fonction))	; height 
                                                 )
@@ -379,23 +384,35 @@
                             )
                     )
                     
-                    
-                    ; remplir la sélection de PP	
-                    (gimp-edit-fill calque_brosse_fonction 0)	
+                    ;(gimp-message "line 384")
+                    ; remplir la sélection de PP
+                    (gimp-edit-fill calque_brosse_fonction 0)
                     
                     
                     ; remplissage intérieur des bulles
                     (if (= Remplissage_des_bulles_fonction 1)
                         (begin
+                            ;(gimp-message "line 392")
+                            ;(gimp-message (number->string Nombre_total_de_motifs_fonction))
+                            ;(gimp-message (number->string (car (gimp-patterns-get-list "")))) 
+                            ;(gimp-message (list-ref (cadr (gimp-patterns-get-list "")) (- (rand Nombre_total_de_motifs_fonction) 1))) 
+                            
+                            (set! guessedPatternNo (rand (- Nombre_total_de_motifs_fonction 1))) ; either 0 or max-value are problems - this takes list from 1..n-1
+                            
+                            ;(gimp-message (number->string guessedPatternNo))
+                            ;(gimp-message (list-ref (cadr (gimp-patterns-get-list "")) guessedPatternNo))
+                            ;(gimp-message (list-ref (cadr (gimp-patterns-get-list "")) 1)) ; might crash
+                            ;(gimp-message (list-ref (cadr (gimp-patterns-get-list "")) 0)) ; might crash Karl
                             
                             ; choix aléatoire du motif 
-                            (gimp-context-set-pattern (list-ref (cadr (gimp-patterns-get-list "")) (round (random Nombre_total_de_motifs_fonction))  ) )
+                            (gimp-context-set-pattern (list-ref (cadr (gimp-patterns-get-list "")) guessedPatternNo  ) )
                             
                             ; remplir de motif
                             (gimp-edit-fill calque_brosse_fonction 4)
                             
+                            ;(gimp-message "line 392 exit")
                         )
-                    )					
+                    )
                     
                     
                     
@@ -407,9 +424,9 @@
                         (or (= Options_rendu_fonction 1) (= Remplissage_des_bulles_fonction 2) )
                             (gimp-drawable-colorize-hsl  
                                 calque_brosse_fonction	; drawable 
-                                (random 360)			; hue 
-                                (random 100)			; lightness 
-                                (- (random 200) 100)	; saturation
+                                (rand 359)          ; hue  ; was 360
+                                (rand 99)          ; lightness ; was 100
+                                (- (rand 199) 100)  ; saturation ; was 200
                             )
                     )					
                     
@@ -421,26 +438,30 @@
                     
                     ; astuce de RobA  http://www.gimpchat.com/viewtopic.php?f=8&t=1221&start=40 pour que le presse-papiers devienne le motif sans avoir à choisir le nom qui varie selon les langues de Gimp
                     ; (gimp-context-set-pattern (list-ref (cadr (gimp-patterns-get-list "")) 0)) ; set patten to clipboard (first in list)
+                    
+                    
                     (gimp-context-set-brush (list-ref (cadr (gimp-brushes-get-list "")) 0)) ; set brush to clipboard (first in list)
                     
-                    ; modification jontait2   http://www.gimpchat.com/viewtopic.php?f=9&t=4592&start=50#p165084
+                    (gimp-context-set-dynamics "Dynamics Off")
+                ;    
+                ;    ; modification jontait2   http://www.gimpchat.com/viewtopic.php?f=9&t=4592&start=50#p165084
                     (if
-						(defined? 'gimp-context-set-brush-size)
-							(gimp-context-set-brush-size (+ 4 diametre_exterieur_bulle_a_creer_fonction))
-					)
+                        (defined? 'gimp-context-set-brush-size)
+                            (gimp-context-set-brush-size (+ 4 diametre_exterieur_bulle_a_creer_fonction))
+                    )
                     
                     
-					; afficher l'image pour tests
-					;(gimp-display-new img_brosse_fonction)
+                    ; afficher l'image pour tests
+                    ;(gimp-display-new img_brosse_fonction)
                     
-					; supprimer l'image
-					(gimp-image-delete img_brosse_fonction)		
+                    ; supprimer l'image
+                    (gimp-image-delete img_brosse_fonction)		
+                    
+                    ;(gimp-message "line 441")
+                    ;; FIN image de la brosse ***************************************************************************
                     
                     
-				;; FIN image de la brosse ***************************************************************************
-                    
-                    
-
+    )
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -500,7 +521,7 @@
             (old-bg (car (gimp-context-get-background)))
             
             ; mémoriser la brosse active
-            (old-brush (car (gimp-context-get-brush)))	
+            (old-brush (car (gimp-context-get-brush)))
             
             ; mémoriser le dégradé actif
             (old_gradient (car (gimp-context-get-gradient)))
@@ -559,6 +580,7 @@
             
         )
         
+        (gimp-context-push)
         
         ; vérification
         ;   (set! index_motif 0)
@@ -671,9 +693,9 @@
         ; appliquer un dégradé sur calque_degrade
         (gimp-edit-blend 
             calque_couleur 
-            0 						; MODE
+            0                       ; MODE
             0 
-            2 						;  radial
+            2                       ;  radial
             100 
             0 
             0 
@@ -682,8 +704,8 @@
             0 
             0 
             FALSE 
-            (round (/ width 2))		; x1 
-            (round (/ height 2))	; y1 
+            (round (/ width 2))     ; x1 
+            (round (/ height 2))    ; y1 
             0						; x2
             0 						; y2
         )
@@ -697,10 +719,10 @@
         
         
         ; créer calque_eclipse
-        (set! calque_eclipse (car (gimp-layer-new img width height 1 "calque_eclipse" 100 0)))	
+        (set! calque_eclipse (car (gimp-layer-new img width height 1 "calque_eclipse" 100 0)))
         
         ; ajouter le calque calque_eclipse
-        (gimp-image-insert-layer img calque_eclipse 0 -1)	
+        (gimp-image-insert-layer img calque_eclipse 0 -1)
         
         ;; boucle pour appliquer des bulles
         (set! index 1)
@@ -720,11 +742,11 @@
                     (gimp-context-set-foreground '(255 255 255))
                     
                     ; modifier couleur d'arrière plan
-                    (gimp-context-set-background '(0 0 0))	
+                    (gimp-context-set-background '(0 0 0))
                     
                     ; coordonnées où appliquer la brosse
-                    (set! X_brosse (random width))
-                    (set! Y_brosse (random height))
+                    (set! X_brosse (rand (- width 1)))
+                    (set! Y_brosse (rand (- height 1)))
                     
                     ; contenu des 2 valeurs de array
                     (aset *array_points_brosse* 0 X_brosse)
@@ -742,184 +764,173 @@
                     
                     (set! index (+ index 1))
                     
+                    (gimp-progress-update (/ index nombre_de_bulles_par_calque))
+                    
         )
         
-	; ajouter du flou gaussien
-	(plug-in-gauss 
-		1						; run-mode 
-		img						; image 
-		calque_eclipse			; drawable 
-		Flou_1						; horizontal 
-		Flou_1						; vertical 
-		1						; method
-	)
-
-
-
-
-; calque_eclipse2*********************************************************************************
-
-
-
-	; créer calque_eclipse2
-	(set! calque_eclipse2 (car (gimp-layer-new img width height 1 "calque_eclipse2" 100 0)))	
-
-	; ajouter le calque calque_eclipse2
-	(gimp-image-insert-layer img calque_eclipse2 0 -1)	
-
-	;; boucle pour appliquer des bulles
-	(set! index 1)
-
-	(while (< index nombre_de_bulles_par_calque)
-
-					; Appel FONCTION Creer_Brosse_Pour_Bokeh_Effect
-					(Creer_Brosse_Pour_Bokeh_Effect diametre_maxi_bulle diametre_mini_bulle Options_rendu 1 1 Couleur_contour_des_bulles Couleur_interieur_des_bulles Opacite_des_bulles Forme_des_bulles 0.7 0.9 0 0 2 Nombre_total_de_motifs Remplissage_des_bulles)
-
-					; modifier couleur de premier plan
-					(gimp-context-set-foreground '(255 255 255))
-
-					; modifier couleur d'arrière plan
-					(gimp-context-set-background '(0 0 0))	
-
-					; coordonnées où appliquer la brosse
-					(set! X_brosse (random width))
-					(set! Y_brosse (random height))
-
-					; contenu des 2 valeurs de array
-					(aset *array_points_brosse* 0 X_brosse)
-					(aset *array_points_brosse* 1 Y_brosse)
-
-					; appliquer pinceau
-					(gimp-paintbrush 
-							calque_eclipse2			; drawable
-							0						; fade-out
-							2						; num-strokes 
-							*array_points_brosse*	; strokes 
-							0						; method 
-							0						; gradient-length
-					)
-
-					(set! index (+ index 1))
-
-	)
-
-	; ajouter du flou gaussien
-	(plug-in-gauss 
-		1						; run-mode 
-		img						; image 
-		calque_eclipse2			; drawable 
-		Flou_2					; horizontal 
-		Flou_2					; vertical 
-		1						; method
-	)
-
-	; mode du calque calque_eclipse2
-	(if
-		(= Mode_calque_eclipse2 TRUE)
-			; mettre en mode superposer Hard Light
-			(gimp-layer-set-mode calque_eclipse2 18)	
-	)
-
-
-
-
-
-
-
-
-
-
-
-	
-; calque_eclipse3*********************************************************************************
-
-
-
-	; créer calque_eclipse3
-	(set! calque_eclipse3 (car (gimp-layer-new img width height 1 "calque_eclipse3" 100 0)))	
-
-	; ajouter le calque calque_eclipse3
-	(gimp-image-insert-layer img calque_eclipse3 0 -1)	
-
-	;; boucle pour appliquer des bulles
-	(set! index 1)
-
-	(while (< index nombre_de_bulles_par_calque)
-
-					; Appel FONCTION Creer_Brosse_Pour_Bokeh_Effect
-					(Creer_Brosse_Pour_Bokeh_Effect diametre_maxi_bulle diametre_mini_bulle Options_rendu 1 1 Couleur_contour_des_bulles Couleur_interieur_des_bulles Opacite_des_bulles Forme_des_bulles 0.7 0.9 0 0 2 Nombre_total_de_motifs Remplissage_des_bulles)
-
-					; modifier couleur de premier plan
-					(gimp-context-set-foreground '(255 255 255))
-
-					; modifier couleur d'arrière plan
-					(gimp-context-set-background '(0 0 0))	
-
-					; coordonnées où appliquer la brosse
-					(set! X_brosse (random width))
-					(set! Y_brosse (random height))
-
-					; contenu des 2 valeurs de array
-					(aset *array_points_brosse* 0 X_brosse)
-					(aset *array_points_brosse* 1 Y_brosse)
-
-					; appliquer pinceau
-					(gimp-paintbrush 
-							calque_eclipse3			; drawable
-							0						; fade-out
-							2						; num-strokes 
-							*array_points_brosse*	; strokes 
-							0						; method 
-							0						; gradient-length
-					)
-
-					(set! index (+ index 1))
-
-	)
-
-	; ajouter du flou gaussien
-	(plug-in-gauss 
-		1						; run-mode 
-		img						; image 
-		calque_eclipse3			; drawable 
-		Flou_3					; horizontal 
-		Flou_3					; vertical 
-		1						; method
-	)
-
-
-	; mode du calque calque_eclipse3
-	(if
-		(= Mode_calque_eclipse3 TRUE)
-			; mettre en mode superposer Grain Merge
-			(gimp-layer-set-mode calque_eclipse3 21)	
-	)	
-
-
-
-
-
-
-
-
-
-
-; calque_Clouds*********************************************************************************
-
-
-
-	; créer calque_Clouds
-	(set! calque_Clouds (car (gimp-layer-new img width height 1 "calque_Clouds" 100 0)))	
-
-	; ajouter le calque calque_Clouds
-	(gimp-image-insert-layer img calque_Clouds 0 -1)
-
-	; modifier couleur de premier plan
-	(gimp-context-set-foreground '(0 0 0))	
-
-	; modifier couleur d'arrière plan
-	(gimp-context-set-background '(255 255 255))	
-
+        ; ajouter du flou gaussien
+        (plug-in-gauss 
+            1						; run-mode 
+            img						; image 
+            calque_eclipse			; drawable 
+            Flou_1						; horizontal 
+            Flou_1						; vertical 
+            1						; method
+        )
+        
+        
+        
+        
+        ; calque_eclipse2*********************************************************************************
+        
+        
+        ;(gimp-message "line 787")
+        ; créer calque_eclipse2
+        (set! calque_eclipse2 (car (gimp-layer-new img width height 1 "calque_eclipse2" 100 0)))	
+        
+        ; ajouter le calque calque_eclipse2
+        (gimp-image-insert-layer img calque_eclipse2 0 -1)	
+        
+    ;; boucle pour appliquer des bulles
+    (set! index 1)
+    
+    (while (< index nombre_de_bulles_par_calque)
+                    
+                    ; Appel FONCTION Creer_Brosse_Pour_Bokeh_Effect
+                    (Creer_Brosse_Pour_Bokeh_Effect diametre_maxi_bulle diametre_mini_bulle Options_rendu 1 1 Couleur_contour_des_bulles Couleur_interieur_des_bulles Opacite_des_bulles Forme_des_bulles 0.7 0.9 0 0 2 Nombre_total_de_motifs Remplissage_des_bulles)
+                    
+                    ; modifier couleur de premier plan
+                    (gimp-context-set-foreground '(255 255 255))
+                    
+                    ; modifier couleur d'arrière plan
+                    (gimp-context-set-background '(0 0 0))	
+                    
+                    ; coordonnées où appliquer la brosse
+                    (set! X_brosse (rand (- width 1)))
+                    (set! Y_brosse (rand (- height 1)))
+                    
+                    ; contenu des 2 valeurs de array
+                    (aset *array_points_brosse* 0 X_brosse)
+                    (aset *array_points_brosse* 1 Y_brosse)
+                    
+                    ; appliquer pinceau
+                    (gimp-paintbrush 
+                            calque_eclipse2         ; drawable
+                            0                       ; fade-out
+                            2                       ; num-strokes 
+                            *array_points_brosse*   ; strokes 
+                            0                       ; method 
+                            0                       ; gradient-length
+                    )
+                    
+                    (set! index (+ index 1))
+                    
+                    (gimp-progress-update (/ index nombre_de_bulles_par_calque))
+                    
+    )
+    
+    ; ajouter du flou gaussien
+    (plug-in-gauss 
+        1                       ; run-mode 
+        img                     ; image 
+        calque_eclipse2         ; drawable 
+        Flou_2                  ; horizontal 
+        Flou_2                  ; vertical 
+        1                       ; method
+    )
+    
+    ; mode du calque calque_eclipse2
+    (if (= Mode_calque_eclipse2 TRUE)
+            ; mettre en mode superposer Hard Light
+            (gimp-layer-set-mode calque_eclipse2 18)	
+    )
+    
+    
+    
+    
+    
+    ;    calque_eclipse3*********************************************************************************
+    
+    
+    
+    ; créer calque_eclipse3
+    (set! calque_eclipse3 (car (gimp-layer-new img width height 1 "calque_eclipse3" 100 0)))	
+    
+    ; ajouter le calque calque_eclipse3
+    (gimp-image-insert-layer img calque_eclipse3 0 -1)	
+    
+    ;; boucle pour appliquer des bulles
+    (set! index 1)
+    
+    (while (< index nombre_de_bulles_par_calque)
+                    
+                    ; Appel FONCTION Creer_Brosse_Pour_Bokeh_Effect
+                    (Creer_Brosse_Pour_Bokeh_Effect diametre_maxi_bulle diametre_mini_bulle Options_rendu 1 1 Couleur_contour_des_bulles Couleur_interieur_des_bulles Opacite_des_bulles Forme_des_bulles 0.7 0.9 0 0 2 Nombre_total_de_motifs Remplissage_des_bulles)
+                    
+                    ; modifier couleur de premier plan
+                    (gimp-context-set-foreground '(255 255 255))
+                    
+                    ; modifier couleur d'arrière plan
+                    (gimp-context-set-background '(0 0 0))	
+                    
+                    ; coordonnées où appliquer la brosse
+                    (set! X_brosse (rand (- width 1)))
+                    (set! Y_brosse (rand (- height 1)))
+                    
+                    ; contenu des 2 valeurs de array
+                    (aset *array_points_brosse* 0 X_brosse)
+                    (aset *array_points_brosse* 1 Y_brosse)
+                    
+                    ; appliquer pinceau
+                    (gimp-paintbrush 
+                            calque_eclipse3			; drawable
+                            0						; fade-out
+                            2						; num-strokes 
+                            *array_points_brosse*	; strokes 
+                            0						; method 
+                            0						; gradient-length
+                    )
+                    
+                    (set! index (+ index 1))
+                    (gimp-progress-update (/ index nombre_de_bulles_par_calque))
+        )
+        
+        ; ajouter du flou gaussien
+        (plug-in-gauss 
+            1						; run-mode 
+            img						; image 
+            calque_eclipse3			; drawable 
+            Flou_3					; horizontal 
+            Flou_3					; vertical 
+            1						; method
+        )
+        
+        
+        ; mode du calque calque_eclipse3
+        (if (= Mode_calque_eclipse3 TRUE)
+            ; mettre en mode superposer Grain Merge
+            (gimp-layer-set-mode calque_eclipse3 21)	
+        )
+        
+        
+        
+        
+        ; calque_Clouds*********************************************************************************
+        
+        
+        
+        ; créer calque_Clouds
+        (set! calque_Clouds (car (gimp-layer-new img width height 1 "calque_Clouds" 100 0)))	
+        
+        ; ajouter le calque calque_Clouds
+        (gimp-image-insert-layer img calque_Clouds 0 -1)
+        
+        ; modifier couleur de premier plan
+        (gimp-context-set-foreground '(0 0 0))	
+        
+        ; modifier couleur d'arrière plan
+        (gimp-context-set-background '(255 255 255))	
+        
         ; nuages
         (plug-in-solid-noise 
             1							; run-mode 
@@ -927,7 +938,7 @@
             calque_Clouds				; drawable 
             TRUE						; tilable 
             FALSE						; turbulent 
-            (round (random 2147483647))	; seed   (round (random 9999999999)) ne fonctionne pas sous Fedora 17 64bits (max = 2^31 - 1)
+            (rand 2147647)	; seed   (round (random 9999999999)) ne fonctionne pas sous Fedora 17 64bits (max = 2^31 - 1)
             4							; detail 
             4							; xsize 
             4							; ysize
@@ -1013,6 +1024,7 @@
         ; ne rien sélectionner
         ;(gimp-selection-none img)
         
+        (gimp-context-pop)
         ; afficher l'image
         (gimp-display-new img)
         
