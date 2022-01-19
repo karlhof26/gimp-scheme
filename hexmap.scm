@@ -61,31 +61,34 @@
     )
 )
 
-;(define (crawl_hex_edges edges mask pressure)
-;    (gimp-message "crawl x")
-;  (if (not (null? edges))
-;    (begin
-;        (gimp-airbrush mask pressure 2 (car edges))
-;        ; Note recursion here
-;        (crawl_hex_edges (cdr edges) mask pressure)
-;    )
-;  )
-;)
-;
-;(define (erase_hex_edges edges mask size)
-;    (let* (
-;            (dummy 0)
-;           )
-;    (gimp-message "erase hex edges")
-;    (gimp-context-set-brush-size (* 1.4 size))
-;    (gimp-context-set-foreground "black")
-;    (gimp-context-set-opacity 80)
-;    (gimp-context-set-brush "2. Hardness 025")
-;    (gimp-message "ready to crawl")
-;    
-;    (crawl_hex_edges edges mask 80)
-;    )
-;)
+(define (crawl_hex_edges edges mask pressure)
+    (gimp-message "crawl x")
+ (if (not (null? edges))
+    (begin
+        (gimp-airbrush mask pressure 2 (car edges))
+       ; Note recursion here
+        (crawl_hex_edges (cdr edges) mask pressure)
+    )
+    (begin
+        (gimp-message "edges are null")
+    )
+  )
+)
+
+(define (erase_hex_edges edges mask size)
+    (let* (
+            (dummy 0)
+           )
+    (gimp-message "erase hex edges")
+    (gimp-context-set-brush-size (* 1.4 size))
+    (gimp-context-set-foreground "black")
+    (gimp-context-set-opacity 80)
+    (gimp-context-set-brush "2. Hardness 025")
+    (gimp-message "ready to crawl")
+    
+    (crawl_hex_edges edges mask 80)
+    )
+)
 
 (define (build_border_path border_edges border_path)
   (let* (
@@ -499,7 +502,7 @@
   )
 )
 
-(define (script-fu-hex-map-kh orientation elm len xN yN xOff yOff erase gStroke gColour bStroke bColour bOpacity)
+(define (script-fu-hex-map-advanced orientation elm len xN yN xOff yOff erase gStroke gColour bStroke bColour bOpacity)
   (let* (
             (img 0)
             (gridLayer 0)
@@ -512,7 +515,7 @@
             (border_path 0)
             (border_edges '())
             (sideLength (cond ((equal? elm 0) len) ((equal? elm 1) (/ len 2.0)) ((equal? elm 2) (/ len 1.73205))))
-            (brushTemp (car (gimp-brush-new "HexMapBrush")))
+            ;(brushTemp (car (gimp-brush-new "HexMapBrush")))
         )
     ;(gimp-message "started OK")
     (if (= orientation 0)
@@ -534,16 +537,18 @@
     (gimp-image-undo-group-start img)
     
     ; set brush
-    (gimp-brush-set-shape brushTemp BRUSH-GENERATED-CIRCLE)
-    (gimp-brush-set-angle brushTemp 0)
-    (gimp-brush-set-aspect-ratio brushTemp 1)
-    (gimp-brush-set-hardness brushTemp 1)
-    (gimp-brush-set-spacing brushTemp 0)
-    (gimp-brush-set-spikes brushTemp 2) ; was 1
-    (gimp-brushes-refresh)
+    ;(gimp-brush-set-shape brushTemp BRUSH-GENERATED-CIRCLE)
+    ;(gimp-brush-set-angle brushTemp 0)
+    ;(gimp-brush-set-aspect-ratio brushTemp 1)
+    ;(gimp-brush-set-hardness brushTemp 1)
+    ;(gimp-brush-set-spacing brushTemp 0)
+    ;(gimp-brush-set-spikes brushTemp 2) ; was 1
+    ;(gimp-brushes-refresh)
     
-    (gimp-context-set-brush "HexMapBrush")
+    (gimp-context-set-brush "Circle (01)") ; was HexMapBrush
     (gimp-context-set-opacity 100)
+    (gimp-context-set-brush-size 2.0)
+    (gimp-context-set-dynamics "Dynamics Off")
     (gimp-context-set-paint-mode LAYER-MODE-NORMAL)
     
     ; paths
@@ -593,20 +598,21 @@
     ;(gimp-display-new img)
     
     (gimp-selection-none img)
-    (gimp-brush-delete brushTemp)
+    ;(gimp-brush-delete brushTemp)
     
 ; REMOVED BY karlhof26 - no need for this as I see.
 ;    ; grid mask
-;    (if (> erase 0)
-;        (begin
-;            (set! mask (car (gimp-layer-create-mask gridLayer ADD-MASK-WHITE)))
-;            (gimp-layer-add-mask gridLayer mask)
-;            (erase_hex_edges hex_edges mask sideLength)
-;            (if(= erase 2)
-;                (gimp-invert mask)
-;            )
-;        )
-;    )
+    (if (> erase 0)
+        (begin
+            (set! mask (car (gimp-layer-create-mask gridLayer ADD-MASK-WHITE)))
+           (gimp-layer-add-mask gridLayer mask)
+            (erase_hex_edges hex_edges mask sideLength)
+            (if (= erase 2)
+                (gimp-drawable-invert mask)
+            )
+            (gimp-message "Layer mask in use - disbale mask to see hexgrid")
+        )
+    )
     
     (gimp-display-new img)
     (gimp-image-clean-all img)
@@ -623,9 +629,9 @@
 ;   (script-fu-hex_map 0 0 100 5 5 140 50 2 "black" 6 "red") 
 ; )
 
-(script-fu-register "script-fu-hex-map-kh"
+(script-fu-register "script-fu-hex-map-advanced"
                     "Hex Map..."
-                    "Draw a hex grid on the image. \nfile:hexmap.scm"
+                    "Draws a hex grid on a layer of the image. Erase, if used, creates a mask that must be disabled to see the hexgrid.\nfile:hexmap.scm"
                     "Jérémy Zurcher"
                     "Copyright 2015, Jérémy Zurcher"
                     "Nov 2015"
@@ -637,7 +643,7 @@
                     SF-ADJUSTMENT "Vertical Hex (#)"        '(10 2 500 1 10 0 SF-SPINNER)
                     SF-ADJUSTMENT "Horizontal Offset (px)"  '(50 0 399 0.5 10 1 SF-SPINNER)
                     SF-ADJUSTMENT "Vertical Offset (px)"    '(50 0 399 0.5 10 1 SF-SPINNER)
-                    SF-OPTION     "Erase (NOT IN USE)"                   '("None" "Points" "Segments")
+                    SF-OPTION     "Erase (Mask out areas)"                   '("None" "Points" "Segments")
                     SF-ADJUSTMENT "Line Width (px)"         '(2 1 20 1 10 0 SF-SPINNER)
                     SF-COLOR      "Line Colour"             '(244 244 244)
                     SF-ADJUSTMENT "Border Width (px)"       '(6 0 20 1 10 0 SF-SPINNER)
@@ -645,6 +651,6 @@
                     SF-ADJUSTMENT "Border Opacity (px)"     '(40 0 100 1 10 0 SF-SPINNER)
 )
 
-(script-fu-menu-register "script-fu-hex-map-kh" "<Toolbox>/Script-Fu/Render/Pattern")
+(script-fu-menu-register "script-fu-hex-map-advanced" "<Toolbox>/Script-Fu/Render/Pattern")
 
 ; end of script
