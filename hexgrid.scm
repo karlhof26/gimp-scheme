@@ -28,7 +28,7 @@
 ; The GNU Public License is available at
 ; http://www.gnu.org/copyleft/gpl.html
 
-(define (script-fu-hex_grid img inLayer inElement inLength inOrientation inStroke inXoff inYoff inColour)
+(define (script-fu-hex-grid img inLayer inElement inLength inOrientation inStroke inXoff inYoff inColour)
   (let*
         (
             (width (car (gimp-image-width img)))
@@ -117,17 +117,19 @@
         ;(gimp-message "ok to line 115")
         
         (gimp-context-set-paint-method "gimp-paintbrush")
-        (set! brushTemp (car (gimp-brush-new "Temp Stroke Circle Brush")))
+        (set! brushTemp (car (gimp-brush-new "HexGrid Temp Stroke Circle Brush")))
         (gimp-brush-set-shape brushTemp BRUSH-GENERATED-CIRCLE)
         (gimp-brush-set-hardness brushTemp 0.99)
-        (gimp-brush-set-radius brushTemp (+ (/ inStroke 2) 1.0))
+        (gimp-brush-set-radius brushTemp (round (+ (/ inStroke 2) 1.0)))
         (gimp-brush-set-spacing brushTemp 20.0)
         (gimp-brush-set-spikes brushTemp 2)
         (gimp-brush-set-aspect-ratio brushTemp 1.0)
         (gimp-brush-set-angle brushTemp 1.0)
         
-        (gimp-context-set-brush "Temp Stroke Circle Brush") ; was brushTemp variable
+        (gimp-context-set-brush "HexGrid Temp Stroke Circle Brush") ; was brushTemp variable
         (gimp-context-set-paint-mode LAYER-MODE-NORMAL)
+        (gimp-context-set-brush-size inStroke)
+        (gimp-context-set-dynamics "Dynamics Off")
         
         (gimp-edit-stroke-vectors inLayer varPath)
         
@@ -135,6 +137,7 @@
         
         ;(gimp-image-remove-vectors img varPath)
         (gimp-brush-delete brushTemp)
+        (gimp-brushes-refresh)
         
         ;done
         (gimp-image-undo-group-end img)
@@ -144,9 +147,9 @@
   )
 )
 
-(script-fu-register "script-fu-hex_grid"
+(script-fu-register "script-fu-hex-grid"
         "<Toolbox>/Script-Fu/Render/Pattern/Hex Grid"
-        "Draw a hex grid on the image. \n hexgrid.scm"
+        "Draw a hex grid on the image. Less advanced version.\n hexgrid.scm"
         "karlhof26"
         "karlhof26"
         "March 2020"
