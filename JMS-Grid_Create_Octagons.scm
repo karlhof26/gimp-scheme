@@ -49,6 +49,7 @@
             (rowCheck 0.0)
         )
         ;(gimp-message "started OK")
+        (gimp-context-push)
         (cond
             ((= gType 0)
                 (set! inWidth (+ tBorder (+ (* circDiam xCirc) (* gapSpace (- xCirc 1)))))
@@ -86,7 +87,7 @@
             )
             
             (while (< yFlag yCirc)
-                (set! yStart (+ rowCheck oBorder (* gapSpace yFlag) (* circDiam yFlag)))
+                (set! yStart (+ rowCheck (+ oBorder (+ (* gapSpace yFlag) (* circDiam yFlag)))))
                 
                 (gimp-free-select theImage 16
                     (vector (+ xStart (* circDiam 0.2929)) yStart
@@ -109,9 +110,9 @@
         )
         
         (gimp-selection-none theImage)
-        
+        (gimp-context-pop)
         (gimp-display-new theImage)
-        
+        (gimp-context-set-dynamics "Dynamics Off")
         (gc) ; garbage collect 
     )
 )

@@ -49,6 +49,7 @@
             (rowCheck 0.0)
           )
         
+        (gimp-context-push)
         (cond
             ((= gType 0)
                 (set! inWidth (+ (+ tBorder (* circDiam xCirc)) (* gapSpace (- xCirc 1))))
@@ -107,7 +108,7 @@
         )
         
         (gimp-selection-none theImage)
-        
+        (gimp-context-pop)
         (gimp-display-new theImage)
         (gc) ; garbage collect
     )

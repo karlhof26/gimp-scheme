@@ -17,7 +17,7 @@
 ;;  *   Free Software Foundation, Inc.,                                       *
 ;;  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             * 
 ;;  ***************************************************************************
-
+;;
 
 (define (script-fu-HexorTri
     Shape        ; Hexagon (Shape=0) or Triangle (Shape=1)
@@ -81,7 +81,7 @@
             
             (theImage (car (gimp-image-new inWidth inHeight RGB)))
             (baseLayer (car (gimp-layer-new theImage inWidth inHeight RGB-IMAGE "Hex Grid" 100 LAYER-MODE-NORMAL)))
-            (brush (car (gimp-brush-new "Hexagon Brush")))
+            ;(brush (car (gimp-brush-new "Hexagon Brush")))
             
             (inColor '(0 0 0))
             (bgColor '(255 255 255))
@@ -114,6 +114,7 @@
             (frameName "")
         )
         
+        (gimp-context-push)
         ; Get the random seed
         (set! seed (if (number? seed) seed (realtime)))
         (srand seed)
@@ -134,14 +135,20 @@
         (gimp-drawable-fill baseLayer FILL-BACKGROUND)
         
         ; Generate the brush to be Brush_Rad pixels
-        (gimp-brush-set-shape brush BRUSH-GENERATED-CIRCLE)
-        (gimp-brush-set-radius brush Brush_Rad)
-        (gimp-brush-set-spikes brush 2)
-        (gimp-brush-set-hardness brush 1)
-        (gimp-brush-set-aspect-ratio brush 1)
-        (gimp-brush-set-angle brush 0)
-        (gimp-brush-set-spacing brush 20)
-        (gimp-context-set-brush brush)
+        ; Generated brushes causing issues - 18/01/2022 on Gimp 2.10.24
+        ;(gimp-brush-set-shape brush BRUSH-GENERATED-CIRCLE)
+        ;(gimp-brush-set-radius brush Brush_Rad)
+        ;(gimp-brush-set-spikes brush 2)
+        ;(gimp-brush-set-hardness brush 1)
+        ;(gimp-brush-set-aspect-ratio brush 1)
+        ;(gimp-brush-set-angle brush 0)
+        ;(gimp-brush-set-spacing brush 20)
+        ;(gimp-context-set-brush brush)
+        
+        (gimp-brushes-refresh)
+        (gimp-context-set-brush "Circle (01)")
+        (gimp-context-set-brush-size Brush_Rad)
+        (gimp-context-set-dynamics "Dynamics Off")
         
         ; Start going across the image
     (while (< xcenter inWidth)
@@ -153,7 +160,7 @@
         )
         
         ; get the X-coordinates for the center and points on the outer hexagon
-        (set! xcenter (* 1.5 hexSize row))
+        (set! xcenter (* (* 1.5 hexSize) row))
         (set! x_coord1 (- xcenter hexSize))
         (set! x_coord2 (- xcenter x1))
         (set! x_coord3 (+ xcenter x1))
@@ -208,10 +215,10 @@
                     (gimp-pencil baseLayer 4 innerArray)
                     
                     ; Set up most of the array of X and Y coordinates for the center of the triangles
-                    (vector-set! xArray 0 (/ (+ x_coord1 x_coord2 x_coord3) 3))
+                    (vector-set! xArray 0 (/ (+ (+ x_coord1 x_coord2) x_coord3) 3))
                     (vector-set! xArray 1 (/ (+ x_coord3 x_coord2) 2))
-                    (vector-set! xArray 2 (/ (+ x_coord2 x_coord3 x_coord4) 3))
-                    (vector-set! xArray 3 (/ (+ x_coord1 x_coord2 x_coord3) 3))
+                    (vector-set! xArray 2 (/ (+ (+ x_coord2 x_coord3) x_coord4) 3))
+                    (vector-set! xArray 3 (/ (+ (+ x_coord1 x_coord2) x_coord3) 3))
                     (vector-set! xArray 4 (/ (+ x_coord3 x_coord2) 2))
                     
                     (vector-set! yArray 0 (/ (+ ycenter y_coord1) 2))
@@ -223,7 +230,7 @@
             ) ; end Shape=1 loop
             
             ; Set these up separately, since they are needed even for a hexagonal grid
-            (vector-set! xArray 5 (/ (+ x_coord2 x_coord3 x_coord4) 3))
+            (vector-set! xArray 5 (/ (+ (+ x_coord2 x_coord3) x_coord4) 3))
             (vector-set! yArray 5 (/ (+ ycenter y_coord2) 2))
             
             ; Are the hexagons colored in?
@@ -319,7 +326,7 @@
         (set! row (+ 1 row))
     ) ; end (while (< xcenter inWidth) loop
     
-    (gimp-brush-delete brush)
+    ;(gimp-brush-delete brush)
     
     (if (= tileAR TRUE)
         (begin
@@ -347,7 +354,7 @@
                     ; Only do the top and bottom if we're using hexagons
                     (if (= Shape 0)
                         (while (< xcenter inWidth)
-                            (set! xcenter (* 1.5 hexSize row))
+                            (set! xcenter (* (* 1.5 hexSize) row))
                             (set! selectx (min (max 0 (- inWidth 1)) xcenter))
                             ;(gimp-fuzzy-select baseLayer selectx 0 0 CHANNEL-OP-REPLACE 0 0 0 0)
                             (gimp-image-select-contiguous-color theImage CHANNEL-OP-ADD baseLayer selectx 0)
@@ -381,6 +388,8 @@
     
     (gimp-drawable-set-name baseLayer frameName)
     (gimp-display-new theImage)
+    (gimp-context-pop)
+    (gimp-context-set-dynamics "Dynamics Off")
     (gc) ; garbage cleanup
     
   )
@@ -396,8 +405,8 @@
     ""
     SF-OPTION       "Shape?"            '("Hexagon"
                                             "Triangle")
-    SF-ADJUSTMENT   "Image width"       '(640 300 3000 1 50 0 0)
-    SF-ADJUSTMENT   "Image height"      '(480 300 3000 1 50 0 0)
+    SF-ADJUSTMENT   "Image width"       '(640 300 3000 1 50 0 1)
+    SF-ADJUSTMENT   "Image height"      '(480 300 3000 1 50 0 1)
     SF-ADJUSTMENT   "Side Length"       '(50 20 200 1 10 0 0)
     SF-ADJUSTMENT   "Brush Radius"      '(1 1 10 1 5 0 0)
     SF-COLOR        "Shape Color"       '(0 0 0)
@@ -405,18 +414,18 @@
     SF-OPTION       "Hex color?"        '("Random"
                                         "White"
                                         "Transparent")
-    SF-COLOR        "Color 1:"          '(255 0 0)				;color variable
-    SF-ADJUSTMENT   "Color 1 Ratio:"    '(20 1 100 1 5 0 0)		;color percent
-    SF-COLOR        "Color 2:"          '(0 255 0)				;color variable
-    SF-ADJUSTMENT   "Color 2 Ratio:"    '(20 1 100 1 5 0 0)		;color percent
-    SF-COLOR        "Color 3:"          '(0 0 255)				;color variable
-    SF-ADJUSTMENT   "Color 3 Ratio:"    '(20 1 100 1 5 0 0)		;color percent
-    SF-COLOR        "Color 4:"          '(0 255 255)				;color variable
-    SF-ADJUSTMENT   "Color 4 Ratio:"    '(20 1 100 1 5 0 0)		;color percent
-    SF-COLOR        "Color 5:"          '(255 0 255)				;color variable
-    SF-ADJUSTMENT   "Color 5 Ratio:"    '(20 1 100 1 5 0 0)		;color percent
-    SF-COLOR        "Color 6:"          '(255 255 0)				;color variable
-    SF-ADJUSTMENT   "Color 6 Ratio:"    '(20 1 100 1 5 0 0)		;color percent
+    SF-COLOR        "Color 1:"          '(255 0 0)              ;color variable
+    SF-ADJUSTMENT   "Color 1 Ratio:"    '(20 1 100 1 5 0 0)     ;color percent
+    SF-COLOR        "Color 2:"          '(0 255 0)              ;color variable
+    SF-ADJUSTMENT   "Color 2 Ratio:"    '(20 1 100 1 5 0 0)     ;color percent
+    SF-COLOR        "Color 3:"          '(0 0 255)              ;color variable
+    SF-ADJUSTMENT   "Color 3 Ratio:"    '(20 1 100 1 5 0 0)     ;color percent
+    SF-COLOR        "Color 4:"          '(0 255 255)            ;color variable
+    SF-ADJUSTMENT   "Color 4 Ratio:"    '(20 1 100 1 5 0 0)     ;color percent
+    SF-COLOR        "Color 5:"          '(255 0 255)            ;color variable
+    SF-ADJUSTMENT   "Color 5 Ratio:"    '(20 1 100 1 5 0 0)     ;color percent
+    SF-COLOR        "Color 6:"          '(255 255 0)            ;color variable
+    SF-ADJUSTMENT   "Color 6 Ratio:"    '(20 1 100 1 5 0 0)     ;color percent
     SF-ADJUSTMENT   "Number of Colors (0 for completely random)"    '(6 0 6 1 1 0 0)
     SF-VALUE        "Random seed?"  "random"
 )

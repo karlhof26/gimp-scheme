@@ -2,7 +2,7 @@
 ; version 2.8 [gimphelp.org]
 ; last modified/tested by Paul Sherman
 ; 02/04/2014 on GIMP-2.8.10
-; 23/11/2020 on GIMP-2.10.22
+; 23/11/2020 on GIMP-2.10.22 
 ;
 ;==============================================================
 ;
@@ -132,7 +132,7 @@
 
 (script-fu-register "FU-circle-creator"
     "<Toolbox>/Script-Fu/Decor/Create New/Circle Draw"
-    "Draw a circle. Can be filled, \nfile:FU_Shapes_circle-create.scm"
+    "Draw a circle. Can be filled. \nfile:FU_Shapes_circle-create.scm"
     "Paul Sherman"
     "Paul Sherman"
     "15 October 2010"

@@ -17,6 +17,7 @@
 ;;  *   Free Software Foundation, Inc.,                                       *
 ;;  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ;;  ***************************************************************************
+;;
 
 (define (drawing-hex-shapes image x1 y1 x2 y2 x3 y3 x4 aliasYN)
     
@@ -143,10 +144,10 @@
             (y4 0.0)
             
             ; Hexagonal coordinates
-            (bigHexX (* s3 0.25 circRad))
-            (bigHexY (* s3 0.5 circRad))
-            (smallHexX (* s3 0.25 smallcircRad))
-            (smallHexY (* s3 0.5 smallcircRad))
+            (bigHexX (* (* s3 0.25) circRad))
+            (bigHexY (* (* s3 0.5) circRad))
+            (smallHexX (* (* s3 0.25) smallcircRad))
+            (smallHexY (* (* s3 0.5) smallcircRad))
             
             ; Octagonal coordinates		
             (bigoctSide (/ bigcircDiam (+ 1.0 s2)))
@@ -154,6 +155,10 @@
             
         )
         
+        (gimp-brushes-refresh)
+        (gimp-context-set-dynamics "Dynamics Off")
+        (gimp-context-push)
+         
         ; If the colors are constant along rows, then switch the X and Y flags
         (if (= constColor 0)
             (begin
@@ -165,35 +170,35 @@
         
         ; Determine the dimensions of the image based on the grid type and number of circles
         (cond
-            ((= gType 0)	; Rectangular Grid
-                (set! inWidth (+ tBorder (* bigcircDiam xCirc) (* gapSpace (- xCirc 1))))
-                (set! inHeight (+ tBorder (* bigcircDiam yCirc) (* gapSpace (- yCirc 1))))
+            ((= gType 0)    ; Rectangular Grid
+                (set! inWidth (+ (+ tBorder (* bigcircDiam xCirc)) (* gapSpace (- xCirc 1))))
+                (set! inHeight (+ (+ tBorder (* bigcircDiam yCirc)) (* gapSpace (- yCirc 1)) ))
             )
             ((= gType 1)    ; Hexagonal Grid
                 (cond
                     ((= shape 0)    ; Circles
                         (set! xGap (* s3 (+ circRad (* 0.5 gapSpace))))
-                        (set! inWidth (+ tBorder bigcircDiam (* (- xCirc 1) xGap)))
+                        (set! inWidth (+ (+ tBorder bigcircDiam) (* (- xCirc 1) xGap)))
                         (set! yGap (* gapSpace (- yCirc 1)))
-                        (set! inHeight (+ tBorder circRad yGap (* gapSpace 0.5) (* bigcircDiam yCirc)))
+                        (set! inHeight (+ (+ (+ (+ tBorder circRad) yGap) (* gapSpace 0.5)) (* bigcircDiam yCirc)))
                     )
                     ((= shape 1)    ; Rectangles
                         (set! xGap (* gapSpace (- xCirc 1)))
                         (set! inWidth (+ tBorder (* bigcircDiam xCirc) xGap))
                         (set! yGap (* gapSpace (- yCirc 1)))
-                        (set! inHeight (+ tBorder circRad yGap (* gapSpace 0.5) (* bigcircDiam yCirc)))
+                        (set! inHeight (+ (+ (+ (+ tBorder circRad) yGap) (* gapSpace 0.5)) (* bigcircDiam yCirc)))
                     )
                     ((= shape 2)    ; Hexagons
                         (set! xGap (* s3 (+ circRad (* 0.5 gapSpace))))
-                        (set! inWidth (+ tBorder bigcircDiam (* (- xCirc 1) xGap)))
+                        (set! inWidth (+ (+ tBorder bigcircDiam) (* (- xCirc 1) xGap)))
                         (set! yGap (* gapSpace (- yCirc 1)))
-                        (set! inHeight (+ tBorder circRad yGap (* gapSpace 0.5) (* bigcircDiam yCirc)))
+                        (set! inHeight (+ (+ (+ (+ tBorder circRad) yGap) (* gapSpace 0.5)) (* bigcircDiam yCirc)))
                     )
                     ((= shape 3)	; Octagons
                         (set! xGap (* s3 (+ circRad (* 0.5 gapSpace))))
-                        (set! inWidth (+ tBorder bigcircDiam (* (- xCirc 1) xGap)))
+                        (set! inWidth (+ (+ tBorder bigcircDiam) (* (- xCirc 1) xGap)))
                         (set! yGap (* gapSpace (- yCirc 1)))
-                        (set! inHeight (+ tBorder circRad yGap (* gapSpace 0.5) (* bigcircDiam yCirc)))
+                        (set! inHeight (+ (+ (+ (+ tBorder circRad) yGap) (* gapSpace 0.5)) (* bigcircDiam yCirc)))
                     )
                 )
             )
@@ -245,7 +250,7 @@
                             (set! xStart (+ oBorder (* s3 (+ circRad (* 0.5 gapSpace)) xFlag)))
                         )
                         ((= shape 1)
-                            (set! xStart (+ oBorder (* bigcircDiam xFlag) (* xFlag gapSpace)))
+                            (set! xStart (+ (+ oBorder (* bigcircDiam xFlag)) (* xFlag gapSpace)))
                         )
                         ((= shape 2)
                             (set! xStart (+ oBorder (* s3 (+ circRad (* 0.5 gapSpace)) xFlag)))
@@ -272,7 +277,7 @@
             
             ; Now start doing the columns
             (while (< yFlag yCirc)
-                (set! yStart (+ rowCheck oBorder (* gapSpace yFlag) (* bigcircDiam yFlag)))
+                (set! yStart (+ (+ (+ rowCheck oBorder) (* gapSpace yFlag)) (* bigcircDiam yFlag)))
                 
                 ; For completely random colors, set the foreground and background colors to random values
                 (if (= randColor TRUE)
@@ -380,28 +385,28 @@
                                 )
                             )
                             
-							((= shape 3)
-								(if (= constColor 0)
-									(begin
-										(set! xCenter (+ yStart circRad))
-										(set! yCenter (+ xStart circRad))
-									)
-									(begin
-										(set! xCenter (+ xStart circRad))
-										(set! yCenter (+ yStart circRad))
-									)
-								)
-								(set! x1 (- xCenter smallcircRad))
-								(set! x2 (- xCenter (/ smalloctSide 2.0)))
-								(set! x3 (+ xCenter (/ smalloctSide 2.0)))
-								(set! x4 (+ xCenter smallcircRad))
-								(set! y1 (- yCenter smallcircRad))
-								(set! y2 (- yCenter (/ smalloctSide 2.0)))
-								(set! y3 (+ yCenter (/ smalloctSide 2.0)))
-								(set! y4 (+ yCenter smallcircRad))
-								(drawing-oct-shapes theImage x1 y1 x2 y2 x3 y3 x4 y4 aliasing)
-							)
-						)
+                            ((= shape 3)
+                                (if (= constColor 0)
+                                    (begin
+                                        (set! xCenter (+ yStart circRad))
+                                        (set! yCenter (+ xStart circRad))
+                                    )
+                                    (begin
+                                        (set! xCenter (+ xStart circRad))
+                                        (set! yCenter (+ yStart circRad))
+                                    )
+                                )
+                                (set! x1 (- xCenter smallcircRad))
+                                (set! x2 (- xCenter (/ smalloctSide 2.0)))
+                                (set! x3 (+ xCenter (/ smalloctSide 2.0)))
+                                (set! x4 (+ xCenter smallcircRad))
+                                (set! y1 (- yCenter smallcircRad))
+                                (set! y2 (- yCenter (/ smalloctSide 2.0)))
+                                (set! y3 (+ yCenter (/ smalloctSide 2.0)))
+                                (set! y4 (+ yCenter smallcircRad))
+                                (drawing-oct-shapes theImage x1 y1 x2 y2 x3 y3 x4 y4 aliasing)
+                            )
+                        )
                         
                         (if (= layered TRUE)
                             (gimp-edit-bucket-fill innerLayer BUCKET-FILL-BG LAYER-MODE-NORMAL 100 255 0 0 0)
@@ -422,6 +427,7 @@
         
         ; Get rid of the selection, and then show the final image.
         (gimp-selection-none theImage)
+        (gimp-context-pop)
         (gimp-display-new theImage)
         (gc) ; garbage collect; array used
     )
