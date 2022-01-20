@@ -98,7 +98,7 @@
     ) ; end let
 ) ;; end of define  
 
-;I was receiving a "eval unbound variable error" because I had mistyped my variable
+;I was receiving a "eval unbound variable error" because I had mistyped my variable 
 ;I was receiving an "illegal token" error because I had deleted the "let" statement and didn't realize that it had a matching parens way at the end of the script before we register the script ...this also might manifest as a "mismatched or unmatched parens" error
 
 (script-fu-register "script-fu-crayon-pixel-art"
@@ -112,9 +112,9 @@
     SF-DRAWABLE     "Drawable"  0
     ;SF-ENUM "Dither" '("DitherType" "GIMP_FS_DITHER") google gimp enum types
     SF-OPTION       "Dither"            '("None" "Floyd-Steinberg" "Floyd-Steinberg Low Bleed" "Fixed")
-    SF-ADJUSTMENT   "Scale Factor"      '(1 1 5 1 2 0 SF-SLIDER)
+    SF-ADJUSTMENT   "Scale Factor"      '(3 1 5 1 2 0 SF-SLIDER)
     SF-TOGGLE       "Scale back to orig size"       TRUE
-    SF-OPTION       "Interpolation"     '("None" "Linear" "Cubic" "Sinc (Lanczos3)");I wish I knew how to use the enum types but not worth the hassle when can use options and works right away. http://developer.gimp.org/api/2.0/libgimpbase/libgimpbase-gimpbaseenums.html
+    SF-OPTION       "Interpolation"     '("None" "Linear" "Cubic" "Sinc (Lanczos3)") ;. http://developer.gimp.org/api/2.0/libgimpbase/libgimpbase-gimpbaseenums.html
     SF-PALETTE      "Palette"            "Ega"
     SF-TOGGLE       "Auto-level image?"  TRUE
 )

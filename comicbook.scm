@@ -92,7 +92,7 @@
 
 (script-fu-register
     "script-fu-Comic-Book1"
-    "<Image>/Script-Fu/Artistic/Comic-Book1..."
+    "Comic-Book1..."
     "Creates a Comic Book Effect. \nfile:comicbook.scm"
     "Joe Kitella <joe.kitella@gmail.com>"
     "Joe Kitella"
@@ -102,8 +102,11 @@
     SF-DRAWABLE   "Drawable"            0
 )
 
+(script-fu-menu-register "script-fu-Comic-Book1" "<Toolbox>/Script-Fu/Artistic")
+; double registration
+(script-fu-menu-register "script-fu-Comic-Book1" "<Toolbox>/Script-Fu3/Comics-o-matic")
 ;*************************************************************************************** 
-; Comic-Book2 script  for GIMP 2.2
+; Comic-Book2 script  for GIMP 2.10.24
 ; Copyright (C) 2009 Joe Kitella <joe.kitella@gmail.com>
 ; 
 ; --------------------------------------------------------------------
@@ -156,7 +159,7 @@
         )
     )
     
-    (gimp-layer-set-name layer-temp1 "Comic-Book")
+    (gimp-layer-set-name layer-temp1 "Comic-Book2")
     (gimp-selection-load old-selection)
     (gimp-image-remove-channel img old-selection)
     (gimp-message "Done!")
@@ -168,7 +171,7 @@
 
 (script-fu-register
   "script-fu-Comic-Book2"
-  "<Image>/Script-Fu/Artistic/Comic-Book2..."
+  "Comic-Book2..."
   "Creates a Comic Book Effect. Type2 variation.  \nfile:comicbook.scm"
   "Joe Kitella <joe.kitella@gmail.com>"
   "Joe Kitella"
@@ -177,3 +180,7 @@
   SF-IMAGE      "Image"             0
   SF-DRAWABLE   "Drawable"          0
 )
+
+(script-fu-menu-register "script-fu-Comic-Book2" "<Toolbox>/Script-Fu/Artistic")
+
+(script-fu-menu-register "script-fu-Comic-Book2" "<Toolbox>/Script-Fu3/Comics-o-matic")

@@ -2,7 +2,7 @@
 ;
 ;
 ; Comic Template rel 0.02 
-; Created by karlhof26
+; Created by karlhof26 
 ; 
 ; Comments directed to http://gimpchat.com or http://gimpscripts.com
 ;
@@ -68,11 +68,11 @@
         ;(gimp-rect-select img border border width height 0 0 0 )
         (gimp-image-select-rectangle img CHANNEL-OP-ADD border border width height)
         ;(gimp-rect-select img (+ border width border) border width height 0 0 0 )
-        (gimp-image-select-rectangle img CHANNEL-OP-ADD (+ border width border) border width height )
+        (gimp-image-select-rectangle img CHANNEL-OP-ADD (+ border (+ width border)) border width height )
         ;(gimp-rect-select img border (+ border height border) width height 0 0 0 )
-        (gimp-image-select-rectangle img CHANNEL-OP-ADD border (+ border height border) width height )
+        (gimp-image-select-rectangle img CHANNEL-OP-ADD border (+ border (+ height border)) width height )
         ;(gimp-rect-select img (+ border width border) (+ border height border) width height 0 0 0 )
-        (gimp-image-select-rectangle img CHANNEL-OP-ADD (+ border width border) (+ border height border) width height)
+        (gimp-image-select-rectangle img CHANNEL-OP-ADD (+ border (+ width border)) (+ border (+ height border)) width height)
         
         
         ;set forground colour to black and stroke the selection to outline the panels
@@ -82,6 +82,7 @@
         (gimp-context-set-paint-method "gimp-paintbrush")
         (gimp-context-set-stroke-method STROKE-PAINT-METHOD)
         (gimp-context-set-brush "Circle (05)") ; was brushTemp variable
+        
         
         ;(gimp-brush-set-shape brushTemp BRUSH-GENERATED-CIRCLE)
         ;(gimp-brush-set-hardness brushTemp 0.99)
@@ -107,7 +108,7 @@
     "Creates a comic template. \n file:comicpanels_0.scm"
     "karlhof26"
     "2020 karlhof26"
-    "Marhc  2020"
+    "March  2020"
     ""
     SF-VALUE   "Panel width"        "300" 
     SF-VALUE   "Panel height"       "300" 
@@ -119,5 +120,6 @@
 
 (script-fu-menu-register "comicpanels-kh"
                          "<Toolbox>/Script-Fu/Artistic/")
-                         
+              
+(script-fu-menu-register "comicpanels-kh" "<Image>/Script-Fu3/Comics-o-matic")
 ; end of script

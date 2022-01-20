@@ -1,4 +1,4 @@
-;; starpolygon.scm -*-scheme-*-
+;; starpolygon.scm -*-scheme-*- 
 ;;
 ;; A Star Polygon is a figure identified as {p/q}, with p,q being positive
 ;; integers,formed by connecting with straight lines every q th point out
@@ -32,7 +32,7 @@
                                    p q radius roffset
                                    xoffset yoffset
                                    pointsonly brush
-                                   color)
+                                   color brushsize)
     (let* (
             (anglesector 0)   
             (niter 0)
@@ -53,6 +53,8 @@
         
         (gimp-context-set-foreground color)
         (gimp-context-set-brush (car brush))
+        (gimp-context-set-brush-size brushsize)
+        
         (gimp-context-set-opacity (car (cdr brush)))(tracing 0)
         (gimp-context-set-paint-mode (car (cdr (cdr (cdr brush)))))
         
@@ -64,8 +66,8 @@
         
         ;; Step 1. Determine the co-ordinates of the points on the circle
         (while (< niter p)
-            (set! thisy (+ yoffset ycenter (* radius (sin (- (/ pi 2) anglecurr)))))
-            (set! thisx (+ xoffset xcenter (* radius (sin anglecurr))))
+            (set! thisy (+ yoffset (+ ycenter (* radius (sin (- (/ pi 2) anglecurr))))))
+            (set! thisx (+ xoffset (+ xcenter (* radius (sin anglecurr)))))
             
             (aset *polygon* itrpol thisx)
             (set! itrpol (+ 1 itrpol))
@@ -84,7 +86,7 @@
             (set! anglecurr (+ anglecurr anglesector))
         )
         
-    ;; Step 2. Draw the Star Polygon 
+    ;; Step 2. Draw the Star Polygon  
     (set! niter 0)
     (while (< niter p)
          (aset *linepoints* 0 (aref *polygon* (* niter 2)))
@@ -99,6 +101,7 @@
     (gimp-image-undo-group-end img)
     (gimp-displays-flush)
     (gimp-context-pop)
+    (gc) ; memory cleanup ; array was used
  ) 
 )
 
@@ -111,16 +114,17 @@
                     "RGB*, INDEXED*, GRAY*"
                     SF-IMAGE       "Image"         0
                     SF-DRAWABLE    "Drawable"      0
-                    SF-ADJUSTMENT _"P (points on circle)" '(6 3 300 1 10 0 1)
-                    SF-ADJUSTMENT _"Q (density)" '(2 1 300 1 10 0 1)
-                    SF-ADJUSTMENT _"Radius " '(100 0 1000 1 10 0 0)
-                    SF-ADJUSTMENT _"Offset (degrees) " '(0 -180 180 1 10 0 0)
-                    SF-ADJUSTMENT _" X Offset (pixels) " '(0 -300 300 1 10 0 0)
-                    SF-ADJUSTMENT _" Y Offset (pixels) " '(0 -300 300 1 10 0 0)
-                    SF-TOGGLE     _"Draw points only"  FALSE
+                    SF-ADJUSTMENT _"P (points on circle)"   '(7 3 300 1 10 0 1)
+                    SF-ADJUSTMENT _"Q (density)"            '(4 1 300 1 10 0 1)
+                    SF-ADJUSTMENT _"Radius "                '(120 0 1000 1 10 0 0)
+                    SF-ADJUSTMENT _"Offset (degrees) "      '(0 -180 180 1 10 0 0)
+                    SF-ADJUSTMENT _" X Offset (pixels) "    '(0 -300 300 1 10 0 0)
+                    SF-ADJUSTMENT _" Y Offset (pixels) "    '(0 -300 300 1 10 0 0)
+                    SF-TOGGLE     _"Draw points only"       FALSE
 
-                    SF-BRUSH      _"Brush"         '("Circle (01)" 100 1 0)
-                    SF-COLOR      _"Color"          "blue"
+                    SF-BRUSH      "Brush"         '("Circle (01)" 100 1 0)
+                    SF-COLOR      "Color"          "blue"
+                    SF-ADJUSTMENT "Brush size"    '(1 0 300 1 10 0 0)
                     )
 
 (script-fu-menu-register "script-fu-starpolygon"
