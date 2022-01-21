@@ -3,7 +3,7 @@
 ;
 ; AUTHOR: Darla McKay (Darla@FarcryDesign.com), (C) 2007,2008
 ;
-; This plugin was tested with GIMP 2.10.22
+; This plugin was tested with GIMP 2.10.22 
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License Version 3 as 
@@ -58,7 +58,7 @@
         (gimp-drawable-set-visible ThresholdLayer FALSE)
         
         ; add clouds if applicable, interactive solid noise
-        (if (not (= InClouds 0)) 
+        (if (= InClouds TRUE) 
             (begin
                 (gimp-image-insert-layer InImage CloudLayer 0 -1)
                 (gimp-selection-all InImage)
@@ -85,10 +85,13 @@
         (gimp-selection-all InImage)
         (gimp-edit-copy ThresholdLayer)
         (gimp-floating-sel-anchor (car (gimp-edit-paste BlueGradientMask FALSE)))
+        (gimp-displays-flush)
+        ;(quit)
+        
         (gimp-selection-none InImage)
-        (if (not (= InClouds 0)) 
+        (if (= InClouds TRUE) 
             (begin
-                (gimp-layer-set-mode BlueGradientLayer LAYER-MODE-HSL-COLOR-LEGACY)
+                (gimp-layer-set-mode BlueGradientLayer LAYER-MODE-MULTIPLY) ; was HSL-COLOR
                 (gimp-layer-set-opacity BlueGradientLayer 90)
             )
             (begin
@@ -110,7 +113,7 @@
 (script-fu-register 
     "script-fu-Darla-BlueSkyClouds"
     "<Toolbox>/Script-Fu/Photo/Sky/Blue Sky & Clouds"
-    "Blue Sky & Clouds \n\
+    "Blue Sky & Clouds \n
 To fix burned out or white skies by adding a blue sky \
 gradient and clouds (uses a threshold mask). \n\
 See http://www.FarcryDesign.com/GIMP for more information.\n\
@@ -122,7 +125,7 @@ file:Darla-BlueSkyClouds.scm"
     SF-IMAGE        "The Image"         0
     SF-DRAWABLE     "The Layer"         0
     SF-ADJUSTMENT   "Threshold"         '(248 0 254 1 0 0 0)
-    SF-COLOR        "Sky Top Color"         '(187 219 255)
+    SF-COLOR        "Sky Top Color"         '(39 140 255) ; was 187 219 255
     SF-COLOR        "Sky Bottom Color"      '(221 234 255)
     SF-ADJUSTMENT   "Edges: Feather Amount" '(5.0 1.0 10.0 1.0 0 1 0)
     SF-TOGGLE       "Add Rendered Clouds"   TRUE

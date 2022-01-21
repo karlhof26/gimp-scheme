@@ -5,7 +5,7 @@
 ; Duotone script  for GIMP 2.4
 ; Original author: 2004, Alexios Chouchoulas
 ;
-; Tags: photo, color, duotone
+; Tags: photo, color, duotone 
 ;
 ; Author statement:
 ;
@@ -58,7 +58,7 @@
 (define (alexios-duotone-spline)
   (let* ((a (cons-array 6 'byte)))
     (alexios-set-pt a 0 0.0 0.0) ; 0 0 
-    (alexios-set-pt a 1 0.51 0.515) ; 128 128
+    (alexios-set-pt a 1 0.51 0.525) ; 128 128
     (alexios-set-pt a 2 1.0 0.0) ; 255 0 
     a
   )
