@@ -57,8 +57,8 @@
         (gimp-context-set-feather-radius 3 3)
         (gimp-context-set-sample-merged TRUE)
         (gimp-image-select-color InImage CHANNEL-OP-REPLACE InLayer InShadCol)
-        (plug-in-hsv-noise TRUE InImage ShadHL1Layer 2 0 0 100)
-        (plug-in-hsv-noise TRUE InImage ShadHL2Layer 2 0 0 100)
+        (plug-in-hsv-noise TRUE InImage ShadHL1Layer 3 0 4 100) ; was 2 0 0 100)
+        (plug-in-hsv-noise TRUE InImage ShadHL2Layer 3 0 4 80) ; was 2 0 0 100)
         (gimp-selection-none InImage)
         ;
         (plug-in-gauss TRUE InImage Midtone1Layer InMid1Blur InMid1Blur TRUE)
@@ -112,5 +112,5 @@
     SF-ADJUSTMENT   "Shadow 2 Blur Radius"      '(1.5 0.5 10.0 0.5 0 2 0)
 )
 ;
-(script-fu-menu-register "script-fu-Eg-AddFilmGrainB" "<Image>/Script-Fu/Distorts/Grain")
+(script-fu-menu-register "script-fu-Eg-AddFilmGrainB" "<Toolbox>/Script-Fu/Distorts/Grain")
 ;

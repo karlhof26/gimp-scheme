@@ -29,7 +29,7 @@
 ;
 (define (script-fu-Eg-AddFilmGrain InImage InLayer InFlatten InShadCol InShadRad InMid1Blur InMid2Blur InShad1Blur InShad2Blur)
     ;
-    ; Save history			
+    ; Save history
     ;
     (gimp-image-undo-group-start InImage)
     (if (= (car (gimp-drawable-is-rgb InLayer)) FALSE ) (gimp-image-convert-rgb InImage))
@@ -112,5 +112,5 @@
     SF-ADJUSTMENT   "Shadow 2 Blur Radius"          '(1.5 0.5 10.0 0.5 0 2 0)
 )
 
-(script-fu-menu-register "script-fu-Eg-AddFilmGrain" "<Image>/Script-Fu/Distorts/Grain")
+(script-fu-menu-register "script-fu-Eg-AddFilmGrain" "<Toolbox>/Script-Fu/Distorts/Grain")
 ; end of script

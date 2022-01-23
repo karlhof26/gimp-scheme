@@ -26,7 +26,7 @@
 ;
 ; Define the function
 ;
-(define (script-fu-Eg-AddFilmGrain InImage InLayer InFlatten InShadCol InShadRad InMid1Blur InMid2Blur InShad1Blur InShad2Blur)
+(define (script-fu-Eg-AddFilmGrain-2b InImage InLayer InFlatten InShadCol InShadRad InMid1Blur InMid2Blur InShad1Blur InShad2Blur)
     ;
     ; Save history
     ;
@@ -61,9 +61,11 @@
         (plug-in-hsv-noise TRUE InImage ShadHL2Layer 2 0 0 100)
         (gimp-selection-none InImage)
         ;
-        (plug-in-gauss TRUE InImage Midtone1Layer InMid1Blur InMid1Blur TRUE)
+        ;(plug-in-gauss TRUE InImage Midtone1Layer InMid1Blur InMid1Blur TRUE)
+        (plug-in-gauss-iir2 1 InImage Midtone1Layer InMid1Blur InMid1Blur)
         (plug-in-gauss TRUE InImage Midtone2Layer InMid2Blur InMid2Blur TRUE)
-        (plug-in-gauss TRUE InImage ShadHL1Layer InShad1Blur InShad1Blur TRUE)
+        ;(plug-in-gauss TRUE InImage ShadHL1Layer InShad1Blur InShad1Blur TRUE)
+        (plug-in-gauss-iir2 1 InImage ShadHL1Layer InShad1Blur (+ InShad1Blur 2))
         (plug-in-gauss TRUE InImage ShadHL2Layer InShad2Blur InShad2Blur TRUE)
         ;
         ; Flatten the image, if we need to
@@ -93,8 +95,8 @@
 )
 ;
 (script-fu-register 
-    "script-fu-Eg-AddFilmGrain"
-    "Eg Add film grain"
+    "script-fu-Eg-AddFilmGrain-2b"
+    "Eg Add film grain - V02b"
     "Add realistic film grain to BW images. \nfile:egger-AddFilmGrain_02b.scm"
     "Martin Egger (martin.egger@gmx.net)"
     "Martin Egger, Bern, Switzerland"
@@ -111,5 +113,5 @@
     SF-ADJUSTMENT   "Shadow 2 Blur Radius"      '(1.5 0.5 10.0 0.5 0 2 0)
 )
 ;
-(script-fu-menu-register "script-fu-Eg-AddFilmGrain" "<Toolbox>/Script-Fu/Distorts/Grain/")
+(script-fu-menu-register "script-fu-Eg-AddFilmGrain-2b" "<Toolbox>/Script-Fu/Distorts/Grain/")
 ;
