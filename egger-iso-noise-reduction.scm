@@ -5,7 +5,7 @@
 ; Sensor Noise Reduction script  for GIMP 2.4
 ; Original author: Martin Egger (martin.egger@gmx.net)
 ; (C) 2005, Bern, Switzerland 
-;
+; 
 ; Tags: photo, noise
 ;
 ; Author statement:
@@ -68,7 +68,7 @@
         
         (plug-in-edge TRUE InImage TempLayer 10 1 5)
         (gimp-drawable-desaturate TempLayer DESATURATE-LIGHTNESS)
-        (gimp-invert TempLayer)
+        (gimp-drawable-invert TempLayer FALSE)
         (plug-in-gauss TRUE InImage TempLayer 10.0 10.0 0)
         (gimp-selection-all InImage)
         (gimp-edit-copy TempLayer)
@@ -185,4 +185,4 @@
     SF-TOGGLE       "Flatten Image"    FALSE
 )
 
-;end of script 
+;end of script  

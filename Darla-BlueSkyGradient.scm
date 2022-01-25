@@ -3,7 +3,7 @@
 ;
 ; AUTHOR: Darla McKay (Darla@FarcryDesign.com), (C) 2007,2008
 ;
-; This plugin was tested with GIMP 2.10.22
+; This plugin was tested with GIMP 2.10.22 
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License Version 3 as 
@@ -49,8 +49,8 @@
         )
         
         (gimp-image-insert-layer InImage SkyLayer 0 -1)
-        (gimp-threshold SkyLayer InThreshold 255)
-        (gimp-invert SkyLayer)
+        (gimp-drawable-threshold SkyLayer HISTOGRAM-VALUE (/ InThreshold 255) 1.0)
+        (gimp-drawable-invert SkyLayer FALSE)
         (gimp-context-set-foreground InSkyTop)
         (gimp-context-set-background InSkyBottom)
         (gimp-by-color-select SkyLayer '(0 0 0) 0 2 FALSE 0 0 0)
@@ -89,8 +89,8 @@ See http://www.FarcryDesign.com/GIMP for more information. \nfile:Darla-BlueSkyG
     SF-ADJUSTMENT   "Threshold"             '(248 0 254 1 0 0 0)
     SF-COLOR        "Sky Top Color"         '(187 219 255)
     SF-COLOR        "Sky Bottom Color"      '(221 234 255)
-    SF-ADJUSTMENT   "Edges: Grow Amount"    '(3.0 1.0 10.0 1.0 0 1 0)
-    SF-ADJUSTMENT   "Edges: Feather Amount" '(5.0 1.0 10.0 1.0 0 1 0)
+    SF-ADJUSTMENT   "Edges: Grow Amount"    '(1.0 1.0 10.0 1.0 0 1 0)
+    SF-ADJUSTMENT   "Edges: Feather Amount" '(4.0 1.0 10.0 1.0 0 1 0)
     SF-TOGGLE       "Flatten Image"         FALSE
 )
 ;end of script 
