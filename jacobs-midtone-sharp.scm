@@ -5,7 +5,7 @@
 ; Midtone Sharp script  for GIMP 2.4
 ; Original author: Tim Jacobs <twjacobs@gmail.com>
 ; Updated 04/10/2020 for GIMP-2.10.20
-;
+; 
 ; Tags: photo, sharpen
 ;
 ; Author statement: Sharpens the midtones of an image
@@ -111,12 +111,13 @@
         ; Cleanup
         (gimp-image-undo-group-end image)
         (gimp-displays-flush)
+        (gc) ; garbage cleanup
     )
     
 )
 
 (script-fu-register "script-fu-midtone-sharp"
-                    "<Image>/Script-Fu/Photo/Enhancement/Midtone-Sharp image"
+                    "<Toolbox>/Script-Fu/Photo/Enhancement/Midtone-Sharp image"
                     "Sharpen the midtones of an image. \nfile:jacobs-midtone-sharp.scm"
                     "twjacobs@gmail.com"
                     "Tim Jacobs"

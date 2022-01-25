@@ -12,7 +12,7 @@
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;   
-;   Windows Vista/7/8)
+;   Windows 10
 ;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;   or
 ;   C:\Users\YOUR-NAME\.gimp-2.8\scripts
@@ -25,7 +25,7 @@
 ;   C:\Documents and Settings\yourname\.gimp-2.8\scripts   
 ;    
 ;   Linux
-;   /home/yourname/.gimp-2.8/scripts  
+;   /home/yourname/.gimp-2.8/scripts   
 ;   or
 ;   Linux system-wide
 ;   /usr/share/gimp/2.0/scripts
@@ -33,7 +33,13 @@
 ;==============================================================
 
 
-(define (script-fu-mosaic-go image group option-sel cell-size Xsize Hsize CSpacing CNeatness CAllowSplit CLightDirection CColorVariation CAliasing CAveraging CShape CSurface CColoring)
+(define (script-fu-mosaic-go image group 
+                option-sel
+                cell-size Xsize
+                Hsize
+                CSpacing
+                CNeatness
+                CAllowSplit CLightDirection CColorVariation CAliasing CAveraging CShape CSurface CColoring NoExamples)
   (gimp-image-undo-group-start image)
   (gimp-context-push)
   (let* (
@@ -57,14 +63,20 @@
             (averagingVar 1)
           )
       (gimp-context-set-default-colors) 
-      (gimp-image-insert-layer image mosaic-layer 0 -1)
-      (gimp-image-insert-layer image try2-layer 0 -1)
-      (gimp-image-insert-layer image try3-layer 0 -1)
-      (gimp-image-insert-layer image try4-layer 0 -1)
+      (if (= NoExamples FALSE)
+        (begin
+            (gimp-image-insert-layer image mosaic-layer 0 -1)
+            (gimp-image-insert-layer image try2-layer 0 -1)
+            (gimp-image-insert-layer image try3-layer 0 -1)
+            (gimp-image-insert-layer image try4-layer 0 -1)
+            
+            (gimp-item-set-name try4-layer "Example4 layer")
+            (gimp-item-set-name try3-layer "Example3 layer")
+            (gimp-item-set-name try2-layer "Example2 layer")
+        )
+      )
       (gimp-image-insert-layer image your-layer 0 -1)
-      (gimp-item-set-name try4-layer "Example4 layer")
-      (gimp-item-set-name try3-layer "Example3 layer")
-      (gimp-item-set-name try2-layer "Example2 layer")
+      
       (gimp-item-set-name your-layer "Your layer")
       
       (if (= CAllowSplit TRUE)
@@ -80,11 +92,15 @@
             (set! averagingVar 0)
       )
       
-      (plug-in-mosaic 1 image mosaic-layer 60 60 1 0 TRUE 175.2  0.3 1 1 1 0 1)
-      (plug-in-mosaic 1 image try4-layer 40 40 2 0.5 TRUE 175.2  0.8 0 0 1 0 0)
-      
-      (plug-in-mosaic 1 image try2-layer 40 40 1 0 TRUE 175.2 0.3 1 0 3 0 1)
-      (plug-in-mosaic 1 image try3-layer 40 40 2 0.25 TRUE 175.2 0.8 1 1 3 0 0)
+      (if (= NoExamples FALSE)
+        (begin
+            (plug-in-mosaic 1 image mosaic-layer 60 60 1 0 TRUE 175.2  0.3 1 1 1 0 1)
+            (plug-in-mosaic 1 image try4-layer 40 40 2 0.5 TRUE 175.2  0.8 0 0 1 0 0)
+            
+            (plug-in-mosaic 1 image try2-layer 40 40 1 0 TRUE 175.2 0.3 1 0 3 0 1)
+            (plug-in-mosaic 1 image try3-layer 40 40 2 0.25 TRUE 175.2 0.8 1 1 3 0 0)
+        )
+      )
       
       (cond
             ((= option-sel 0)
@@ -129,6 +145,7 @@
   SF-OPTION   "Shape"                       '("Squares" "Hexagons" "Octagons" "Triangles")
   SF-OPTION "Tile Surface"                  '("Smooth" "Rough")
   SF-OPTION "Tile colouring"                '("White-Black (left to right)" "Foreground-Background (FG-BG) colors")
+  SF-TOGGLE "No Examples"                   FALSE
 )
 
 (script-fu-menu-register "script-fu-mosaic-go"
