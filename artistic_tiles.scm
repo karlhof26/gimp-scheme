@@ -4,7 +4,9 @@
 ; originally  based on random.scm
 ; by Charles Cave <charlesweb@optusnet.com.au>
 ; http://members.optusnet.com.au/~charles57/GIMP
-
+;
+; Updated by Karlhof26 on 06/02/2022
+;
 ; License:
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -23,7 +25,14 @@
 ;
 
 
-(define (script-fu-tiles inWidth inHeight inTileWidth inTileHeight inColour1 inColour2 inColour3 inColour4 inColour5 inColour6 inColour7 inColour8 inColour9 inColour10 inNumColours inGroutWidth inGroutColour inGroutOpacity)
+(define (script-fu-tiles inWidth inHeight inTileWidth inTileHeight inColour1 inColour2 inColour3 
+                inColour4 inColour5 inColour6 inColour7 
+                inColour8 inColour9 inColour10 
+                inNumColours 
+                inGroutWidth 
+                inGroutColour 
+                inGroutOpacity
+                inGroutOption)
     (let* (
             ; define our local variables
             (theImageWidth  inWidth)
@@ -107,21 +116,52 @@
         (gimp-context-set-foreground '(0 0 0) )
         (gimp-drawable-fill theTilesLayer FILL-FOREGROUND)
         
+        ;(gimp-message (number->string (round (/ theGroutWidth 2))))
+        ;(gimp-message (number->string (max (round (/ theGroutWidth 2)) 1)))
+        
+        ; added by karlhof26
+        (if (<= inGroutOption 1)
+            (begin
+                (set! theX (max (round (/ theGroutWidth 2)) 1))
+            )
+            (begin
+                (set! theX 0)
+                (set! theGroutWidth 0)
+            )
+        )
         ; draw the tiles
-        (while (< theX theImageWidth) 
+        (while (< theX theImageWidth)
+            (if (<= inGroutOption 1)
+                (begin
+                    (set! theY (max (round (/ theGroutWidth 2)) 1))
+                )
+                (begin
+                    (set! theY 0)
+                    (set! theGroutWidth 0)
+                )
+            )
             (while (< theY theImageHeight) 
                 
-                (gimp-rect-select 
+                ;(gimp-rect-select 
+                ;    theImage 
+                ;    theX 
+                ;    theY 
+                ;    theTileWidth 
+                ;    theTileHeight 
+                ;    CHANNEL-OP-REPLACE 
+                ;    FALSE 
+                ;    0 
+                ;)
+                (gimp-image-select-rectangle 
                     theImage 
+                    CHANNEL-OP-REPLACE 
                     theX 
                     theY 
                     theTileWidth 
-                    theTileHeight 
-                    CHANNEL-OP-REPLACE 
-                    FALSE 
-                    0 
-                ) 
-                (set! theColour (list-ref theColours (random theNumColours)))
+                    theTileHeight
+                )
+                
+                (set! theColour (list-ref theColours (- (rand theNumColours) 1)))
                 (gimp-context-set-foreground theColour) 
                 (gimp-edit-bucket-fill
                     theTilesLayer
@@ -133,10 +173,12 @@
                     0
                     0
                 )
-                (set! theY (+ theY theTileHeight)) 
+                (set! theY (+ (+ theY theTileHeight) theGroutWidth))
+                ;(gimp-progress-update (/ theY theImageHeight))
             ) 
-            (set! theY 0) 
-            (set! theX (+ theX theTileWidth)) 
+            ;(set! theY 0) 
+            (set! theX (+ (+ theX theTileWidth) theGroutWidth)) 
+            (gimp-progress-update (/ theX theImageWidth))
         )
         
         ; draw the grout lines
@@ -145,8 +187,14 @@
         (gimp-selection-all theImage) 
         (gimp-edit-clear theGroutLayer) 
         
-        (plug-in-grid 1 theImage theGroutLayer theGroutWidth theTileWidth 0 theGroutColour theGroutOpacity theGroutWidth theTileHeight 0 theGroutColour theGroutOpacity theGroutWidth 0 0 theGroutColour theGroutOpacity) 
+        ; NOTE: plug-in-grid has a bug - height/vertical is first  width/horizontal is second (not as per pdb)
         
+        ;(plug-in-grid 1 theImage theGroutLayer theGroutWidth theTileWidth 0 theGroutColour theGroutOpacity theGroutWidth theTileHeight 0 theGroutColour theGroutOpacity theGroutWidth 0 0 theGroutColour theGroutOpacity) 
+        ;(plug-in-grid 1 theImage theGroutLayer theGroutWidth (+ theTileWidth theGroutWidth) 0 theGroutColour theGroutOpacity theGroutWidth theTileHeight 0 theGroutColour theGroutOpacity theGroutWidth 0 0 theGroutColour theGroutOpacity) 
+        
+        (if (= inGroutOption 0)
+            (plug-in-grid 1 theImage theGroutLayer theGroutWidth (+ theTileHeight theGroutWidth) 0 theGroutColour theGroutOpacity    theGroutWidth (+ theGroutWidth theTileWidth) 0 theGroutColour theGroutOpacity   theGroutWidth 0 0 theGroutColour theGroutOpacity) 
+        )
         ; display the image
         (gimp-display-new theImage)
         (list theImage theTilesLayer theGroutLayer)
@@ -154,20 +202,20 @@
 )
 
 (script-fu-register 
-    "script-fu-tiles"                        										;func name
+    "script-fu-tiles"                                                   ;func name
     "Artistic Tiles"                                                    ;menu label
-    "Creates a tiled image, using random colours set by the user. \nfile:artistic_tiles.scm"      ;description
+    "Creates a tiled image, using random colours set by the user. Lower opacity renders lighter intersection points. \nfile:artistic_tiles.scm"      ;description
     "John Irving"                                                       ;author
     "copyright 2009, John Irving"                                       ;copyright notice
     "2009"                                                              ;date created
     "New Image"                                                         ;image type that the script works on
     SF-VALUE        "Image Width"                   "800"                           ;image width
     SF-VALUE        "Image Height"                  "600"                           ;image height
-    SF-VALUE        "Tile Width"                    "7"                             ;tile width
-    SF-VALUE        "Tile Height"                   "7"                             ;tile height
-    SF-COLOR        "Colour 1"                      '(40 40 40)                     ;colour variable
-    SF-COLOR        "Colour 2"                      '(45 45 45)                     ;colour variable
-    SF-COLOR        "Colour 3"                      '(50 50 50)                     ;colour variable
+    SF-VALUE        "Tile Width"                    "20"                             ;tile width
+    SF-VALUE        "Tile Height"                   "20"                             ;tile height
+    SF-COLOR        "Colour 1"                      '(255 0 40)                     ;colour variable ; was 140 40 40
+    SF-COLOR        "Colour 2"                      '(45 245 45)                     ;colour variable
+    SF-COLOR        "Colour 3"                      '(50 50 250)                     ;colour variable
     SF-COLOR        "Colour 4"                      '(0 0 0)                        ;colour variable
     SF-COLOR        "Colour 5"                      '(0 0 0)                        ;colour variable
     SF-COLOR        "Colour 6"                      '(0 0 0)                        ;colour variable
@@ -177,8 +225,9 @@
     SF-COLOR        "Colour 10"                     '(0 0 0)                        ;colour variable
     SF-VALUE        "Num of Tile Colours"           "3"                             ;num of colours to use
     SF-VALUE        "Grout Width"                   "1"                             ;grout width
-    SF-COLOR        "Grout Colour"                  '(35 35 35)                     ;grout colour
+    SF-COLOR        "Grout Colour"                  '(235 235 235)                     ;grout colour
     SF-VALUE        "Grout Opacity - 0 > 255"       "255"                           ;grout opacity
+    SF-OPTION       "Grout Option"                     '("Grout" "Grout Off (Grout width remains)" "No Grout Gap")
 )
 
 (script-fu-menu-register "script-fu-tiles" "<Image>/Script-Fu/Render")
