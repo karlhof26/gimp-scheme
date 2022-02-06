@@ -3,7 +3,7 @@
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
-; the Free Software Foundation; either version 3 of the License, or
+; the Free Software Foundation; either version 3 of the License, or 
 ; (at your option) any later version.
 ; 
 ; This program is distributed in the hope that it will be useful,
@@ -108,7 +108,7 @@
         (gimp-edit-copy adraw)
         (gimp-layer-add-mask blue-layer blue-mask)
         (gimp-floating-sel-anchor (car (gimp-edit-paste blue-mask TRUE)))
-        (gimp-drawable-invert blue-mask TRUE)
+        (gimp-drawable-invert blue-mask FALSE)
         (gimp-layer-add-mask white-layer white-mask)
         (gimp-floating-sel-anchor (car (gimp-edit-paste white-mask TRUE)))
         
@@ -130,7 +130,7 @@
         (gimp-edit-bucket-fill blue-overlay-layer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 0 FALSE 0 0)
         (gimp-selection-none img)
         
-        ; tidy up
+        ; tidy up 
         (gimp-image-undo-group-end img)
         (gimp-displays-flush)
         (gimp-context-pop)

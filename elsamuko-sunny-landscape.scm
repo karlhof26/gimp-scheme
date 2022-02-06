@@ -9,7 +9,7 @@
 ; This program is distributed in the hope that it will be useful,
 ; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-; GNU General Public License for more details.
+; GNU General Public License for more details. 
 ; 
 ; You should have received a copy of the GNU General Public License
 ; along with this program; if not, write to the Free Software
@@ -192,7 +192,7 @@
     (gimp-context-set-foreground '(255 255 255))
     (gimp-context-set-background '(0 0 0))
     (gimp-edit-blend cloud-layer BLEND-FG-BG-RGB
-                     LAYER-MODE-MULTIPLY-LEGACY GRADIENT-LINEAR
+                     LAYER-MODE-MULTIPLY GRADIENT-LINEAR
                      100 0 REPEAT-NONE
                      FALSE FALSE 1 0
                      TRUE 0 offset1 0 offset2)
@@ -202,7 +202,7 @@
     (gimp-edit-copy sub-blue-layer)
     (gimp-floating-sel-anchor (car (gimp-edit-paste top-blue-layer TRUE)))
     (gimp-layer-add-mask top-blue-layer top-blue-layer-mask)
-    (gimp-edit-copy sub-blue-layer-mask)
+    (gimp-edit-copy sub-blue-layer-mask) 
     (gimp-floating-sel-anchor (car (gimp-edit-paste top-blue-layer-mask TRUE)))
     
     ;more color (not yet used)
