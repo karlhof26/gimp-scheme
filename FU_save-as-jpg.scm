@@ -5,7 +5,7 @@
 ; 27/10/2020 on GIMP-2.10.22
 ;
 ;==============================================================
-;
+; 
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
@@ -43,7 +43,7 @@
 ;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;   
 ;==============================================================
-; Original information 
+; Original information  
 ;   
 ; Original script by Saul Goode
 ; script-fu-quick-jpeg-save.scm
@@ -59,44 +59,57 @@
     (unless (and (> (length nameparts) 1)
                  (member (car (last nameparts)) '("jpg" "jpeg" "JPG" "JPEG"))
                  )
-    (set! nameparts (append (butlast nameparts) '("jpg"))) )
+        (set! nameparts (append (butlast nameparts) '("jpg")))
+    )
     (set! filename (unbreakupstr nameparts "."))
     (let* ( (buffer (car (gimp-edit-named-copy-visible image "jpg buffer")))
             (new-image (car (gimp-edit-named-paste-as-new buffer)))
-            (layer (car (gimp-image-flatten new-image))) 
+            (layer (car (gimp-image-flatten new-image)))
           )
         (unless (zero? (car (gimp-image-base-type new-image)))
-        (gimp-image-convert-rgb new-image) )
-        (file-jpeg-save RUN-NONINTERACTIVE 
+            (gimp-image-convert-rgb new-image)
+        )
+         
+        ;(file-jpeg-save RUN-NONINTERACTIVE 
+        ;    new-image 
+        ;    layer
+        ;    filename 
+        ;    filename 
+        ;    0.92 ; JPEG compression level
+        ;    0.05 ; smoothing was0
+        ;    1 ; optimize 
+        ;    0 ; progressive 
+        ;    "" ; comment 
+        ;    2 ; subsmp (0-4) ; was0
+        ;    1 ; baseline 
+        ;    0 ; restart 
+        ;    1 ;dct was 0
+        ;)
+        
+        (gimp-file-save RUN-NONINTERACTIVE 
             new-image 
             layer
             filename 
             filename 
-            0.92 ; JPEG compression level
-            0 ; smoothing 
-            1 ; optimize 
-            0 ; progressive 
-            "" ; comment 
-            0 ; subsmp (0-4)
-            1 ; baseline 
-            0 ; restart 
-            0 ;dct 
         )
         (gimp-image-delete new-image)
-     
-     (gimp-image-clean-all image)
+        
+        (gimp-buffer-delete "jpg buffer")
+        (gimp-image-clean-all image)
+        (gimp-displays-flush)
+        (gc) ; garbage cleanup
     )
   )
 )
 
 (script-fu-register "FU_save-as-jpg"
     "Fast Save as JPG"
-    "Fast Save the image as a JPG file\n\nFor more options and a proper file overwrite protected dialog, \nuse the FILE > EXPORT menu item when saving as a JPG.\nfile:FU_save-as-jpg.scm"
+    "Fast Save the image as a JPG file\nWarning: Removes EXIF data. Only 1 . is allowed. Save Time in (windows) folders does not update but can be found in Gimp File>Open dialog. For more options and a proper file overwrite protected dialog, use the FILE > EXPORT AS menu item when saving as a JPG.\nfile:FU_save-as-jpg.scm"
     "Paul Sherman"
     "Paul Sherman"
     "February 2014"
     "*"
-    SF-IMAGE    "Image"    0
+    SF-IMAGE    "Image"       0
 )
   
 (script-fu-menu-register "FU_save-as-jpg"
