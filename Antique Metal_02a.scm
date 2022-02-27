@@ -1,10 +1,10 @@
 ; Antique Metal rel 0.03 
 ; Created by Graechan
 ; You will need to install GMIC to run this Scipt
-; GMIC can be downloaded from http://sourceforge.net/projects/gmic/files/
+; GMIC can be downloaded from http://gmic.eu
 ;    Thanks to Draconian for his Antique-metal tutorial
 ;    that I followed to write this script.  
-; Comments directed to http://gimpchat.com or http://gimpscripts.com
+; Comments directed to http://gimpchat.com
 ;
 ; License: GPLv3
 ;    This program is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 ; Rel 0.01 - Initial Release
 ; Rel 0.02 - Added text options Justify, Letter Spacing, Line Spacing and option controls for 'Drop Shadow' 'Grunge' 'Vignette' 'Frame'
 ; Rel 0.03 - Bugfix for typo in script
+; Rel 0.04 - Update by karlhof26 to remove Gmic dependency and messages on 27/02/2022
 ; 
 (define (script-fu-antique-metal-logo 
                                       text
@@ -60,29 +61,29 @@
          (justify (cond ((= justify 0) 2)
                         ((= justify 1) 0)
                         ((= justify 2) 1)))
-         (width (car (gimp-drawable-width text-layer)))
-         (height (car (gimp-drawable-height text-layer)))
-         (text-channel 0)
-         (bkg-layer 0) 
-         (inner-shadow 0)
-         (inner-glow 0)
-         (inner-shadow-mask 0)
-         (inner-glow-mask 0)
-         (overlay-mode 0)
-         (add-shadow TRUE)
-         (add-canvas TRUE)
-         (add-mottling TRUE)
-         (nominal-burn-size 30)
-         (inner-bevel-layer 0)
-         (azimuth 135)
-         (elevation 35)
-         (postblur 3.0)
-         (texture-layer 0)
-         (red (car grunge-color))	
-         (green (cadr grunge-color))
-          (blue (caddr grunge-color))
-          (frame-layer 0)
-         (frame frame-in)         
+            (width (car (gimp-drawable-width text-layer)))
+            (height (car (gimp-drawable-height text-layer)))
+            (text-channel 0)
+            (bkg-layer 0) 
+            (inner-shadow 0)
+            (inner-glow 0)
+            (inner-shadow-mask 0)
+            (inner-glow-mask 0)
+            (overlay-mode 0)
+            (add-shadow TRUE)
+            (add-canvas TRUE)
+            (add-mottling TRUE)
+            (nominal-burn-size 30)
+            (inner-bevel-layer 0)
+            (azimuth 135)
+            (elevation 35)
+            (postblur 3.0)
+            (texture-layer 0)
+            (red (car grunge-color))	
+            (green (cadr grunge-color))
+            (blue (caddr grunge-color))
+            (frame-layer 0)
+            (frame frame-in)         
          )
          
     (gimp-context-push)
@@ -100,7 +101,7 @@
     (gimp-context-set-foreground '(0 0 0))
     (gimp-selection-layer-alpha text-layer)
     (gimp-drawable-edit-fill text-layer FILL-FOREGROUND)
-    (gimp-message "line 103")
+    ;(gimp-message "line 103")
     
     ;;;;Expand the font if needed
     (if (> grow 0)
@@ -117,7 +118,9 @@
     (gimp-selection-none image)
     (gimp-display-new image)
     (gimp-image-undo-group-start image)
-    (gimp-message "line 117")
+    ;(gimp-message "line 120")
+    (gimp-progress-pulse)
+    
     (script-fu-antique-metal-alpha 
                             image 
                             text-layer
@@ -139,7 +142,8 @@
                             conserve)
     (gimp-image-undo-group-end image)
     (gimp-context-pop)
-    (gimp-message "good end line 137")
+    ;(gimp-message "good end line 137")
+    (gimp-progress-pulse)
   )
 )
   
@@ -232,7 +236,8 @@
             (metal-layer 0)
         )
     
-    (gimp-message "line 235")
+    ;(gimp-message "line 239")
+    (gimp-progress-update 0.10)
     (gimp-context-push)
     (gimp-image-undo-group-start image)
     (gimp-context-set-foreground '(0 0 0))
@@ -248,7 +253,8 @@
     (gimp-edit-clear image-layer)
     (gimp-selection-invert image)
     
-    (gimp-message "line 251")
+    ;(gimp-message "line 256")
+    (gimp-progress-update 0.15)
     ;;;;create selection-channel
     (gimp-selection-save image)
     (set! selection-channel (car (gimp-image-get-active-drawable image)))
@@ -260,20 +266,21 @@
     ;;;;create the background layer    
     (set! bkg-layer (car (gimp-layer-new image width height RGBA-IMAGE "Background" 100 LAYER-MODE-NORMAL-LEGACY)))
     (gimp-image-insert-layer image bkg-layer 0 0) ;; was 0 1
-    (gimp-message "line 263")
+    ;(gimp-message "line 269")
     
     (if (= apply-grunge TRUE) 
         (begin
-            (gimp-message "line 267")
-            (gimp-message "going to the antique metal background")
+            ;(gimp-message "line 273")
+            ;(gimp-message "going to the antique metal background")
             (the-antique-metal-background image bkg-layer grunge-color grunge-opacity)
             (set! bkg-layer (car (gimp-image-get-active-layer image)))                                              
             (set! bkg-layer (car (gimp-image-merge-down image bkg-layer EXPAND-AS-NECESSARY)))
             (gimp-drawable-set-name bkg-layer "Background")
         )
     )
-    (gimp-message "line 275")
-            
+    ;(gimp-message "line 281")
+    (gimp-progress-update 0.20)
+    
     ;;;;fill image with grey
     (gimp-selection-load selection-channel)
     (gimp-context-set-foreground '(123 123 123))
@@ -283,7 +290,7 @@
     (gimp-selection-none image)
     (gimp-layer-resize-to-image-size bkg-layer)
     (gimp-layer-resize-to-image-size image-layer)
-    (gimp-message "line 286")
+    ;(gimp-message "line 293")
     
     ;;;;create inner-shadow and inner-glow layers    
     (set! inner-shadow (car (gimp-layer-copy image-layer TRUE)))
@@ -291,8 +298,9 @@
     (gimp-drawable-set-name inner-shadow "Inner shadow")
     (gimp-layer-set-mode inner-shadow LAYER-MODE-MULTIPLY-LEGACY)
     (gimp-layer-set-opacity inner-shadow opacity)
+    (gimp-progress-update 0.25)
     
-    (gimp-message "line 295")
+    ;(gimp-message "line 303")
     (set! inner-glow (car (gimp-layer-copy image-layer TRUE)))
     (gimp-image-insert-layer image inner-glow 0 -1)
     (gimp-drawable-set-name inner-glow "Inner glow")
@@ -302,7 +310,8 @@
     ;;;;create the inner shadow
     (gimp-image-set-active-layer image inner-shadow)
     (gimp-drawable-set-visible inner-shadow TRUE)     
-    (gimp-message "line 305")
+    ;(gimp-message "line 313")
+    (gimp-progress-update 0.30)
     
     (set! inner-shadow-mask (car (gimp-layer-create-mask inner-shadow  ADD-MASK-ALPHA)))
     (gimp-layer-add-mask inner-shadow inner-shadow-mask)
@@ -312,12 +321,12 @@
     (gimp-selection-shrink image (* bev-width 1.5))
     (gimp-selection-invert image)
     (gimp-context-set-foreground '(99 78 56))
-    (gimp-message "line 315")
+    ;(gimp-message "line 324")
     
     (gimp-edit-bucket-fill inner-shadow BUCKET-FILL-FG LAYER-MODE-NORMAL opacity 15.0 TRUE 0 0) ;; was LAYER-MODE-NORMAL opacity 15.0 TRUE 0 0
     (gimp-selection-none image)
     (plug-in-gauss-rle RUN-NONINTERACTIVE image inner-shadow (* bev-width 3) TRUE TRUE)
-    (gimp-message "line 320")
+    ;(gimp-message "line 329")
     
     ;;;;create the inner glow
     (gimp-image-set-active-layer image inner-glow)
@@ -328,21 +337,22 @@
     (set! inner-glow-mask (car (gimp-layer-create-mask inner-glow ADD-MASK-SELECTION)))
     (gimp-layer-add-mask inner-glow inner-glow-mask)
     (gimp-layer-set-edit-mask inner-glow FALSE)
-    (gimp-message "line 331")
+    ;(gimp-message "line 340")
+    (gimp-progress-update 0.40)
     
     (gimp-selection-shrink image bev-width)
     (gimp-selection-invert image)
     (gimp-context-set-foreground '(120 100 80))
     (gimp-edit-bucket-fill inner-glow FILL-FOREGROUND LAYER-MODE-NORMAL opacity 15.0 TRUE 0 0) ;; was FG-BUCKET-FILL NORMAL-MODE opacity 15.0 TRUE 0 0
     (gimp-selection-none image)
-    (gimp-message "line 338")
+    ;(gimp-message "line 348")
     
     (plug-in-gauss-rle RUN-NONINTERACTIVE image inner-glow (* bev-width 2) TRUE TRUE)
     (gimp-image-raise-layer-to-top image bkg-layer)
     (set! image-layer (car (gimp-image-merge-visible-layers image EXPAND-AS-NECESSARY)))
     (if (= apply-grunge FALSE)
         (begin
-            (gimp-message "line 345")
+            ;(gimp-message "line 355")
             (gimp-selection-load selection-channel)
             (gimp-selection-translate image -3 -2)
             (gimp-selection-invert image)
@@ -351,8 +361,8 @@
         )
     )
     (gimp-drawable-set-name image-layer text)
-    (gimp-message "line 354")
-    
+    ;(gimp-message "line 364")
+    (gimp-progress-update 0.50)
     ;;;;Add new layer with Bevel
     (gimp-selection-load selection-channel)
     (set! inner-bevel-layer (car (gimp-layer-new image width height RGBA-IMAGE "Inner bevel" 100 LAYER-MODE-NORMAL)))
@@ -360,16 +370,17 @@
     (gimp-image-set-active-layer image inner-bevel-layer)    
     (gimp-context-set-foreground '(0 0 0))
     (gimp-context-set-background '(255 255 255))
-    (gimp-message "line 363")
+    ;(gimp-message "line 373")
     
     (gimp-drawable-edit-fill inner-bevel-layer FILL-FOREGROUND)    
     (gimp-selection-shrink image 1)
     (gimp-selection-feather image bev-width)
     (gimp-selection-shrink image (- (/ bev-width 2) 1))
-    (gimp-message "line 364")
+    ;(gimp-message "line 379")
+    (gimp-progress-update 0.60)
     (gimp-drawable-edit-fill inner-bevel-layer FILL-BACKGROUND)
     (gimp-selection-all image)
-    (gimp-message "line 372")
+    ;(gimp-message "line 383")
     
     (if (= ds-apply TRUE) (gimp-invert inner-bevel-layer))
     (plug-in-emboss RUN-NONINTERACTIVE image inner-bevel-layer azimuth elevation depth 1);Emboss
@@ -378,8 +389,8 @@
     ;;(gimp-curves-spline inner-bevel-layer 0 18 #(0 0 32 158 62 30 96 223 126 96 159 255 189 160 222 255 255 255))
     (gimp-drawable-curves-spline inner-bevel-layer HISTOGRAM-VALUE 18 #(0.0 0.0 0.15 0.7 0.23 0.145 0.38 0.88 0.5 0.38 0.88 1.0 0.75 0.65 0.92 1.0 1.0 1.0))    
     (plug-in-gauss-rle RUN-NONINTERACTIVE image inner-bevel-layer postblur 1 1)
-    (gimp-message "line 381")
-    
+    ;(gimp-message "line 392")
+    (gimp-progress-update 0.70)
     ;;;;Clean up the layers
     
     (gimp-selection-load selection-channel)
@@ -392,10 +403,14 @@
     (gimp-selection-load selection-channel)
     (gimp-context-set-foreground '(123 123 123))
     (gimp-drawable-edit-fill texture-layer FILL-FOREGROUND)
-    (gimp-message "line 395")
+    ;(gimp-progress-update 0.81)
+    ;(gimp-message "line 407")
     
     ;;;; Render Whirl drawing using G'MIC.
-    ;;(gimp-message "whirl start")
+    ;(gimp-message "whirl start")
+    (if (defined? 'plug-in-gmic-qt) ; (defined? 'gimp-context-set-brush-size)
+        (begin
+                ;(gimp-message "line413")
                 (plug-in-gmic-qt 1 image texture-layer 1 0 
                     (string-append
                         "-v - " ; To have a silent output. Remove it to display errors from the G'MIC interpreter on stderr.
@@ -403,9 +418,16 @@
                         "74.70"
                     )
                 )
-                ;;(gimp-message "whirl end")
+        )
+        (begin
+                ;(gimp-message "No whirl Gmic is required (from http;//gmic.eu)")
+                (plug-in-hsv-noise 1 image texture-layer 1 4 16 (rand 200))
                 
-    (gimp-message "line 408")
+        )
+    )
+                
+    ;(gimp-message "line 429")
+    (gimp-progress-update 0.85)
     (plug-in-mblur 1 image texture-layer 0 4 90 (/ width 2) (/ height 2))
     ;;(gimp-curves-spline texture-layer 0 18 #(0 255 31 0 62 255 91 0 127 255 159 0 190 255 223 0 255 255))
     (gimp-drawable-curves-spline texture-layer 0 18 #(0.0 1.0 0.12 0.0 0.24 1.0 0.35 0.0 0.5 1.0 0.61 0.0 0.74 1.0 0.87 0.0 1.0 1.0))
@@ -414,7 +436,9 @@
     ;(gimp-image-remove-channel image selection-channel)
     (plug-in-bump-map 1 image inner-bevel-layer texture-layer 135 45 5 0 0 0 0 TRUE FALSE 2)
     (gimp-image-remove-layer image texture-layer)
-    (gimp-message "line 417")
+    
+    ;(gimp-message "line 440")
+    (gimp-progress-update 0.87)
     
     ;;was (gimp-color-balance inner-bevel-layer 0 TRUE 40 0 0);shadows
     (gimp-drawable-color-balance inner-bevel-layer TRANSFER-SHADOWS TRUE 50 0 0);shadows
@@ -431,7 +455,8 @@
     (set! image-layer (car (gimp-image-merge-visible-layers image 1)))
     (gimp-drawable-set-name image-layer text)
     
-    (gimp-message "line 434")
+    ;(gimp-message "line 458")
+    (gimp-progress-update 0.90)
     (script-fu-addborder image image-layer 3 3 grunge-color 1) ; was 1 1 grunge-color 0
     (set! image-layer (car (gimp-image-merge-visible-layers image 1)))
     (gimp-drawable-set-name image-layer text)
@@ -440,7 +465,7 @@
     (set! metal-layer (car (gimp-layer-new image width height RGBA-IMAGE "Plating" 80 LAYER-MODE-HSL-COLOR))) ;; was COLOR-MODE
     (gimp-image-insert-layer image metal-layer 0 -1)
     (gimp-selection-load selection-channel)
-    
+    (gimp-progress-update 0.92)
     (if (= metal 1) (gimp-context-set-foreground '(253 208 23)));gold
     
     (if (= metal 2)
@@ -454,12 +479,14 @@
     (if (= metal 4) (gimp-context-set-foreground '(140 120 83)));bronze
     (if (= metal 5) (gimp-context-set-foreground '(181 166 66)));brass
     
+    
     (if (> metal 0)
         (begin
             (gimp-drawable-edit-fill metal-layer FILL-FOREGROUND)
         )
     )
     
+    (gimp-progress-update 0.94)
     (set! image-layer (car (gimp-image-merge-down image metal-layer EXPAND-AS-NECESSARY)))
     
     ;(if (> metal 0)
@@ -472,66 +499,84 @@
     
     (set! image-layer (car (gimp-image-get-active-layer image)))
     (gimp-selection-none image)
-    (gimp-message "line 475")
+    ;(gimp-message "line 502")
     
     (if (= frame 0)
          (begin
-            (gimp-message "frame already zero")
+            ;(gimp-message "frame already zero")
          )
          (begin
-            (gimp-message "frame above zero")
+            ;(gimp-message "frame above zero")
          )
     )
     
     (if (= apply-vignette FALSE)
         (begin
-            (gimp-message "apply vignette is FALSE")
+            ;(gimp-message "apply vignette is FALSE")
             (set! vig-size 0)
         )
     )
     
     (if (= apply-frame FALSE)
         (begin
-            (gimp-message "apply vignettre is FALSE")
+            ;(gimp-message "apply vignettre is FALSE")
             (set! frame 0)
         )
     )
     
     (if (and (> vig-size 0) (= frame 0))
         (begin
-            (gimp-message "vig size with zero frame")
+            ;(gimp-message "vig size with zero frame")
             (set! frame 0.2) ;; was 0.1
         )
     )
     
-    (gimp-message "line 507")
+    (gimp-progress-update 0.96)
+    
+    ;(gimp-message "line 536")
     (if (> frame 0)
       (begin
-                (gimp-message "line 510")
+                ;(gimp-message "line 539")
                 ;;;; Render Picture Frame using G'MIC.
-                (gimp-message "frame start")
-                (gimp-message (number->string frame))
+                ;(gimp-message "frame start")
+                ;(gimp-message (number->string frame))
                 
-                (plug-in-gmic-qt 1 image image-layer 1 0
-                   (string-append
-                        "-v - " ; To have a silent output. Remove it to display errors from the G'MIC interpreter on stderr.
-                        "-fx_frame_painting "
-                        (number->string frame) ",0.4,1.5,"
-                        (number->string red) ","
-                        (number->string green) ","
-                        (number->string blue) ","
-                        (number->string vig-size) ",400,98.5,62.61,6.2,0.5,117517,1")) ;; was 98.5,70.61,6.2,0.5,123456,1 
                 
-            (set! image-layer (car (gimp-image-get-active-layer image)))
-            (gimp-drawable-set-name image-layer text)
+                
+                (if (defined? 'plug-in-gmic-qt)
+                    (begin
+                        (plug-in-gmic-qt 1 image image-layer 1 0
+                            (string-append
+                                "-v - " ; To have a silent output. Remove it to display errors from the G'MIC interpreter on stderr.
+                                "-fx_frame_painting "
+                                (number->string frame) ",0.4,1.5,"
+                                (number->string red) ","
+                                (number->string green) ","
+                                (number->string blue) ","
+                                (number->string vig-size) ",400,98.5,62.61,6.2,0.5,117517,1")
+                        )     ;; was 98.5,70.61,6.2,0.5,123456,1
+                        
+                        (set! image-layer (car (gimp-image-get-active-layer image)))
+                        (gimp-drawable-set-name image-layer text)
+                        
+                        (set! frame-layer (car (gimp-layer-new image width height RGBA-IMAGE "Frame" 100 LAYER-MODE-NORMAL-LEGACY)))
+                        (gimp-image-insert-layer image frame-layer 0 -1)
+                        (gimp-image-raise-item image frame-layer)  ;; removed by karlhof26 as it gives error
+                        (set! frame-layer (car (gimp-image-merge-down image frame-layer EXPAND-AS-NECESSARY)))
+                        ;(gimp-message "frame end")
+                    )
+                    (begin
+                        (gimp-message "no Gmic means - Frame using color")
+                        (set! frame-layer (car (gimp-layer-new image width height RGBA-IMAGE "Frame" 100 LAYER-MODE-NORMAL-LEGACY)))
+                        (gimp-image-insert-layer image frame-layer 0 -1)
+                        (script-fu-addborder  image frame-layer (* (/ frame 100) width) (* (/ frame 100) height) grunge-color (* frame 3))
+                    )
+                )
             
-            (set! frame-layer (car (gimp-layer-new image width height RGBA-IMAGE "Frame" 100 LAYER-MODE-NORMAL-LEGACY)))
-            (gimp-image-insert-layer image frame-layer 0 -1)
-            (gimp-image-raise-item image frame-layer)  ;; removed by karlhof26 as it gives error
-            (set! frame-layer (car (gimp-image-merge-down image frame-layer EXPAND-AS-NECESSARY)))
-            (gimp-message "frame end")
       )
     )
+    
+    (gimp-progress-update 0.98)
     
     (if (and (> vig-size 0) (= apply-frame FALSE))
         (gimp-drawable-set-name frame-layer "Vignette")
@@ -544,6 +589,8 @@
     )
     
     (if (= frame-in 0) (plug-in-autocrop 1 image image-layer))
+    
+    (gimp-progress-update 0.97)
     
     ;;removed by karlhof26 - no need for it
     ;(gimp-image-set-active-layer image image-layer)
@@ -568,20 +615,31 @@
     (if (= conserve FALSE) 
         (begin
             (if (or (> vig-size 0) (= apply-frame TRUE))
-                (set! image-layer (car (gimp-image-merge-down image frame-layer EXPAND-AS-NECESSARY)))
+                (begin
+                    (set! image-layer (car (gimp-image-merge-down image frame-layer EXPAND-AS-NECESSARY)))
+                )
             )
         )
     )
-    (gimp-message "line 575")
+    (gimp-progress-update 1.0)
+    ;(gimp-message "line 622")
     
     (gimp-drawable-set-name image-layer text)
     (if (= keep-selection FALSE)
-        (gimp-selection-none image)
+        (begin
+            (gimp-selection-none image)
+        )
     )
-    (if (= conserve FALSE) (gimp-image-remove-channel image selection-channel))
+    (if (= conserve FALSE)
+        (gimp-image-remove-channel image selection-channel)
+    )
     
-    (if (and (= conserve FALSE) (= alpha FALSE) (gimp-layer-flatten image-layer)))
-    (gimp-message "Good finish OK")
+    (if (and (= conserve FALSE) (= alpha FALSE))
+        (begin
+            (gimp-layer-flatten image-layer)
+        )
+    )
+    ;(gimp-message "Good finish OK")
     
     (gimp-displays-flush)
     (gimp-image-undo-group-end image)
@@ -634,13 +692,13 @@
             (burn-size 0)
         )
         
-    (gimp-message "inside metal background")
+    ;(gimp-message "inside metal background")
     (set! burn-size (/ (* nominal-burn-size (max width height 1))))
     (gimp-context-push)
     (gimp-image-undo-group-start image)
     (gimp-context-set-foreground '(0 0 0))
     (gimp-context-set-background '(255 255 255))
-    (gimp-message "line 619")
+    ;(gimp-message "line 690")
     
     (set! paper-layer (car (gimp-layer-new image width height RGBA-IMAGE "Paper Layer" 100 LAYER-MODE-NORMAL)))
     (gimp-image-insert-layer image paper-layer 0 -1)
@@ -653,8 +711,8 @@
     (plug-in-solid-noise RUN-NONINTERACTIVE image mottle-layer 0 0 (rand 65536) 1 2 2)
     (set! paper-layer (car (gimp-image-merge-down image mottle-layer CLIP-TO-IMAGE)))
     (plug-in-spread 1 image paper-layer 5 5)
-    (gimp-message "line 632")
-    (gimp-message "end background")
+    ;(gimp-message "line 703")
+    ;(gimp-message "end background")
     
     (gimp-displays-flush)
     (gimp-image-undo-group-end image)
@@ -685,12 +743,12 @@
             (tmp-layer 0)
         )
         
-    (gimp-message "inside metal shine")
+    ;(gimp-message "inside metal shine")
     (gimp-context-push)
     ;;(gimp-image-undo-group-start image)
     (gimp-context-set-foreground '(0 0 0))
     (gimp-context-set-background '(255 255 255))
-    (gimp-message "line 693")
+    ;(gimp-message "line 740")
     
     (if (= alpha FALSE)
         (gimp-layer-add-alpha image-layer)
@@ -717,7 +775,7 @@
     (gimp-drawable-set-name img-channel "img-channel")
     (gimp-image-set-active-layer image img-layer)
     (gimp-drawable-set-name image-layer "Original Image")
-    (gimp-message "line 720")
+    ;(gimp-message "line 767")
     
     ;;;;create the background layer    
     (set! bkg-layer (car (gimp-layer-new image width height RGBA-IMAGE "Background" 100 LAYER-MODE-NORMAL-LEGACY)))
@@ -730,7 +788,7 @@
     (plug-in-emboss RUN-NONINTERACTIVE image img-layer 225 84 10 TRUE)
     (gimp-selection-invert image)
     (gimp-edit-clear img-layer)
-    (gimp-message "line 733")
+    ;(gimp-message "line 780")
     
     (gimp-selection-invert image)
     (plug-in-colortoalpha RUN-NONINTERACTIVE image img-layer '(254 254 254));;fefefe
@@ -739,7 +797,7 @@
     (gimp-image-set-active-layer image bkg-layer)
     (plug-in-displace RUN-NONINTERACTIVE image bkg-layer 8 8 TRUE TRUE img-channel img-channel 2)
     ;(gimp-image-remove-layer image bkg-layer)
-    (gimp-message "line 742")
+    ;(gimp-message "line 789")
     
     ;;;;create the shadow
     ;(if (> shadow-size 0)
@@ -773,7 +831,7 @@
     ;(gimp-context-pop)
     ;(gimp-display-new image)
     (gimp-displays-flush)
-    (gimp-message "end shine")
+    ;(gimp-message "end shine")
  )
 )
 
