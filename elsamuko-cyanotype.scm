@@ -15,16 +15,18 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ; http://www.gnu.org/licenses/gpl-3.0.html
-;
+; 
 ; Copyright (C) 2010 elsamuko <elsamuko@web.de>
-;
+; Updated by karlhof26 on 04/03/2022
 
 
 (define (elsamuko-cyanotype aimg adraw
                             color1 color2
                             localcontrast 
                             overlay
-                            blackwhite)
+                            blackwhite
+                            invertimage
+                            bluemix)
   (let* (
             (img (car (gimp-item-get-image adraw)))
             (owidth (car (gimp-image-width img)))
@@ -56,7 +58,7 @@
                                                   RGBA-IMAGE
                                                   "Blue Overlay" 
                                                   80 
-                                                  LAYER-MODE-OVERLAY-LEGACY)))
+                                                  LAYER-MODE-OVERLAY)))
          )
         
         ; init
@@ -64,6 +66,13 @@
         (gimp-image-undo-group-start img)
         (if (= (car (gimp-drawable-is-gray adraw )) TRUE)
             (gimp-image-convert-rgb img)
+        )
+        
+        ;invert image
+        (if (= invertimage TRUE)
+            (begin
+                (gimp-drawable-invert adraw FALSE)
+            )
         )
         
         ;desaturate original
@@ -130,6 +139,22 @@
         (gimp-edit-bucket-fill blue-overlay-layer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 0 FALSE 0 0)
         (gimp-selection-none img)
         
+        ;;Bluemix option added by karlhof26
+        (cond ((= bluemix 0)
+                (gimp-layer-set-mode blue-overlay-layer LAYER-MODE-OVERLAY)
+              )
+              ((= bluemix 1) 
+                (gimp-layer-set-mode blue-overlay-layer LAYER-MODE-HARD-MIX)
+              )
+              ((= bluemix 2) 
+                (gimp-layer-set-mode blue-overlay-layer LAYER-MODE-VIVID-LIGHT)
+              )
+              ((= bluemix 3) 
+                (gimp-layer-set-mode blue-overlay-layer LAYER-MODE-DISSOLVE)
+                (gimp-layer-set-opacity blue-overlay-layer 61.0)
+              )
+        )
+        ;(gimp-layer-set-mode blue-overlay-layer LAYER-MODE-HARD-MIX)
         ; tidy up 
         (gimp-image-undo-group-end img)
         (gimp-displays-flush)
@@ -149,8 +174,10 @@
                     SF-COLOR       "Prussian Blue"       '( 61  87 136)
                     SF-COLOR       "Aged White"          '(251 253 240)
                     SF-ADJUSTMENT  "Local Contrast"      '(0.4 0   2 0.1 0.2 1 0)
-                    SF-ADJUSTMENT  "B/W Overlay"         '(50  0  100  1   5 0 0)                    
+                    SF-ADJUSTMENT  "B/W Overlay"         '(50  0  100  1   5 0 0)
                     SF-TOGGLE      "Desaturate Image"     TRUE
+                    SF-TOGGLE      "Invert Image"         TRUE
+                    SF-OPTION      "Blue mix option"      '("Overlay" "Hard mix" "Vivid" "Dissolve")
                     )
 
 (script-fu-menu-register "elsamuko-cyanotype" "<Toolbox>/Script-Fu/Artistic")
