@@ -2,7 +2,7 @@
 ; version 2.8 [gimphelp.org]
 ; last modified/tested by Paul Sherman
 ; 02/14/2014 on GIMP-2.8.10
-; 03/09/2020 on GIMP-2.10.20
+; 03/09/2020 on GIMP-2.10.20 
 ;
 ; 02/14/2014 - convert to RGB if needed
 ;==============================================================
@@ -10,18 +10,14 @@
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;   
-;   Windows Vista/7/8)
+;   Windows 10 & 11)
 ;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;   or
 ;   C:\Users\YOUR-NAME\.gimp-2.8\scripts
 ;   C:\Users\YOUR-NAME\.gimp-2.10\scripts
 ;   C:\Users\YOUR-NAME\AppData\Roaming\GIMP\2.10\scripts
 ;   
-;   Windows XP
-;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;   or
-;   C:\Documents and Settings\yourname\.gimp-2.8\scripts   
-;    
+;   
 ;   Linux
 ;   /home/yourname/.gimp-2.8/scripts  
 ;   or
@@ -120,7 +116,7 @@
 ; an image with optional padding on each of the 4 sides.  If 'delta' > 0
 ; then each side will be colored so that it resembles a bevel (unless
 ; the fillchoice is a pattern).
-(define (draw-border drawable
+(define (draw-border-matte drawable
             borderwidth
             lpad tpad rpad bpad   ; # pixels to pad on L, T, R, B
             fillchoice            ; type of fill
@@ -131,7 +127,9 @@
             layername             ; border is drawn on a new layer
             leaveselectionp       ; if true, border becomes selection
         )
-  (let* (   (img (car (gimp-item-get-image drawable)))
+    ;(gimp-message "line 130")
+    (let* (
+            (img (car (gimp-item-get-image drawable)))
             (imgtype (car (gimp-drawable-type-with-alpha drawable)))
             (owidth (car (gimp-image-width img)))      ; current image w & h
             (oheight (car (gimp-image-height img)))
@@ -167,7 +165,7 @@
             (ibumpflag (if (= ibumpp TRUE) 0 1))
         )
         
-        ;(gimp-message "line 168")
+        ;(gimp-message "line 166")
         ; fill with transparent pixels and resize to new dimensions
         (gimp-drawable-fill layer FILL-TRANSPARENT)
         (gimp-image-resize img width height ulimage_x ulimage_y)
@@ -179,12 +177,11 @@
         (if (> fillchoice 2)
             (begin
                 ;(gimp-message "Pattern filling")
+                ; uses the current pattern
                 (set! filltype BUCKET-FILL-PATTERN)
             )
         )
         
-        ;added by karlhof26 but now not needed
-        ;(gimp-context-set-pattern bumppattern)
         
         ; color the left polygon
         (gimp-context-set-background (car colors))
@@ -193,16 +190,15 @@
               (list-to-array (list ulborder_x ulborder_y ulimage_x ulimage_y
                                llimage_x llimage_y llborder_x llborder_y
                                ulborder_x ulborder_y)))
-        ;(gimp-message "line194")
+        ;(gimp-message "line193")
         
         (gimp-edit-bucket-fill layer filltype LAYER-MODE-NORMAL 100 0 FALSE 0 0)
-        ;debug
-        ;(gimp-displays-flush)
-        ;(quit)
+        
         
         ; color the left pad
         (if (> lpad 0)
             (begin
+                ;(gimp-message "left pad")
                 (gimp-context-set-background color)
                 (gimp-image-select-polygon img CHANNEL-OP-REPLACE 10
                     (list-to-array (list 0 ulborder_y ulborder_x ulborder_y llborder_x
@@ -211,6 +207,8 @@
                 (gimp-edit-bucket-fill layer filltype LAYER-MODE-NORMAL 100 0 FALSE 0 0)
             )
         )
+        
+        
         
         ; color the top polygon
         (gimp-context-set-background (cadr colors))
@@ -221,9 +219,11 @@
         
         (gimp-edit-bucket-fill layer filltype LAYER-MODE-NORMAL 100 0 FALSE 0 0)
         
+        
         ; color the top pad
         (if (> tpad 0)
             (begin
+                ;(gimp-message "top-pad")
                 (gimp-context-set-background color)
                 (gimp-image-select-polygon img CHANNEL-OP-REPLACE 10
                     (list-to-array (list 0 0 0 ulborder_y width urborder_y width 0 0 0)))
@@ -231,6 +231,8 @@
                 (gimp-edit-bucket-fill layer filltype LAYER-MODE-NORMAL 100 0 FALSE 0 0)
             )
         )
+        
+        
         
         ; color the right polygon
         (gimp-context-set-background (caddr colors))
@@ -241,7 +243,10 @@
         
         (gimp-edit-bucket-fill layer filltype LAYER-MODE-NORMAL 100 0 FALSE 0 0)
         
-        ;(gimp-message "line 242")
+        ;(gimp-message "line 246")
+        
+        
+        
         ; color the right pad
         (if (> rpad 0)
             (begin
@@ -254,6 +259,8 @@
                 (gimp-edit-bucket-fill layer filltype LAYER-MODE-NORMAL 100 0 FALSE 0 0)
             )
         )
+        
+        
         
         ; color the bottom polygon
         (gimp-context-set-background (cadddr colors))
@@ -268,6 +275,7 @@
         ; color the bottom pad
         (if (> bpad 0)
             (begin
+                ;(gimp-message "line 269 - bottom pad")
                 (gimp-context-set-background color)
                 (gimp-image-select-polygon img CHANNEL-OP-REPLACE 10
                     (list-to-array (list 0 height 0 llborder_y width lrborder_y
@@ -278,36 +286,47 @@
             )
         )
         
+        
+        
         ; if user wanted to texture the border, do a bump map
-    (if (not (null? bumppattern))
-        (let* (     (old-pattern (car (gimp-context-get-pattern)))
-                    (bumpmap (car (gimp-layer-new img width height imgtype
+        (if (not (null? bumppattern))
+            (begin
+                (let* (     (old-pattern (car (gimp-context-get-pattern)))
+                            (bumpmap (car (gimp-layer-new img width height imgtype
                                              "Texture Bump Map" 100 LAYER-MODE-NORMAL)))
-              )
-            ;(gimp-message "bumpmapping")
-            (gimp-image-insert-layer img bumpmap 0 0)
-            (gimp-context-set-pattern bumppattern)
-            ; NOTE: if we try to do a bump map on only the selection we get
-            ; wierd artifacts around the edges; as a kludge, we turn on
-            ; "preserve transparency" and bump map the entire thing.  It might
-            ; also be possible to just grow the selection, but I haven't tried
-            ; that yet.
-            (gimp-layer-set-preserve-trans layer 1)
-            (gimp-selection-all img)
-            
-            (gimp-edit-bucket-fill bumpmap BUCKET-FILL-PATTERN LAYER-MODE-NORMAL 100
+                      )
+                    ;(gimp-message "bumpmapping")
+                    (gimp-image-insert-layer img bumpmap 0 -1)
+                    (gimp-context-set-pattern bumppattern)
+                    ; NOTE: if we try to do a bump map on only the selection we get
+                    ; weird artifacts around the edges; as a kludge, we turn on
+                    ; "preserve transparency" and bump map the entire thing.  It might
+                    ; also be possible to just grow the selection, but I haven't tried
+                    ; that yet.
+                    (gimp-layer-set-preserve-trans layer 1)
+                    (gimp-selection-all img)
+                    
+                    (gimp-edit-bucket-fill bumpmap BUCKET-FILL-PATTERN LAYER-MODE-NORMAL 100
                             0 FALSE 0 0)
-            (gimp-context-set-pattern old-pattern)
-            (plug-in-bump-map ibumpflag img layer bumpmap 125 45 3 0 0 0 0
+                    (gimp-context-set-pattern old-pattern)
+                    (plug-in-bump-map ibumpflag img layer bumpmap 125 45 5 0 0 0 0 ; was 125 45 3 0 0 0 0
                             TRUE FALSE 1)
-            (if (= leavebumpmap TRUE)
-                (gimp-item-set-visible bumpmap 0)
-                (gimp-image-remove-layer img bumpmap)
+                    (if (= leavebumpmap TRUE)
+                        (gimp-item-set-visible bumpmap 0)
+                        (gimp-image-remove-layer img bumpmap)
+                    )
+                    (gimp-layer-set-preserve-trans layer 0)
+                )
             )
-            (gimp-layer-set-preserve-trans layer 0)
         )
-    )
-        ;(gimp-message "line308")
+        
+        ;debug
+        ;(gimp-message "Quit KH2")
+        ;(gimp-displays-flush)
+        ;(quit)
+        
+        ;(gimp-message "line 328")
+        (gimp-displays-flush)
         ; clear selection
         (gimp-selection-none img)
         
@@ -328,19 +347,20 @@
         
         ; return value
         (list layer)
-  );end let*
+    );end let*
 )
 
 ; Script to add a mat around an image.
 ;
 (define (FU-add-mat image drawable
             bevelwidth           ; mat bevel width in pixels
+            beveledge            ; outer edge of the bevel
             bevelfillchoice      ; {0 (Choose) | 1 (FG color) | 2 (BG color)}
             bevelcolorchoice     ; (Choose) color from color selection dialog
             delta                ; amount to vary fill to create bevel effect
             matwidth             ; no comment here asks karlhof82
             matfillchoice        ; as above, but for the mat
-            matcolorchoice
+            matcolorchoice3      ; karlhof26 now matcolorchoice3
             texturep             ; flag: TRUE-->bump map the mat
             mattexture           ; pattern for bump mapping mat
             leavebumpmapp        ; flag: TRUE-->preserve bump map
@@ -352,53 +372,78 @@
             layersp              ; flag: TRUE-->preserve new layers
             leaveselectionp      ; flag: TRUE-->mat is selected on exit
         )
-        
+        ;(gimp-message "line 375")
         (gimp-image-undo-group-start image)
         (if (not (= RGB (car (gimp-image-base-type image))))
             (gimp-image-convert-rgb image)
         )
         
-  (let* (   (img (car (gimp-item-get-image drawable)))
+    (let* (
+            (img (car (gimp-item-get-image drawable)))
             (pattern (if (= texturep TRUE) mattexture '()))
         )
-    
-    ; draw bevel
-    (if (> bevelwidth 0)
-        (draw-border drawable bevelwidth 0 0 0 0 bevelfillchoice
-                    bevelcolorchoice delta '() FALSE FALSE "Mat Bevel" FALSE)
-    )
-    
-    ; draw mat
-    (if (> matwidth 0)
-        (draw-border drawable matwidth lpad tpad rpad bpad
-                    matfillchoice matcolorchoice 0 pattern leavebumpmapp
-                    ibumpp "Mat" leaveselectionp)
-    )
-    
-    ; merge layers if user did not want them
-    (if (= layersp FALSE)
-        (begin
-            (if (> matwidth 0)
-                (let (
-                        (layer (car (gimp-image-get-active-layer img)))
-                     )
-                    (gimp-image-merge-down img layer EXPAND-AS-NECESSARY)
-                )
+        
+        ;(gimp-message "line 386")
+        ; draw bevel
+        (if (> bevelwidth 0)
+            (begin
+                ;(gimp-message "line 390 - Bevelling")
+                ;(gimp-message "line 391")
+                ;;(draw-border-matte drawable bevelwidth 0 0 0 0 bevelfillchoice
+                ;;    bevelcolorchoice delta mattexture FALSE FALSE "Mat Bevel" FALSE)
+                ;(gimp-message "line 394")
+                
+                (draw-border-matte drawable bevelwidth beveledge beveledge beveledge beveledge bevelfillchoice     ; was 0 0 0 0 instead of beveledgex4
+                    bevelcolorchoice delta pattern FALSE FALSE "Mat Bevel" FALSE)
+                ;(gimp-message "line398")
+                
+                ;;boken- empty list;;(draw-border-matte drawable bevelwidth 0 0 0 0 bevelfillchoice
+                ;;    bevelcolorchoice delta '() FALSE FALSE "Mat Bevel" FALSE)
             )
-            (if (> bevelwidth 0)
-                (let (
-                        (layer (car (gimp-image-get-active-layer img)))
-                     )
-                    (gimp-image-merge-down img layer EXPAND-AS-NECESSARY)
+        )
+        
+        
+        ; draw mat
+        (if (> matwidth 0)
+            (begin
+                ;(gimp-message "line 409")
+                (draw-border-matte drawable matwidth lpad tpad rpad bpad
+                    matfillchoice matcolorchoice3 0 pattern leavebumpmapp
+                    ibumpp "Mat" leaveselectionp)
+            )
+        )
+        ;(gimp-message "line 415")
+        ; merge layers if user did not want them
+        
+        (gimp-displays-flush)
+        ;(gimp-message "Quit Now")
+        ;(quit)
+        
+        (if (= layersp FALSE)
+            (begin
+                (if (> matwidth 0)
+                    (let (
+                            (layer (car (gimp-image-get-active-layer img)))
+                         )
+                        (gimp-image-merge-down img layer EXPAND-AS-NECESSARY)
+                    )
+                )
+                (if (> bevelwidth 0)
+                    (let (
+                            (layer (car (gimp-image-get-active-layer img)))
+                         )
+                        (gimp-image-merge-down img layer EXPAND-AS-NECESSARY)
+                    )
                 )
             )
         )
+        
+        ;(gimp-message "Good finish OK")
+        ; th-th-th-that's all folks!
+        (gimp-image-undo-group-end img)
+        (gimp-displays-flush)
+        (gc) ; garbage collection; memory cleanup
     )
-    
-    ; th-th-th-that's all folks!
-    (gimp-image-undo-group-end img)
-    (gimp-displays-flush)
-  )
 )
 
 
@@ -419,7 +464,7 @@
             leaveselectionp      ; flag: TRUE-->mat is selected on exit
             leavebevelbumpmapp   ; flag: TRUE-->preserve bevel bump map
         )
-        ;(gimp-message "line 420")
+        ;(gimp-message "line 467")
         (gimp-image-undo-group-start image)
         (if (not (= RGB (car (gimp-image-base-type image))))
             (gimp-image-convert-rgb image)
@@ -440,22 +485,23 @@
     )
     
     ; draw border
-    (let* ((frame (car (draw-border drawable framewidth 0 0 0 0
+    (let* (
+            (frame (car (draw-border-matte drawable framewidth 0 0 0 0
                                     framefillchoice framecolorchoice 0
                                     pattern leavebumpmapp ibumpp "Frame"
                                     TRUE)))
-           (selection (car (gimp-selection-save img)))
-           (width (car (gimp-image-width img)))      ; current image w & h
-           (height (car (gimp-image-height img)))
-           (old-bg (car (gimp-context-get-background)))
-           (bumpmap (car (gimp-layer-new img width height imgtype
+            (selection (car (gimp-selection-save img)))
+            (width (car (gimp-image-width img)))      ; current image w & h
+            (height (car (gimp-image-height img)))
+            (old-bg (car (gimp-context-get-background)))
+            (bumpmap (car (gimp-layer-new img width height imgtype
                                          "Frame Bevel Bump Map" 100 LAYER-MODE-NORMAL)))
-           (index 1)
-           )
-        ;(gimp-message "line 453")
+            (index 1)
+          )
+        ;(gimp-message "line 501")
         ; Initialise our bumpmap
-        (gimp-image-insert-layer img bumpmap 0 0)
-        (gimp-item-set-visible bumpmap 0)
+        (gimp-image-insert-layer img bumpmap 0 -1)
+        (gimp-item-set-visible bumpmap FALSE)
         (gimp-context-set-background '(0 0 0))
         (gimp-drawable-fill bumpmap FILL-BACKGROUND)
         (gimp-image-select-item img CHANNEL-OP-REPLACE selection)
@@ -463,11 +509,13 @@
         ; Fill with a gradient of sorts
         ; TODO: there has got to be a more efficient way to do this
         ; (gradient fills?)
-        ;(gimp-message "line 464")
+        ;(gimp-message "line 512")
+        (set! index 0)
         (while (< index bevelindex)
             (let ((gv (/ (* index 255) bevelindex)))
                 (begin
-                    (gimp-context-set-background (list gv gv gv))
+                    ;(gimp-message (string-append (number->string gv) ":" (number->string index)))
+                    (gimp-context-set-background (list (round gv) (round gv) (round gv)))
                     (gimp-edit-bucket-fill bumpmap FILL-BACKGROUND LAYER-MODE-NORMAL 100 0
                                    FALSE 0 0)
                     (gimp-selection-shrink img 1)
@@ -482,9 +530,13 @@
         
         ; Do the bump map.
         (gimp-selection-none img)
-        (plug-in-bump-map 1 img frame bumpmap 125 45 3 0 0 0 0 TRUE FALSE 1)
+        (gimp-displays-flush)
+        (plug-in-bump-map 1 img frame bumpmap 125 45 bevelindex 0 0 0 0 TRUE FALSE 1) ; bump value was 3 now 5
         
-        ;(gimp-message "line 485")
+        ;(gimp-message "line 536")
+        ;(gimp-layer-set-mode bumpmap LAYER-MODE-ADDITION)
+        (gimp-displays-flush)
+        
         ; remove bump map if user did not want it
         (if (= leavebevelbumpmapp FALSE)
             (gimp-image-remove-layer img bumpmap)
@@ -492,24 +544,28 @@
         
         ; Now for the inner shadow
         (if (> ds-width 0)
-            (let* ((ds-color '(0 0 0))
-                 ; create the shadow layer
-                 (shadow (car (gimp-layer-new img width height imgtype
+            (begin
+                (let* (
+                        (ds-color '(0 0 0))
+                        ; create the shadow layer
+                        (shadow (car (gimp-layer-new img width height imgtype
                                               "Shadow" ds-opacity LAYER-MODE-NORMAL)))
-                 )
-                 ;(gimp-message "line 498")
-                (gimp-image-insert-layer img shadow 0 0)
-                (gimp-selection-none img)
-                (gimp-edit-clear shadow)
-                (gimp-context-set-background ds-color)
-                (gimp-image-select-item img CHANNEL-OP-REPLACE selection)
-                (gimp-selection-feather img ds-width)
-                (gimp-edit-fill shadow FILL-BACKGROUND)
-                (gimp-image-select-item img CHANNEL-OP-REPLACE selection)
-                (gimp-edit-clear shadow)
+                      )
+                    ;(gimp-message "line 554")
+                    (gimp-image-insert-layer img shadow 0 0)
+                    (gimp-selection-none img)
+                    (gimp-edit-clear shadow)
+                    (gimp-context-set-background ds-color)
+                    (gimp-image-select-item img CHANNEL-OP-REPLACE selection)
+                    (gimp-selection-feather img ds-width)
+                    (gimp-edit-fill shadow FILL-BACKGROUND)
+                    (gimp-image-select-item img CHANNEL-OP-REPLACE selection)
+                    (gimp-edit-clear shadow)
+                )
             )
         )
-            
+        
+        (gimp-displays-flush)
         ; merge layers if user did not want them
         (if (= layersp FALSE)
             (begin
@@ -531,6 +587,7 @@
         
     );end let*
     
+    ;(gimp-message "Good finish OK")
     ; th-th-th-that's all folks!
     (gimp-image-undo-group-end img)
     (gimp-displays-flush)
@@ -542,34 +599,35 @@
 
 (script-fu-register "FU-add-mat"
             "<Toolbox>/Script-Fu/Edges/Add Matte Frame"
-            "Add a single mat around an image. \nfile:FU_edges_mats-and-frames.scm"
+            "Add a single mat around an image. Matte overwrites the bevel. \nfile:FU_edges_mats-and-frames.scm"
             "Eric Jeschke <eric@redskiesatnight.com>"
             "Eric Jeschke"
             "5/27/03"
             "*"
             SF-IMAGE        "Input Image"                   0
             SF-DRAWABLE     "Input Drawable"                0
-            SF-ADJUSTMENT   "Bevel Width"                   '(5 0 250 1 10 0 1)
-            SF-OPTION       "Bevel Fill"                    '("Color" "FG color" "BG color" "Pattern")
+            SF-ADJUSTMENT   "Bevel Width 0=no bevel"        '(50 0 250 1 10 0 1)
+            SF-ADJUSTMENT   "Bevel Edge"                    '(10 0 250 1 10 0 1)
+            SF-OPTION       "Bevel Fill"                    '("Color" "FG color" "BG color" "ActivePattern")
             SF-COLOR        "Bevel Fill Color"              '(221 221 221)
-            SF-ADJUSTMENT   "Delta Value on Bevel Color"    '(25 1 255 1 10 0 1)
-            SF-ADJUSTMENT   "Mat Width"                     '(35 0 1000 1 10 0 1)
-            SF-OPTION       "Mat Fill"                      '("Color" "FG color" "BG color" "Pattern")
+            SF-ADJUSTMENT   "Delta Value on Bevel Color"    '(55 1 255 1 10 0 1)
+            SF-ADJUSTMENT   "Mat Width 0=no matte"          '(80 0 1000 1 10 0 1)
+            SF-OPTION       "Mat Fill"                      '("Color" "FG color" "BG color" "ActivePattern")
             SF-COLOR        "Mat Fill Color"                '(128 128 128)
-            SF-TOGGLE       "Texture Mat"                   FALSE
-            SF-PATTERN      "Texture Pattern"               "Wood"
+            SF-TOGGLE       "Texture Mat/Bevel"             FALSE
+            SF-PATTERN      "Texture/Bump Pattern"          "Wood"
             SF-TOGGLE       "Leave Texture Bump Map"        FALSE
             SF-TOGGLE       "Bump Interactively"            FALSE
             SF-ADJUSTMENT   "Left Pad"                      '(0 0 1000 1 10 0 1)
             SF-ADJUSTMENT   "Top Pad"                       '(0 0 1000 1 10 0 1)
             SF-ADJUSTMENT   "Right Pad"                     '(0 0 1000 1 10 0 1)
             SF-ADJUSTMENT   "Bottom Pad"                    '(0 0 1000 1 10 0 1)
-            SF-TOGGLE       "Use Layers"                    FALSE
+            SF-TOGGLE       "Use Layers"                    TRUE
             SF-TOGGLE       "Leave Selection"               FALSE
 )
 
 (script-fu-register "FU-add-frame-kh"
-            "<Toolbox>/Script-Fu/Edges/Frame with Bevel"
+            "<Toolbox>/Script-Fu/Edges/Add Frame with Bevel"
             "Add a frame around an image, ability to adjust bevel and shadow. Uses current pattern. \nfile:FU_edges_mats-and-frames.scm"
             "Eric Jeschke <eric@redskiesatnight.com>"
             "Eric Jeschke"
