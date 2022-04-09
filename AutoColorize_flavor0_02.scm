@@ -177,15 +177,15 @@
                         (begin
                             (if (> l-original 245)
                                 (begin
-                                    (set! r (+ (rand 20) 236))
-                                    (set! g (+ (rand 20) 236))
-                                    (set! b (+ (rand 20) 236))
+                                    (set! r (+ (rand 20) 234))
+                                    (set! g (+ (rand 20) 234))
+                                    (set! b (+ (rand 20) 234))
                                     
                                 )
                                 (begin
-                                    (set! r (rand 255)) ; was 256
-                                    (set! g (rand 255)) ; was 256
-                                    (set! b (rand 255)) ; was 256
+                                    (set! r (rand 254)) ; was 256
+                                    (set! g (rand 254)) ; was 256
+                                    (set! b (rand 254)) ; was 256
                                 )
                             )
                         )
@@ -205,15 +205,15 @@
                                             (begin
                                                 (if (> l-original 245)
                                                     (begin
-                                                        (set! r (+ (rand 20) 236))
-                                                        (set! g (+ (rand 20) 236))
-                                                        (set! b (+ (rand 20) 236))
+                                                        (set! r (+ (rand 30) 224))
+                                                        (set! g (+ (rand 30) 224))
+                                                        (set! b (+ (rand 30) 224)) ; was rand 20 and 234
                                                         
                                                     )
                                                     (begin
-                                                        (set! r (rand 255)) ;was 256
-                                                        (set! g (rand 255)) ; was 256
-                                                        (set! b (rand 255)) ; was 256
+                                                        (set! r (rand 254)) ;was 256
+                                                        (set! g (rand 254)) ; was 256
+                                                        (set! b (rand 254)) ; was 256
                                                     )
                                                 )
                                                 
@@ -235,15 +235,15 @@
                                                     (begin
                                                         (if (> l-original 245)
                                                             (begin
-                                                                (set! r (+ (rand 20) 235))
-                                                                (set! g (+ (rand 20) 235))
-                                                                (set! b (+ (rand 20) 235))
+                                                                (set! r (+ (rand 20) 234))
+                                                                (set! g (+ (rand 20) 234))
+                                                                (set! b (+ (rand 20) 234))
                                                                 
                                                             )
                                                             (begin
-                                                                (set! r (rand 255)) ; was 256
-                                                                (set! g (rand 255)) ; was 256
-                                                                (set! b (rand 255)) ; was 256
+                                                                (set! r (rand 254)) ; was 256
+                                                                (set! g (rand 254)) ; was 256
+                                                                (set! b (rand 254)) ; was 256
                                                             )
                                                         )
                                                         
@@ -263,15 +263,15 @@
                                                     (begin
                                                         (if (> l-original 245)
                                                             (begin
-                                                                (set! r (+ (rand 20) 235))
-                                                                (set! g (+ (rand 20) 235))
-                                                                (set! b (+ (rand 20) 235))
+                                                                (set! r (+ (rand 20) 234))
+                                                                (set! g (+ (rand 20) 234))
+                                                                (set! b (+ (rand 20) 234))
                                                                 
                                                             )
                                                             (begin
-                                                                (set! r (rand 255)) ; was 256
-                                                                (set! g (rand 255)) ; was 256
-                                                                (set! b (rand 255)) ; was 256
+                                                                (set! r (rand 254)) ; was 256
+                                                                (set! g (rand 254)) ; was 256
+                                                                (set! b (rand 254)) ; was 256
                                                             )
                                                         )
                                                         
