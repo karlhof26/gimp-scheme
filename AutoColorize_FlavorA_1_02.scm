@@ -61,7 +61,7 @@
                 (set! floating (car(gimp-edit-paste layer TRUE)))
                 (gimp-floating-sel-to-layer floating)
                 (gimp-image-set-active-layer image floating)
-                (set! hue (rand 360))
+                (set! hue (rand 359)) ; was rand 360
                 (gimp-drawable-colorize-hsl floating hue 100 0)
                 ;(script-fu-colorize image floating (list (rand 255) (rand 255) (rand 255)) 100)
                 (if (> y 1) ;if y is still valid we set colors to the next colors
