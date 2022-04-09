@@ -116,11 +116,11 @@
                     )
                 )
                 
-                (while (and (> difference 1) (> bigcounter 1))
+                (while (and (> difference 1.5) (> bigcounter 1))
                     (if (= counter 0)
                         (begin
-                            (set! try (- try (rand 2)))
-                            (if (< try 0)
+                            (set! try (- try (rand 5)))
+                            (if (< try 1) ; was try<0
                                 (begin
                                     ;(gimp-message "try below 0 - reset")
                                     (set! try 255) ;retry from 255
@@ -140,7 +140,7 @@
                             
                         )
                     )
-                    (if (< l-original 85) ; was 85
+                    (if (< l-original 75) ; was 85
                         (begin
                             (set! r (- (rand 256) 1))
                             (set! g try)                            ;try green was red
@@ -173,8 +173,7 @@
                 ;(gimp-message (number->string r)) 
                 ;(gimp-message (number->string g))
                 ;(gimp-message (number->string b))
-                (gimp-image-set-active-layer image randomlayer)
-                (gimp-drawable-colorize-hsl randomlayer (rand 359) 100 1)
+                
                 (gimp-image-set-active-layer image floating)
                 
                 (gimp-context-set-foreground (list r g b))
@@ -191,8 +190,19 @@
                 
                 ;loop control
                 (set! y (- y 1))
+                (gimp-displays-flush)
             );end of while 
-            (gimp-selection-none image)	
+            
+            
+            (gimp-selection-none image)
+            
+            (gimp-image-set-active-layer image randomlayer)
+            ;(gimp-drawable-colorize-hsl randomlayer (rand 359) 100 1)
+            (plug-in-alienmap2 1 image randomlayer 8 40 1 0 1 0 0 TRUE TRUE TRUE)
+            ;(gimp-message "alien")
+            ;(plug-in-alienmap2 1 image randomlayer (rand 6) (rand 20) (rand 6) (rand 20) (rand 6) (rand 20) 0 TRUE TRUE TRUE)
+            ;(gimp-drawable-colorize-hsl floating (rand 359) 100 1) 
+            
             ;(gimp-image-undo-enable image) ;DN = NO UNDO
             (gimp-image-undo-group-end image)                     ;undo group in one step
             (gimp-displays-flush)
@@ -202,14 +212,14 @@
 (script-fu-register
     "script-fu-auto-colorize-g"         ;function name
     "<Image>/Script-Fu2/Create from Image/Auto Colorize Flavor G"    ;menu register
-    "Randomly colorize image with specified number of colors. Also creates a second random color layer. This version has green priority so it may generate different effects.\nfile:AutoColorize_FlavorG_ver3_02.scm"       ;description
+    "Randomly colorize image with specified number of colors. Also creates a second random color layer red priority. This version has green/blue priority so it may generate different effects. Also generates a separate layer for each color. Hide layers for interesting combinations.\nfile:AutoColorize_FlavorG_ver3_02.scm"       ;description
     "Tin Tran"                              ;author name
     "copyright info and description"        ;copyright info or description
     "2015"                                  ;date
     "RGB*, GRAY*"                           ;mode
-    SF-IMAGE      "Image"           0                   
-    SF-DRAWABLE   "Layer"           0
-    SF-ADJUSTMENT "Number of colors" '(5 2 255 1 10 0 0)
+    SF-IMAGE      "Image"                   0      
+    SF-DRAWABLE   "Layer"                   0
+    SF-ADJUSTMENT "Number of colors"        '(5 2 50 1 10 0 0) ; was 255 at max
 )
 
 ; end of file
