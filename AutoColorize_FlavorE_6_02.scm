@@ -108,9 +108,9 @@
                                 
                             )
                             (begin
-                                (set! r (- (rand 256) 1))
-                                (set! g (- (rand 256) 1))
-                                (set! b (- (rand 256) 1))
+                                (set! r (- (rand 255) 1))
+                                (set! g (- (rand 255) 1))
+                                (set! b (- (rand 255) 1))
                             )
                         )
                         

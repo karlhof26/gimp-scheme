@@ -171,21 +171,21 @@
                 
                 (if (< l-original 56.8)
                     (begin
-                        (set! r (- (rand 256) 1))
-                        (set! g (- (rand 256) 1))
+                        (set! r (- (rand 255) 1)); was 256-1
+                        (set! g (- (rand 255) 1))
                         (set! b try)        ;try blueish
                     )
                     (begin
                         (if (> l-original (* 56.8 2))
                             (begin
-                                (set! r (- (rand 256) 1))
+                                (set! r (- (rand 255) 1))
                                 (set! g try)       ;try greenish
-                                (set! b (- (rand 256) 1))
+                                (set! b (- (rand 255) 1))
                             )
                             (begin
                                 (set! r try)       ;try red
-                                (set! g (- (rand 256) 1))      
-                                (set! b (- (rand 256) 1))
+                                (set! g (- (rand 255) 1))      
+                                (set! b (- (rand 255) 1))
                             )
                         )
                     )
@@ -233,6 +233,8 @@
         (gimp-message "Good finish OK")
         (gimp-image-undo-group-end image)                     ;undo group in one step
         (gimp-displays-flush)
+        
+        (gc) ; memory garbage cleanup
     )
     
     

@@ -110,7 +110,7 @@
               ;just randomly pick a color until we find a color of similar luminance
               ;absolutely not the ideal way of getting a color
               (while (and (> difference 1.5) (< counter 220))  ; was 1 was 1.5
-                    (set! r (- (rand 256) 1)) ; was 255
+                    (set! r (- (rand 254) 1)) ; was 255; was 256-1
                     (set! g (rand 255))
                     (set! b (rand 255))
                     (set! l-new (sqrt (+ (pow (* r Re) 2) (pow (* g Gr) 2)  (pow (* b Bl) 2))))
