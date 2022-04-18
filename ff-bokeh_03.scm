@@ -235,7 +235,8 @@
 
 (script-fu-register "script-fu-ff-semi-auto-bokeh"
     "Free-form-semi-auto-bokeh..."
-    "Use the path tool to mark the lightsources in the image from which the bokeheffect will be made. The shape and the size of the bokeh-effect is taken from a selection the user must make before using this plugin. \nfile:ff-bokeh_03.scm"
+    "Use the path tool to mark the lightsources in the image from which the bokeheffect will be made. 
+    The shape and the size of the bokeh-effect is taken from a selection the user must make before using this plugin. \nfile:ff-bokeh_03.scm"
     "Hans Schopmeijer"
     "GNU General Public License"
     "3-2013"
@@ -314,13 +315,14 @@
         (let* ( 
                 (brightest (car (gimp-layer-copy layer 1)))
               )
+            ;(gimp-message "line 317")
             (gimp-image-insert-layer img brightest 0 1)
             (gimp-drawable-levels-stretch brightest)
             (gimp-drawable-levels brightest HISTOGRAM-VALUE 0.0 1.0 TRUE 0.3 0.0 1.0 TRUE) ;; 1.0 0.3 0 255
             (gimp-drawable-threshold brightest HISTOGRAM-VALUE (/ lowthr1 255) 1.0)
-            (plug-in-gauss-iir2 1 img brightest scale scale)  	
+            (plug-in-gauss-iir2 1 img brightest scale scale)
             (gimp-drawable-threshold brightest HISTOGRAM-VALUE  (/ lowthr2 255) 1.0)
-            (gimp-image-select-color img 0 brightest `( 255 255 255)) 
+            (gimp-image-select-color img 0 brightest '( 255 255 255)) 
             (plug-in-sel2path 0 img brightest)
             (gimp-image-remove-layer img brightest)
             (gimp-selection-none img)
@@ -405,7 +407,8 @@
         (set! dia (round (max (- (caddr data)  (car data)) (- (cadddr data) (cadr data)))))
         
         ;save bokehshape
-        (set! channelc (car(gimp-selection-save img)))
+        (set! channelc (car (gimp-selection-save img)))
+        (gimp-channel-set-name channelc "ChannelC")
         (gimp-selection-none img)
         
         ;Find histogram value so that (percentage) brightest pixels lie above that value
@@ -415,7 +418,7 @@
         (brightest-to-path img drawa hist-low (round (- 255 (* 2.54 sens))) scale)
         
         ; create new transparent layer for the bokeh-effect
-        (set! pos (car(gimp-image-get-item-position img item)))
+        (set! pos (car (gimp-image-get-item-position img item)))
         (gimp-image-insert-layer img bokeh-layer 0 pos)
         (gimp-layer-set-name bokeh-layer (strcat "Bokeh : " 
                                             (number->string (round sens)) " "
@@ -431,22 +434,34 @@
         ;create a ringselection and save it in a channel
         (gimp-image-select-item img CHANNEL-OP-REPLACE channelc)
         (gimp-selection-feather img ringwidth)
-        (set! channela (car(gimp-selection-save img)))
+        (set! channela (car (gimp-selection-save img)))
+        (gimp-channel-set-name channela "ChannelA")
+        
         (gimp-selection-shrink img ringwidth)
         (gimp-selection-feather img (* 2 ringwidth))
-        (set! channelb (car(gimp-selection-save img)))
+        (set! channelb (car (gimp-selection-save img)))
+        (gimp-channel-set-name channela "ChannelB")
         (gimp-image-select-item img CHANNEL-OP-REPLACE channela)
-        (gimp-image-remove-channel img channela)
+        ;(gimp-image-remove-channel img channela) ; removed by karlhof26
         (gimp-selection-feather img ringwidth)
         (gimp-image-select-item img CHANNEL-OP-SUBTRACT channelb)
-        (gimp-image-remove-channel img channelb)
-        (set! channela (car(gimp-selection-save img)))
-        (gimp-selection-none img)
+        ;(gimp-image-remove-channel img channelb) ; removed by karlhof26
+        
+        ;(set! channela (car (gimp-selection-save img))) ; removed by karlhof26
+        (gimp-channel-set-name channela "ChannelA2")
+        
+        ;(gimp-message "Channel work done")
+        (gimp-displays-flush)
+        ;(quit)
+        
+        ;removed by karlhof26
+        ;(gimp-selection-none img)
         
         ; get the strokes
         (set! vectors (car(gimp-image-get-active-vectors img)))
         (if (= vectors -1)
-            (gimp-message-and-quit "There are no bright lightsources in the image! \nAre you shure you are on the correct layer?"))
+            (gimp-message-and-quit "There are no bright lightsources in the image! \nAre you shure you are on the correct layer?")
+        )
         
         (set! strokes (gimp-vectors-get-strokes vectors)) 
         (set! strnr 0)
@@ -480,12 +495,20 @@
                 )
             )
             
+            ;(gimp-message (string-append
+            ;    "maxdim:" (number->string maxdim)
+            ;    " sourcesize:" (number->string sourcesize)
+            ;    " roundness:" (number->string roundness)
+            ;    " dx:" (number->string dx)
+            ;    )
+            ;)
             ;make a bokeh if size of lightsource is smaller than sourcesize and the 
             ;ratio between width and height of the lightsource is below 2.
             ;These restrictions prefent big lighted areas and non-round lightsources
             ;producing a bokeh.
-            (if (and (< maxdim sourcesize) (< roundness 2))
+            (if (and (< maxdim sourcesize) (< roundness 4)) ; was roundness <2
                 (begin
+                    ;(gimp-message "ratio test passed")
                     ;calculate centre of stroke
                     (set! x (round (/ (apply + xcoor) (length xcoor))) )
                     (set! y (round (/ (apply + ycoor) (length ycoor))) )
@@ -496,8 +519,24 @@
                     (set! ycp (max (- y half-maxdim) half-maxdim))
                     (set! ycp (min y  (- height half-maxdim)))
                     (set! color (car (gimp-image-pick-color img drawa xcp ycp FALSE TRUE maxdim ) ))
+                    
+                    (gimp-message (string-append "x" (number->string x)
+                        " y:" (number->string y)
+                        " half-maxdim:" (number->string half-maxdim)
+                        " xcp:" (number->string xcp)
+                        )
+                    )
+                    ;(gimp-message "line515")
+                    ;(gimp-displays-flush)
+                    ;(quit)
+                    
                     ;create white ring
+                    ;(gimp-image-select-ellipse img CHANNEL-OP-ADD ( - x half-maxdim) (- y half-maxdim) maxdim maxdim)
                     (gimp-image-select-item img CHANNEL-OP-REPLACE channela)
+                    
+                    ;(gimp-displays-flush)
+                    ;(quit)
+                    
                     (gimp-selection-translate img (- x sel-centre-x) (- y sel-centre-y))
                     ;make opacity of the ring depended on the size of the lightsource
                     (set! op (trunc (* maxdim (/ 10 sourcesize))))
@@ -511,23 +550,29 @@
                     (gimp-edit-blend bokeh-layer 2 0 2 (+ 50 (* op 5)) 0 0 FALSE FALSE 1 0 TRUE x y (+ x dia) (+ y dia))
                     (gimp-selection-none img)
                 )
-                ()
+                (begin
+                    ;(gimp-message "ratio test failed")
+                )
             )
             (set! strnr (+ strnr 1))
+            ;(gimp-message "Loop")
         )
-        (gimp-message "Line 518")
+        
+        ;(gimp-message "Line 558")
         
         ; Copy imagelayer and blur it, put it beneath the bokeh-layer 
         (if (equal? blurlayer TRUE)
             (begin
+                ;(gimp-message "line 563")
                 (set! blurred (car (gimp-layer-copy drawa 1)))
                 (gimp-image-insert-layer img blurred 0 (+ pos 1))
                 (gimp-layer-set-name blurred "Blurred Original")
                 (plug-in-gauss-iir2 1 img blurred blur blur)
             )
-            ()
+            (begin
+            )
         )
-        (gimp-message "Line 530")
+        ;(gimp-message "line 572")
         ; set bokeh-layer mode to screen, modify bokeh-layer, delete channels and vectors 
         (gimp-layer-set-mode bokeh-layer 4)
         (gimp-drawable-hue-saturation bokeh-layer HISTOGRAM-VALUE 0 lightness saturation 0)
@@ -540,24 +585,25 @@
         (gimp-image-undo-group-end img)
         (gimp-context-pop)
         (gimp-image-set-active-layer img drawa)
-        
+        ;(gimp-message "line 585") 
     )
 )
 
 (script-fu-register "script-fu-ff-auto-bokeh"
             "Free-form-auto-bokeh..."
-            "Creates a Bokeh-effect from available lightsources in the active layer. The shape and the size of the bokeh-effect is taken from a selection the user must make before using this plugin. \nfile:ff-bokeh_03.scm"
+            "Creates a Bokeh-effect from available lightsources in the active layer. 
+ The shape and the size of the bokeh-effect is taken from a selection the user must make before using this plugin. \nfile:ff-bokeh_03.scm"
             "Hans Schopmeijer"
             "GNU General Public License"
             "3-2013"
             "RGB* GRAY*"
             SF-IMAGE        "Input Image"                           0
             SF-DRAWABLE     "Drawable"                              0
-            SF-ADJUSTMENT   "Sensitivity (higher is more sensitive)"    '(70 0 100 1 10 1)
-            SF-ADJUSTMENT   "Maximum lightsource dimension (pix)"       '(80 3 1000 1 10 1)
-            SF-ADJUSTMENT    "Bokeh-border thickness (pix)"             '(2 1 100 1 10 1)
-            SF-ADJUSTMENT   "lightness correction bokehlayer"           '(50 -100 100 1 10 1)
-            SF-ADJUSTMENT   "Saturation correction bokehlayer"          '(90 -100 100 1 10 1)
+            SF-ADJUSTMENT   "Sensitivity (higher is more sensitive)"    '(70 0 100 1 10 0 1)
+            SF-ADJUSTMENT   "Maximum lightsource dimension (pix)"       '(80 3 1000 1 10 1 0)
+            SF-ADJUSTMENT    "Bokeh-border thickness (pix)"             '(2 1 100 1 10 1 0)
+            SF-ADJUSTMENT   "lightness correction bokehlayer"           '(50 -100 100 1 10 1 0)
+            SF-ADJUSTMENT   "Saturation correction bokehlayer"          '(90 -100 100 1 10 1 0)
             SF-TOGGLE       "Insert a blurred copy from the image?"      TRUE
             SF-ADJUSTMENT   "Blur-radius of the inserted layer"         '(50 1 200 1 10 1)
 )
