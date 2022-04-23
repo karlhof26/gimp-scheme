@@ -38,18 +38,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;.
 
 ;
-(define (script-fu-Eg-StairInterpolation InImage InLayer InFactor)
+(define (script-fu-Eg-StairInterpolation InImage InLayer InFactor InInterpolation)
 ;
     (let* (
             (TheImage (car (gimp-channel-ops-duplicate InImage)))
             (TheLayer (car (gimp-image-flatten TheImage)))
-            (Step (* 10 (- InFactor 1)))
+            (Step (round (* 15 (- InFactor 1)))) ; was (* 10
             (TheWidth (car (gimp-image-width TheImage)))
             (TheHeight (car (gimp-image-height TheImage)))
-            (TotWidth (* InFactor TheWidth))
-            (TotHeight (* InFactor TheHeight))
-            (IncWidth (/ (- TotWidth TheWidth) Step))
-            (IncHeight (/ (- TotHeight TheHeight) Step))
+            (TotWidth (round (* InFactor TheWidth)))
+            (TotHeight (round (* InFactor TheHeight)))
+            (IncWidth (round (/ (- TotWidth TheWidth) Step)))
+            (IncHeight (round (/ (- TotHeight TheHeight) Step)))
             (Counter 1)
         )
         (gimp-image-undo-disable TheImage)
@@ -57,8 +57,29 @@
         ;
         ; Resize the image
         ;
-        (gimp-context-set-interpolation INTERPOLATION-CUBIC)
+        (cond ((= InInterpolation 0)
+                (gimp-context-set-interpolation INTERPOLATION-NOHALO)
+              )
+              ((= InInterpolation 1)
+                (gimp-context-set-interpolation INTERPOLATION-NONE)
+              )
+              ((= InInterpolation 2)
+                (gimp-context-set-interpolation INTERPOLATION-CUBIC)
+              )
+              ((= InInterpolation 3)
+                (gimp-context-set-interpolation INTERPOLATION-LINEAR)
+              )
+              ((= InInterpolation 4)
+                (gimp-context-set-interpolation INTERPOLATION-NOHALO)
+              )
+              ((= InInterpolation 5)
+                (gimp-context-set-interpolation INTERPOLATION-LOHALO)
+              )
+        )
+        ;(gimp-context-set-interpolation INTERPOLATION-LINEAR)
         (gimp-context-set-transform-direction TRANSFORM-FORWARD)
+        
+        
         
         (while (<= Counter Step)
             ;
@@ -68,6 +89,7 @@
                 )
                 ;(gimp-drawable-transform-scale TheLayer 0.0 0.0 NewWidth NewHeight TRANSFORM-FORWARD INTERPOLATION-CUBIC TRUE 3 FALSE)
                 (gimp-item-transform-scale TheLayer 0.0 0.0 NewWidth NewHeight)
+                ;(gimp-message "Bing")
             )
             (set! Counter (+ Counter 1))
         )
@@ -88,13 +110,14 @@
 (script-fu-register
     "script-fu-Eg-StairInterpolation"
     "<Toolbox>/Script-Fu/Toolbox/Eg Stair Scaleup"
-    "Scale up images with minimal cost in quality but larger cost in time. Enlarges the image step by step. \n file:egger-stair-intertpolation.scm"
+    "Scale up images with minimal cost in quality but larger cost in time. Enlarges the image step by step. NoHalo is the best setting. \n file:egger-stair-intertpolation.scm"
     "Martin Egger (martin.egger@gmx.net)"
     "2005, Martin Egger, Bern, Switzerland"
     "31.05.2005"
     "RGB* GRAY*"
-    SF-IMAGE    "The Image"         0
-    SF-DRAWABLE    "The Layer"      0
-    SF-ADJUSTMENT    "Factor"       '(1.0 1.0 3.0 0.1 0 2 0)
+    SF-IMAGE        "The Image"         0
+    SF-DRAWABLE     "The Layer"         0
+    SF-ADJUSTMENT   "Factor"            '(1.7 1.0 3.0 0.1 0 1 0) ; 0 2 0
+    SF-OPTION        "Interpolation"    '("NoHalo" "None" "Cubic" "Linear" "NoHalo" "LowHalo")
 )
 ;end of script
