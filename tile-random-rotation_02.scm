@@ -3,7 +3,7 @@
 ;
 ; This is Script-Fu program written for GIMP 2.8.
 ;
-; Updated for Gimp-2.10.20 on 26/09/2020
+; Updated for Gimp-2.10.20 on 26/09/2020 
 ; make-seamless-by-mirroring.scm depends on this script.
 ;
 ; It tiles the image with optional random rotations and flipping, useful for
@@ -81,22 +81,33 @@
         (gimp-progress-pulse)
         
         (while (< x tilesX)
-            (while (< y tilesY)
+            (while (< y tilesY) 
                 (gimp-selection-none image)
                 (gimp-edit-copy layerTile)
                 (set! layerFloating (car (gimp-edit-paste layerBase FALSE)))
                 (if (= flip TRUE)
                     (begin
-                        (if (= 0 (- (random 2) 1))
-                            (gimp-item-transform-flip-simple layerFloating ORIENTATION-HORIZONTAL TRUE 0)
+                        (if (= 0 (- (rand 2) 1))
+                            (begin
+                                ;(gimp-message "Bing")
+                                ;(gimp-message (number->string (rand 2)))
+                                (gimp-item-transform-flip-simple layerFloating ORIENTATION-HORIZONTAL TRUE 0)
+                            )
                         )
-                        (if (= 0 (- (random 2) 1))
-                            (gimp-item-transform-flip-simple layerFloating ORIENTATION-VERTICAL TRUE 0)
+                        (if (= 0 (- (rand 2) 1))
+                            (begin
+                                ;(gimp-message "Bong")
+                                ;(gimp-message (number->string (rand 2)))
+                                (gimp-item-transform-flip-simple layerFloating ORIENTATION-VERTICAL TRUE 0)
+                            )
                         )
                     )
                 )
-                (if (and (= rotate TRUE) (not (= 0 (- (random 3) 1))))
-                    (gimp-item-transform-rotate-simple layerFloating (- (random 3) 1) TRUE 0 0)
+                (if (and (= rotate TRUE) (not (= 0 (- (rand 3) 1))))
+                    (begin
+                        ;(gimp-message "rotate yes")
+                        (gimp-item-transform-rotate-simple layerFloating (- (rand 3) 1) TRUE 0 0)
+                    )
                 )
                 ; need offsets because layers are pasted in the middle of the image
                 (gimp-layer-translate layerFloating (- (* x width ) midWidth) (- (* y height) midHeight))
@@ -118,7 +129,7 @@
         (gimp-image-remove-layer image layerTile)
         (gimp-image-undo-group-end image)
         (gimp-displays-flush)
-        (gimp-context-pop) 
+        (gimp-context-pop)  
     )
 )
 
@@ -139,4 +150,4 @@
 
 (script-fu-menu-register "script-fu-tile-random-rotation" "<Image>/Script-Fu2/Pattern") 
 
-; end of script
+; end of script 

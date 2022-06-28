@@ -15,34 +15,99 @@
 ; along with this program; if not, you can view the GNU General Public
 ; License version 3 at the web site http://www.gnu.org/licenses/gpl-3.0.html
 ; Alternatively you can write to the Free Software Foundation, Inc., 675 Mass
-; Ave, Cambridge, MA 02139, USA.
+; Ave, Cambridge, MA 02139, USA. 
 ;
 ;
 ;
 ;
-(define (square image drawable)
+(define (square image drawable 500yn scaleamt expandyn)
     (let* (
             (width (car (gimp-image-width image)))
             (height (car (gimp-image-height image)))
             (newWidth width)
             (newHeight height)
             (layer (vector-ref (cadr (gimp-image-get-layers image)) 0))
+            (halfheight 0)
+            (halfwidth 0)
           )
         (gimp-image-undo-group-start image)
         (gimp-context-push)
-        (plug-in-autocrop 1 image drawable)    
-        (if (< width height)
-            (set! newWidth height)
-        )
-        (if (> width height)
-            (set! newHeight width)
+        
+        (if (= expandyn 0)
+            (begin
+                (plug-in-autocrop 1 image drawable)    
+                (if (< width height)
+                    (set! newWidth height)
+                )
+                (if (> width height)
+                    (set! newHeight width)
+                )
+                
+                (gimp-image-resize image newWidth newHeight (/ (- newWidth width) 2) (/ (- newHeight height) 2))
+                (gimp-layer-resize-to-image-size layer)
+            )
         )
         
-        (gimp-image-resize image newWidth newHeight (/ (- newWidth width) 2) (/ (- newHeight height) 2))
-        (gimp-layer-resize-to-image-size layer)
+        (if (= expandyn 1)
+            (begin
+                
+                (if (< width height)
+                    (begin
+                        ;(gimp-message "portrait image")
+                        (set! newWidth width)
+                        (set! newHeight width)
+                        ; this is a portrait image
+                        ; use height to determine squaring
+                        ; calc height / 2
+                        (set! halfheight (/ height 2))
+                        ;calc width / 2
+                        (set! halfwidth (/ width 2))
+                        ; select from 1/2 height-width/2 to 1/2height + width/2 x by width wide
+                        
+                        ;(gimp-image-select-rectangle image CHANNEL-OP-REPLACE 0 (- halfheight halfwidth) width (+ halfheight halfwidth))
+                        (gimp-image-crop image width width 0 (- halfheight halfwidth))
+                    )
+                    
+                    
+                )
+                (if (> width height)
+                    (begin
+                        ;(gimp-message "landscape image")
+                        (set! newWidth height)
+                        (set! newHeight height)
+                        ; this is a portrait image
+                        ; use height to determine squaring
+                        ; calc height / 2
+                        (set! halfheight (/ height 2))
+                        ;calc width / 2
+                        (set! halfwidth (/ width 2))
+                        ; select from 1/2 height-width/2 to 1/2height + width/2 x by width wide
+                        
+                        ;(gimp-image-select-rectangle image CHANNEL-OP-REPLACE (- halfwidth halfheight) 0 height (+ halfwidth halfheight) )
+                        
+                        (gimp-image-crop image height height (- halfwidth halfheight) 0)
+                    )
+                )
+                
+                
+                
+            )
+        )
         
-        (if (and (> newWidth 500) (> newHeight 500))
-            (gimp-image-scale image 500 500) 
+        (if (= 500yn 1)
+            (begin
+                (if (and (> newWidth 500) (> newHeight 500))
+                    (gimp-image-scale image 500 500) 
+                )
+            )
+        )
+        
+        (if (= 500yn 2)
+            (begin
+                
+                    (gimp-image-scale image scaleamt scaleamt) 
+                
+            )
         )
         
         ;(gimp-image-resize-to-layers image)
@@ -62,8 +127,11 @@
     "GPLv3 2016"
     "12 May 2016"
     "*"
-    SF-IMAGE    "Input Image"       0
-    SF-DRAWABLE "Input Drawable"    0
+    SF-IMAGE    "Input Image"               0
+    SF-DRAWABLE "Input Drawable"            0
+    SF-OPTION   "Scale option"                  '("None" "500x500px" "User selected")
+    SF-ADJUSTMENT   "User scale amount px"      '(340 5 5000 10 100 0 SF-SPINNER)
+    SF-OPTION "Expand image or Lose edges"      '("Expand" "Lose edges")
 )
 
 ; end of script

@@ -10,7 +10,7 @@
 ;; - Changelog -
 ;; Changelog:
 ;; Version 1.8 (27 September 2021)
-;; - Made compatible with Gimp-2.10.24 
+;; - Made compatible with Gimp-2.10.24  
 ;; Version 1.7 (5th August 2007)
 ;; - Added GPL3 licence
 ;; - Menu location at the top of the script
@@ -150,10 +150,10 @@
     "*"
     SF-IMAGE        "Image"            0
     SF-DRAWABLE     "Drawable"         0
-    SF-COLOR        "Highlight colour" '(255 144 0)
-    SF-ADJUSTMENT   "Highlight opacity:" '(100 0 100 5 10 1 0)
-    SF-COLOR        "Shadows colour"     '(0 204 255)
-    SF-ADJUSTMENT   "Shadow opacity:"    '(100 0 100 5 10 1 0)
+    SF-COLOR        "Highlight colour"      '(255 144 0)
+    SF-ADJUSTMENT   "Highlight opacity:"    '(100 0 100 5 10 1 0)
+    SF-COLOR        "Shadows colour"        '(0 204 255)
+    SF-ADJUSTMENT   "Shadow opacity:"       '(100 0 100 5 10 1 0)
 )
 
 ;end of script

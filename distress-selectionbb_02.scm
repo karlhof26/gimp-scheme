@@ -202,7 +202,7 @@
 
 
 (script-fu-register "script-fu-distress-selection-bb"
-    "Distress selection"
+    "Distress selection BB"
     "Distress the selection. \nfile:distress-selectionbb_02.scm"
     "Chris Gutteridge"
     "Chris Gutteridge, ECS dept, University of Southampton, England"
