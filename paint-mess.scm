@@ -168,7 +168,7 @@
         )
         (gimp-message "Good finish OK")
         (gimp-image-flatten image)
-        (gc) ; garbage collect as an array was used 
+        (gc) ; garbage collect as an array was used  
     )
            
     (gimp-displays-flush)

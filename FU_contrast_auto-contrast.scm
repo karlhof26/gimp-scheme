@@ -4,7 +4,7 @@
 ; 02/15/2014 on GIMP-2.8.10
 ; 01/09/2020 on Gimp 2.10.20
 ;
-; 02/15/2014 - convert to RGB if needed
+; 02/15/2014 - convert to RGB if needed 
 ;==============================================================
 ;
 ; Installation:

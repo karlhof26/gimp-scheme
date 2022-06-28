@@ -12,7 +12,7 @@
 ;
 ;You should have received a copy of the GNU General Public License
 ;along with this program; if not, write to the Free Software
-;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
+;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
 ;http://www.gnu.org/licenses/gpl-3.0.html
 ;
 ;FIL = Film Imitation Lab;
@@ -913,7 +913,7 @@
   (append
       (list
             "fil-spe-core"
-            "<Image>/Script-Fu/Colors/Film Imitation/Film Imitation Lab Core"
+            "<Image>/Script-Fu/Colors/Film Imitation/A Film Imitation Lab Core"
             "Film Imitation Lab. \nfile: fil_current_pub_eng_02.scm"
       )
       fil-credits
@@ -1026,20 +1026,20 @@
         ;fil-spe-core launching
         (if (= fbm_misc_random TRUE)
           (fil-spe-core
-            img							;>>fm_image
-            fbm_clr_flag						;>>fm_clr_flag
-            (random (length fk-clr-stage))			;>>fm_clr_id
-            fbm_grain_flag					;>>fm_grain_flag
-            (random (length fk-grain-stage))			;>>fm_grain_id
-            (random 1)						;>>fm_pre_vign_flag
-            fbm_pre_vign_rad					;>>fm_pre_vign_rad
-            fbm_pre_vign_soft					;>>fm_pre_vign_soft
-            fbm_pre_vign_opc					;>>fm_pre_vign_opc
-            fbm_pre_blur_step					;>>fm_pre_blur_step
-            fbm_pre_xps_control					;>>fm_pre_xps_control
-            fbm_pre_monocle_switch				;monocle effect switch;
-            fbm_misc_logout					;>>fm_misc_logout
-            FALSE						;>>fm_misc_visible
+            img                                 ;>>fm_image
+            fbm_clr_flag                        ;>>fm_clr_flag
+            (rand (length fk-clr-stage))            ;>>fm_clr_id
+            fbm_grain_flag                          ;>>fm_grain_flag
+            (rand (length fk-grain-stage))          ;>>fm_grain_id
+            (rand 1)                                ;>>fm_pre_vign_flag
+            fbm_pre_vign_rad                        ;>>fm_pre_vign_rad
+            fbm_pre_vign_soft                       ;>>fm_pre_vign_soft
+            fbm_pre_vign_opc                        ;>>fm_pre_vign_opc
+            fbm_pre_blur_step                       ;>>fm_pre_blur_step
+            fbm_pre_xps_control                     ;>>fm_pre_xps_control
+            fbm_pre_monocle_switch                  ;monocle effect switch;
+            fbm_misc_logout                         ;>>fm_misc_logout
+            FALSE                                   ;>>fm_misc_visible
           )
           (fil-spe-core 
             img                             ;>>fm_image
@@ -1316,8 +1316,8 @@
 (define (fil-clr-sov2 image layer imh imw fore input_red input_first)
   (define sov2-exit)
   (let* (
-            (first (car (gimp-layer-new image imw imh 1 "Маска" 100 0)))
-            (red (car (gimp-layer-new image imw imh 1 "Красный" 100 0)))
+            (first (car (gimp-layer-new image imw imh 1 "Мacka" 100 0))) ; was cyrillic
+            (red (car (gimp-layer-new image imw imh 1 "Kpachan" 100 0))) ; was cyrillic
             (red_mask)
         )
         
@@ -1783,7 +1783,7 @@ dram-c-exit
 
 ;fil-grn-adv_grain
 ;GRAIN PROCESS
-;Input variables:
+;Input variables: 
 ;IMAGE - processing image;
 ;LAYER - processing layer;
 ;INTEGER - image height value;
@@ -1887,7 +1887,7 @@ adv-exit
         )
         (set! grain_layer 
             (car 
-                (gimp-layer-new image imw imh 0 "Нормальное зерно" 100 0)
+                (gimp-layer-new image imw imh 0 "Grain Layer" 100 0)
             )
         )
         (gimp-image-insert-layer image grain_layer -1 -1)
