@@ -11,22 +11,18 @@
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
-;	Windows Vista/7/8)
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
-;	
-;	Windows XP
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;   Windows 10 plus
+;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;   or
+;   C:\Users\YOUR-NAME\.gimp-2.10\scripts
+;   
 ;    
-;	Linux
-;	/home/yourname/.gimp-2.8/scripts  
-;	
-;	Linux system-wide
-;	/usr/share/gimp/2.0/scripts
-;
+;   Linux
+;   /home/yourname/.gimp-2.8/scripts  
+;   
+;   Linux system-wide
+;   /usr/share/gimp/2.0/scripts
+;   
 ;==============================================================
 ;
 ; LICENSE
@@ -35,12 +31,12 @@
 ;    it under the terms of the GNU General Public License as published by
 ;    the Free Software Foundation, either version 3 of the License, or
 ;    (at your option) any later version.
-;
+;    
 ;    This program is distributed in the hope that it will be useful,
 ;    but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;    GNU General Public License for more details.
-;
+;    
 ;    You should have received a copy of the GNU General Public License
 ;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;
@@ -108,6 +104,7 @@
             (if gray-mode?
                 (gimp-image-convert-grayscale image) 
             )
+            (gimp-layer-set-mode edge-layer LAYER-MODE-OVERLAY)
         )
         (gimp-image-undo-group-end image)
     )
@@ -122,9 +119,11 @@
     "February, 2014"
     "*"
     SF-IMAGE    "Image"    0
-    SF-DRAWABLE "Layer" 0
+    SF-DRAWABLE "Layer"    0 
 )
 
 (script-fu-menu-register "FU-effects-tooninator"  "<Image>/Script-Fu/Effects/")
+
+(script-fu-menu-register "FU-effects-tooninator" "<Image>/Script-Fu3/Comics-o-matic")
 
 ;end of script

@@ -4,7 +4,7 @@
 ; 02/14/2014 on GIMP-2.8.10
 ; 04/09/2020 on GIMP-2.10.20 
 ;
-; 02/14/2014 - convert to RGB if needed
+; 02/14/2014 - convert to RGB if needed 
 ;==============================================================
 ;
 ; Installation:
@@ -73,7 +73,7 @@
 ;==============================================================
 
 
-(define (draw-line layer x-from y-from x-to y-to) 
+(define (draw-line layer x-from y-from x-to y-to)  
     (let* (
             (points (cons-array 4 'double))
         )
