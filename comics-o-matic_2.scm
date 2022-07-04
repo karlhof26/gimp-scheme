@@ -459,42 +459,73 @@
 ; comicsomatic-add-graph-paper-layer
 ; adds a layer with a graph paper
 (define (comicsomatic-add-graph-paper-layer image inColour inStyle)
-  (let* ((ratio (cond 
+  (let* (
+         
+         (ratio (cond 
+                ((= inStyle 6) (/ 38 40))
+                ((= inStyle 5) (/ 3 4))
+                ((= inStyle 4) (/ 1 2))
+                ((= inStyle 3) (/ 1 3))
                 ((= inStyle 2) (/ 1 6))
                 ((= inStyle 1) (* 10 comicsomatic-ratio))
                 (else comicsomatic-ratio)))
          (div1  (cond 
-                ((= inStyle 2) 6)
-                ((= inStyle 1) 1)
-                (else 10)))
+                ((= inStyle 6) 6)
+                ((= inStyle 5) 10)
+                ((= inStyle 4) 20)
+                ((= inStyle 3) 12)
+                ((= inStyle 2) 20)
+                ((= inStyle 1) 15); was 1
+                (else 75)))
          (div2  (cond 
-                ((= inStyle 2) 1)
-                ((= inStyle 1) 10)
-                (else 5)))
+                ((= inStyle 6) 3)
+                ((= inStyle 5) 5)
+                ((= inStyle 4) 10)
+                ((= inStyle 3) 6)
+                ((= inStyle 2) 10)
+                ((= inStyle 1) 5); was 10
+                (else 15)))
          (canvas-dpi (car (gimp-image-get-resolution image)))
          (width (car (gimp-image-width image)))
          (height (car (gimp-image-height image)))
          (colour (car (gimp-context-get-foreground)))
          (position (* ratio canvas-dpi))
          (index 1)
-         (gimp-image-undo-disable image)
-         (pglayer (car (gimp-layer-new image width height RGBA-IMAGE _"Graph Paper" 100 LAYER-MODE-NORMAL))))
+         ;(gimp-image-undo-disable image)
+         (pglayer (car (gimp-layer-new image width height RGBA-IMAGE _"Graph Paper" 100 LAYER-MODE-NORMAL)))
+        )
         
+        (gimp-image-undo-group-start image)
         
         (gimp-drawable-fill pglayer FILL-TRANSPARENT)
         (gimp-image-insert-layer image pglayer 0 -1)
         
         (gimp-context-set-foreground inColour)
+        (set! position (* ratio canvas-dpi))
         (while (< position width)
-            (let* ((thickness (if (= 0 (modulo index div1)) 
-                                     5
-                              (if (= 0 (modulo index div2)) 
+            (let* ((thickness (if (= 0 (modulo index div1))    ;(modulo index div1))
+                                     5 
+                              (if (= 0 (modulo index div2))    ;(modulo index div2))
                                          3 
-                                         2)))
+                                         1))) ; was 5 3 2
+                  )
+                  
+                  (if (= thickness 5)
+                        (begin
+                            ;(gimp-message "77777777777777777777777777777777")
+                            ;(quit)
+                        )
+                        (begin
+                            (if (= thickness 3)
+                                (begin
+                                    ;(gimp-message "2TWO2TWO2TWO2TWO2TWO2TWO2TWO")
+                                )
+                            )
+                        )
                   )
                 (gimp-image-select-rectangle image CHANNEL-OP-REPLACE (- position 1) 0 thickness height)
                 (set! index (+ 1 index))
-                (set! position (* index ratio canvas-dpi))
+                (set! position (* index (* ratio canvas-dpi)))
                 (gimp-edit-fill pglayer FILL-FOREGROUND)
             )
         )
@@ -505,19 +536,20 @@
                                      5
                               (if (= 0 (modulo index div2)) 
                                          3 
-                                         2)))
+                                         1)))
                   )
                 (gimp-image-select-rectangle image CHANNEL-OP-REPLACE 0 (- position 1) width thickness)
                 (set! index (+ 1 index))
-                (set! position (* index ratio canvas-dpi))
+                (set! position (* index (* ratio canvas-dpi)))
                 (gimp-edit-fill pglayer FILL-FOREGROUND)
             )
         )
         (gimp-context-set-foreground colour)
         (gimp-selection-none image)
         
-        (gimp-image-undo-enable image)
-        (gimp-displays-flush))
+        (gimp-image-undo-group-end image)
+        (gimp-displays-flush)
+    )
 )
 
 (script-fu-register  "comicsomatic-add-graph-paper-layer"
@@ -527,9 +559,9 @@
     "Stefano Guidoni"
     "November 2013"
     "RGB* RGBA*"
-    SF-IMAGE    "Image" 0
-    SF-COLOR    "Color" `(230 158 20)
-    SF-OPTION   "Style" `("mm" "cm" "1/6 in")
+    SF-IMAGE    "Image"         0
+    SF-COLOR    "Color"         '(230 158 20)
+    SF-OPTION   "Style"         '("mm" "cm" "1/6 in" "1/3 in" "1/2 in" "0.75 in" "1.0 in")
 )
 
 (script-fu-menu-register "comicsomatic-add-graph-paper-layer" "<Image>/Script-Fu3/Comics-o-matic/Guides")
