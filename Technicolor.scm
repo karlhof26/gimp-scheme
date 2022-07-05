@@ -26,15 +26,15 @@
                                image
                                layer
                                mode
-							   gradient
-							   blend-repititions
-							   displace-repititions
-							   keep-selection
-							   conserve
-							   )
-	
+                               gradient
+                               blend-repititions
+                               displace-repititions
+                               keep-selection
+                               conserve
+                               )
+    
     (gimp-image-undo-group-start image)	
-
+    
  (let* (
             (width (car (gimp-image-width image)))
             (height (car (gimp-image-height image)))
@@ -75,31 +75,43 @@
     (gimp-selection-none image)
     
     ;;;;begin the script here--------------------------------------------------------------------------------------------------------	
-    (include-layer image paint-layer layer 0)	;stack 0=above 1=below
+    ;(include-layer image paint-layer layer 0)  ;stack 0=above 1=below
+    (gimp-image-insert-layer image paint-layer 0 -1)
     (gimp-drawable-fill paint-layer FILL-BACKGROUND)
     
     
     (gimp-context-set-gradient gradient) 
     (while (> cnt 0)
-        (set! width-box (round (random width )))
-        (set! height-box (round (random height)))
+        (set! width-box (round (rand (- width 5))))
+        (set! height-box (round (rand (- height 5))))
                     ; set the arrays
-        (set! x1 width-box)    
+        (set! x1 width-box)
         (set! y1 height-box)
         (set! x2 (+ width-box 5))
-        (set! y2 (+ height-box 5))	
+        (set! y2 (+ height-box 5))
         
         (gimp-edit-blend paint-layer BLEND-CUSTOM LAYER-MODE-DIFFERENCE GRADIENT-CONICAL-SYMMETRIC 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE x1 y1 x2 y2)
         
         (set! cnt (- cnt 1))
+        
+        
+        
     ) ;endwhile
     
     (cond ((= ver 2.8)                         ;insert or add the new layer
-            (gimp-image-insert-layer image noise 0 1)) ;new 2.8
-            (else (gimp-image-add-layer image noise 1)) ;new 2.6
-    ) ;endcond
+            (gimp-image-insert-layer image noise 0 -1)
+          ) ;new 2.8
+          (else (gimp-image-add-layer image noise 1)) ;new 2.6
+    )   ;endcond
     
-    (plug-in-solid-noise 1 image noise FALSE FALSE 1611597286 1 (/ width 100) (/ height 100))
+    ;(gimp-message (number->string height))
+    ;(gimp-message (number->string width))
+    ;(plug-in-solid-noise 1 image noise FALSE TRUE 1611593 1 (+ (rand 12) 4) (+ (rand 8) 3))
+    ;(gimp-displays-flush)
+    ;(quit)
+        
+    ;(plug-in-solid-noise 1 image noise FALSE FALSE 1611597286 1 (/ width 100) (/ height 100))
+    (plug-in-solid-noise 1 image noise FALSE TRUE 1611593 1 12 8)
     
     (gimp-image-set-active-layer image paint-layer)
     (set! cnt displace-repititions)
@@ -107,7 +119,7 @@
         (plug-in-displace 1 
                     image 
                     paint-layer ;drawable 
-                    0 ;amount-x Displace multiplier for X or radial direction 
+                    (rand 10) ;amount-x Displace multiplier for X or radial direction ; was 0
                     50 ;amount-y Displace multiplier for Y or tangent (degrees) direction
                     TRUE ;do-x Displace in X or radial direction?
                     TRUE ;Displace in Y or tangent direction?
@@ -124,11 +136,21 @@
     (gimp-selection-none image)
     
     
-    (gimp-image-remove-layer image noise)
-    (if (= keep-selection TRUE) (gimp-selection-load selection-channel))
+    
+    (if (= keep-selection TRUE)
+        (begin
+            (gimp-selection-load selection-channel)
+        )
+    )
     (gimp-image-remove-channel image selection-channel)
-    (gimp-curves-spline paint-layer 0 10 #(0 0 86 50 128 129 172 207 255 255))
-    (if (= conserve FALSE) (set! layer (car (gimp-image-merge-down image paint-layer EXPAND-AS-NECESSARY))))
+    ;(gimp-curves-spline paint-layer 0 10 #(0 0 86 50 128 129 172 207 255 255))
+    (gimp-drawable-curves-spline paint-layer 0 10 #(0.0 0.0 0.337 0.196 0.501 0.505 0.674 0.811 1.0 1.0))
+    (if (= conserve FALSE)
+        (begin
+            (gimp-image-remove-layer image noise)
+            (set! layer (car (gimp-image-merge-down image paint-layer EXPAND-AS-NECESSARY)))
+        )
+    )
     
     (gimp-displays-flush)
     (gimp-context-pop)
@@ -139,21 +161,21 @@
 
 (script-fu-register "script-fu-technicolor"        		    
   "Technicolor"
-  "Chages layer or selection to Technicolors. \nfile:Technicolor.scm"
+  "Changes layer or selection to Technicolors. \nfile:Technicolor.scm"
   "Graechan"
   "Graechan - http://gimpchat.com"
   "May 2014"
   "RGB*"
-  SF-IMAGE      "image"      0
-  SF-DRAWABLE   "drawable"   0
-  SF-ENUM "Paint LayerMode" '("LayerModeEffects" "normal-mode")
-  SF-GRADIENT   "Effect Gradient" "Full saturation spectrum CCW"
-  SF-ADJUSTMENT "Blend Repititions" '(12 0 50 1 1 0 0)
-  SF-ADJUSTMENT "Displace Repititions" '(8 0 20 1 1 0 0)
-  SF-TOGGLE     "Keep selection"          FALSE
-  SF-TOGGLE     "Keep the Layers"   FALSE  
+  SF-IMAGE      "image"             0
+  SF-DRAWABLE   "drawable"          0
+  SF-ENUM       "Paint LayerMode"           '("LayerModeEffects" "normal-mode")
+  SF-GRADIENT   "Effect Gradient"           "Full saturation spectrum CCW"
+  SF-ADJUSTMENT "Blend Repititions"         '(12 0 50 1 1 0 0)
+  SF-ADJUSTMENT "Displace Repititions"      '(3 0 20 1 1 0 0)
+  SF-TOGGLE     "Keep selection"            FALSE
+  SF-TOGGLE     "Keep the Layers"           FALSE  
 )
 
-(script-fu-menu-register "script-fu-technicolor" "<Image>/Script-Fu/Patterns")
+(script-fu-menu-register "script-fu-technicolor" "<Toolbox>/Script-Fu/Patterns")
 
-
+; end of script
