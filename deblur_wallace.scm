@@ -48,7 +48,8 @@
         (plug-in-gauss 1 image dup-layer blur-radius blur-radius 1)
         
         ;invert
-        (gimp-invert dup-layer)
+        ;(gimp-invert dup-layer)
+        (gimp-drawable-invert dup-layer FALSE)
         
         ;set mode to grain merge
         (gimp-layer-set-mode dup-layer GRAIN-MERGE-MODE)
@@ -73,16 +74,16 @@
 ) ;end of define
 
 (script-fu-register
-    "script-fu-deblur-wallace"         ;function name
+    "script-fu-deblur-wallace"              ;function name
     "<Image>/Script-Fu2/Enhance/Deblur (by Wallace)..."    ;menu register
     "Adds a deblur layer to the image. Try Grain-Merge as the mode to deblur \nfile:deblur_wallace.scm"       ;description
-    "Tin Tran"                          ;author name
-    "copyright info and description"         ;copyright info or description
-    "2016"                          ;date
-    "RGB*, GRAY*"                        ;mode
-    SF-IMAGE      "Image" 0                   
-    SF-DRAWABLE   "Layer" 0
-    SF-ADJUSTMENT "Blur Radius" '(15 1 500 1 10 0 0)
+    "Tin Tran"                              ;author name
+    "copyright info and description"        ;copyright info or description
+    "2016"                                  ;date
+    "RGB*, GRAY*"                           ;mode
+    SF-IMAGE      "Image"           0                   
+    SF-DRAWABLE   "Layer"           0
+    SF-ADJUSTMENT "Blur Radius"     '(15 1 500 1 10 0 0)
     SF-OPTION       "Set Layer Mode" '(
                                     "NORMAL-MODE"
                                     "DISSOLVE-MODE"
@@ -110,7 +111,7 @@
                                     "ERASE-MODE"
                                     "REPLACE-MODE"
                                     "ANTI-ERASE-MODE")
-    SF-ADJUSTMENT "Opacity" '(50 0 100 1 10 0 0)
+    SF-ADJUSTMENT "Opacity"         '(50 0 100 1 10 0 0)
 )
 
 ;end of script
