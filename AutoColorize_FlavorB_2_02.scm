@@ -104,7 +104,7 @@
                 ;;(set! hue (rand 360))
                 ;;(gimp-colorize floating hue 100 0)
                 ;;sqrt( 0.299*R^2 + 0.587*G^2 + 0.114*B^2 )
-              (set! l-original (sqrt (+ (pow (* red Re) 2) (pow (* green Gr) 2)  (pow (* blue Bl) 2))))
+              (set! l-original (sqrt (+ (pow (* red Re) 2) (+ (pow (* green Gr) 2)  (pow (* blue Bl) 2)))))
               (set! difference 10)
               (set! counter 0)
               ;just randomly pick a color until we find a color of similar luminance
@@ -113,7 +113,7 @@
                     (set! r (- (rand 254) 1)) ; was 255; was 256-1
                     (set! g (rand 255))
                     (set! b (rand 255))
-                    (set! l-new (sqrt (+ (pow (* r Re) 2) (pow (* g Gr) 2)  (pow (* b Bl) 2))))
+                    (set! l-new (sqrt (+ (+ (pow (* r Re) 2) (+ (pow (* g Gr) 2))  (pow (* b Bl) 2)))))
                     (set! difference (abs (- l-new l-original)))
                     ;(gimp-message "Picking....")
                     ;(gimp-message (number->string (rand 10)))
