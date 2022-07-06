@@ -9,15 +9,11 @@
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
-;	Windows Vista/7/8)
+;	Windows 10
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
+;	C:\Users\YOUR-NAME\.gimp-2.10\scripts
 ;	
-;	Windows XP
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
 ;    
 ;	Linux
 ;	/home/yourname/.gimp-2.8/scripts  
@@ -26,9 +22,9 @@
 ;	/usr/share/gimp/2.0/scripts
 ;
 ;
-; ALSO NEED TO COPY:
-; ev_strokes45r.txt
-; graphite2.txt
+; ALSO NEED TO COPY: - Custome Gimpressionist settings must be named as follows
+; ev_strokes45ra
+; graphite2
 ;
 ;	Windows Vista/7
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\gimpressionist\presets
@@ -77,6 +73,8 @@
         wild?
         canvas?
         inMerge
+        customGimpress
+        customThresh
     )
     
     (gimp-image-undo-group-start img)
@@ -103,6 +101,7 @@
     ;-------------------------------------------------------
     (if (eqv? (car (gimp-palettes-get-list "conte_ev8")) 0)
         (begin
+            (gimp-message "new palette conte_ev8")
             (gimp-palette-new "conte_ev8")
             (gimp-palette-add-entry "conte_ev8" "1" '(117 96 91))
             (gimp-palette-add-entry "conte_ev8" "2" '(139 91 87))
@@ -112,6 +111,7 @@
             (gimp-palette-add-entry "conte_ev8" "6" '(205 212 220))
             (gimp-palette-add-entry "conte_ev8" "7" '(90 93 100))
             (gimp-palette-add-entry "conte_ev8" "8" '(51 51 51))
+            (gimp-palette-add-entry "conte_ev8" "9" '(241 242 241))
         )
     )
     (if (> (car (gimp-palettes-get-list "conte_ev8 ")) 0)
@@ -129,7 +129,7 @@
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-tempb 0)))
     
     (plug-in-neon 1 img layer-tempa 5.0 0)
-    (gimp-invert layer-tempa)
+    (gimp-drawable-invert layer-tempa FALSE)
     (gimp-drawable-desaturate layer-tempa DESATURATE-LIGHTNESS)
     
     (gimp-brightness-contrast layer-tempb (* brightness 1.25) (* contrast 1.25))
@@ -139,26 +139,56 @@
     
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-tempc 0)))
     ;  (plug-in-gimpressionist 1 img layer-tempc "ev_strokes45r.txt")
-    (plug-in-gimpressionist 1 img layer-tempc "ev_strokes45ra")
+    ;(plug-in-gimpressionist 1 img layer-tempc "ev_strokes45ra")
+    (if (= customGimpress FALSE)
+        (begin
+            ;(plug-in-gimpressionist 1 img layer-tempc "Furry")
+            ;(plug-in-gimpressionist 1 img layer-tempc "Straws") ; Dotify; Embroidery ; Weave
+            (plug-in-gimpressionist 1 img layer-tempc "Dotify")
+        )
+        (begin
+            (plug-in-gimpressionist 1 img layer-tempc "ev_strokes45ra")
+        )
+    )
+    
+    
+    
     (plug-in-dog 1 img layer-tempc 2.3 13.2 TRUE TRUE)
+    
+    
+    
     ;(gimp-threshold layer-tempc 250 255)
-    (gimp-drawable-threshold layer-tempc HISTOGRAM-VALUE 0.2415 1.0) ; was 0.95
+    (if (= customGimpress FALSE)
+        (begin
+            (gimp-drawable-threshold layer-tempc HISTOGRAM-VALUE (/ customThresh 100) 1.0) ; was 0.95; was 0.2415
+        )
+        (begin
+            (gimp-drawable-threshold layer-tempc HISTOGRAM-VALUE (/ customThresh 100) 1.0) ; was 0.95; was 0.2415
+        )
+    )
     ;(gimp-message "line 146")
+    
+    (gimp-displays-flush)
     
     (gimp-layer-set-mode layer-tempc LAYER-MODE-MULTIPLY) ; was 3
     (gimp-layer-set-mode layer-tempb LAYER-MODE-MULTIPLY)
     (gimp-item-set-name layer-tempc "layer-tempc")
     (gimp-item-set-name layer-tempb "layer-tempb")
     
-    (gimp-displays-flush)
     
     
     (gimp-image-merge-down img layer-tempc 0)
     (set! layer-tempb (car (gimp-image-get-active-layer img)))
+    
+    (gimp-displays-flush)
+    
     (gimp-image-merge-down img layer-tempb 0)
     (set! layer-tempa (car (gimp-image-get-active-layer img)))
     (gimp-edit-copy layer-tempa)
     ;(gimp-message "line 161")
+    
+    (gimp-displays-flush)
+    ;(quit)
     
     ;    (set! img2 (car (gimp-image-new width height image-type)))
     ;    (set! layer-temp2 (car (gimp-layer-new img2 width height layer-type "temp2"  100 NORMAL-MODE)))
@@ -186,8 +216,16 @@
     (if (= wild? TRUE)
         (begin
             ;(gimp-message "line 188")
-            ; (plug-in-gimpressionist 1 img layer-tempd "graphite2.txt") 
-            (plug-in-gimpressionist 1 img layer-tempd "graphite2")
+            (if (= customGimpress FALSE)
+                (begin
+                    ;(plug-in-gimpressionist 1 img layer-tempd "Line-art")
+                    ;(plug-in-gimpressionist 1 img layer-tempd "Line-art-2")
+                    (plug-in-gimpressionist 1 img layer-tempd "Straws")
+                )
+                (begin
+                    (plug-in-gimpressionist 1 img layer-tempd "graphite2")
+                )
+            )
         )
     )
     
@@ -195,7 +233,9 @@
     
     (gimp-layer-set-mode layer-tempd LAYER-MODE-HARDLIGHT) ; was 19
     
-    (gimp-image-merge-down img layer-tempd 0)
+    (if (= inMerge TRUE)
+        (gimp-image-merge-down img layer-tempd 0)
+    )
     
     (set! layer-tempa (car (gimp-image-get-active-layer img)))
     ;(gimp-message "line 181")
@@ -256,10 +296,12 @@
     SF-IMAGE      "Image"                       0
     SF-DRAWABLE   "Drawable"                    0
     SF-ADJUSTMENT "Brightness"                  '(50 -100 100 1 10 0 0)
-    SF-ADJUSTMENT "Contrast"                    '(80 -100 100 1 10 0 0)
-    SF-TOGGLE     "Wild"                        TRUE
+    SF-ADJUSTMENT "Contrast"                    '(30 -100 100 1 10 0 0)
+    SF-TOGGLE     "Wild"                        FALSE
     SF-TOGGLE     "Canvas"                      TRUE
     SF-TOGGLE     "Merge layers when complete?"     FALSE
+    SF-TOGGLE     "Use Custom gimpressionist settings" FALSE
+    SF-ADJUSTMENT "Scratch/hatch Threshold"                    '(92 50 100 1 10 0 0)
 )
 
 ; end of script
