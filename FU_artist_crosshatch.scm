@@ -1,41 +1,48 @@
-; FU_artist_angled-strokes.scm
-; version 2.9 [gimphelp.org] 
+; FU_artist_crosshatch.scm
+; version 2.8 [gimphelp.org]
 ; last modified/tested by Paul Sherman
 ; 02/15/2014 on GIMP-2.8.10
+; 28/08/2020 on Gimp 2.10.20
 ;
 ; first edit for gimp-2.4 by paul on 1/27/2008
 ; "peeled" from photoeffects.scm - an scm containing several scripts
 ; separated to more easily update and to place more easily in menus.
 ;
-; work with non-rgb, merge option and install info added
+; 02/15/2014 - work with non-rgb, merge option and install info added
 ;==============================================================
 ;
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
-;   Windows 10
-;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;   or
-;   C:\Users\YOUR-NAME\.gimp-2.10\scripts
-;   or
-;   C:\Users\YOUR-NAME\AppData\Roaming\GIMP\2.10\scripts
-;   
-;   
+;	Windows Vista/7/8)
+;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;	or
+;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
+;	
+;	Windows XP
+;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;	or
+;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;    
 ;	Linux
 ;	/home/yourname/.gimp-2.8/scripts  
 ;	or
 ;	Linux system-wide
 ;	/usr/share/gimp/2.0/scripts
 ;
-; ALSO NEED TO PUT:
-; ev_angledstrokes.txt
+; ALSO NEED TO COPY:
+; ev_crosshatched.txt
 ;
-;	Windows 10 plus
+;	Windows Vista/7
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\gimpressionist\presets
 ;	or
-;	C:\Users\YOUR-NAME\.gimp-2.10\gimpressionist\presets
+;	C:\Users\YOUR-NAME\.gimp-2.8\gimpressionist\presets
 ;	
-;
+;	Windows XP
+;	C:\Program Files\GIMP 2\share\gimp\2.0\gimpressionist\preset
+;	or
+;	C:\Documents and Settings\yourname\.gimp-2.8\gimpressionist\presets  
+;    
 ;	Linux
 ;	/home/yourname/.gimp-2.8/gimpressionist/presets 
 ;	or
@@ -61,26 +68,18 @@
 ;==============================================================
 ; Original information 
 ; 
-; Angled Strokes image script  for GIMP 2.2
+; Crosshatch image script  for GIMP 2.2
 ; Copyright (C) 2007 Eddy Verlinden <eddy_verlinden@hotmail.com>
 ;==============================================================
 
-(define (FU-angled-strokes
-            img
-            drawable
-            inMerge
+(define (FU-crosshatch
+    img
+    drawable
+    inMerge
     )
-    
     (gimp-image-undo-group-start img)
-    
     (define indexed (car (gimp-drawable-is-indexed drawable)))
-    
-    (if (= indexed TRUE)
-        (begin
-            (gimp-image-convert-rgb img)
-        )
-    )
-    
+    (if (= indexed TRUE)(gimp-image-convert-rgb img))
   (let* (
             (width (car (gimp-drawable-width drawable)))
             (height (car (gimp-drawable-height drawable)))
@@ -88,43 +87,46 @@
             (image-type (car (gimp-image-base-type img)))
             (layer-type (car (gimp-drawable-type drawable)))
             (layer-temp1 (car (gimp-layer-new img width height layer-type "temp1"  100 LAYER-MODE-NORMAL)))
+            (achannel)
         ) 
         
-    (if (eqv? (car (gimp-selection-is-empty img)) TRUE)
-        (gimp-drawable-fill old-selection FILL-WHITE)
-    ) ; so Empty and All are the same.
-    (gimp-selection-none img) 
-    (gimp-drawable-fill layer-temp1 FILL-TRANSPARENT)
-    (gimp-image-insert-layer img layer-temp1 0 -1)
-    (gimp-layer-add-alpha layer-temp1)
-    (gimp-edit-copy drawable)
-    (gimp-floating-sel-anchor (car (gimp-edit-paste layer-temp1 0)))
-    
-    ;; (plug-in-gimpressionist 1 img layer-temp1 "ev_angledstrokes")
-    (plug-in-gimpressionist 1 img layer-temp1 "Line-art-2")
-    (plug-in-unsharp-mask 1 img layer-temp1 5.0 1.0 0) 
-    
-    (gimp-image-select-item img CHANNEL-OP-REPLACE old-selection)
-    (gimp-selection-invert img)
-    (if (eqv? (car (gimp-selection-is-empty img)) FALSE) ; both Empty and All are denied
-        (begin
-            (gimp-edit-clear layer-temp1)
+        (if (eqv? (car (gimp-selection-is-empty img)) TRUE)
+            (gimp-drawable-fill old-selection FILL-WHITE)) ; so Empty and All are the same.
+        (gimp-selection-none img)
+        (gimp-drawable-fill layer-temp1 FILL-TRANSPARENT)
+        (gimp-image-insert-layer img layer-temp1 0 -1)
+        (gimp-layer-add-alpha layer-temp1)
+        (gimp-edit-copy drawable)
+        (gimp-floating-sel-anchor (car (gimp-edit-paste layer-temp1 0)))
+        
+        ;;(plug-in-gimpressionist 1 img layer-temp1 "ev_crosshatched.txt")
+        (plug-in-gimpressionist 1 img layer-temp1 "Crosshatch")
+        
+        (gimp-image-select-item img CHANNEL-OP-REPLACE old-selection)
+        (gimp-selection-invert img)
+        (if (eqv? (car (gimp-selection-is-empty img)) FALSE) ; both Empty and All are denied
+            (begin
+                (gimp-edit-clear layer-temp1)
+            )
         )
-    )
-    
-    (gimp-item-set-name layer-temp1 "Angled strokes")
-    (gimp-image-select-item img CHANNEL-OP-REPLACE old-selection)
-    (gimp-image-remove-channel img old-selection)
-    
-    (if (= inMerge TRUE)(gimp-image-merge-visible-layers img EXPAND-AS-NECESSARY))
-    (gimp-image-undo-group-end img)
-    (gimp-displays-flush)
+        
+        (gimp-item-set-name layer-temp1 "Crosshatch")
+        (gimp-image-select-item img CHANNEL-OP-REPLACE old-selection)
+        (gimp-image-remove-channel img old-selection)
+        
+        (set! achannel (car (gimp-image-get-active-channel img)))
+        (plug-in-dilate RUN-NONINTERACTIVE img layer-temp1 1 achannel 0.99 5 0 50)
+        
+        (if (= inMerge TRUE)(gimp-image-merge-visible-layers img EXPAND-AS-NECESSARY))
+        (gimp-image-undo-group-end img)
+        (gimp-displays-flush)
   )
 )
 
-(script-fu-register "FU-angled-strokes"
-    "<Toolbox>/Script-Fu/Artist/Angled strokes"
-    "Creates a drawing effect, based on the Gimpressionist. \nfile: FU_artist_angled-strokes.scm"
+(script-fu-register
+    "FU-crosshatch"
+    "<Image>/Script-Fu/Artist/Crosshatched..."
+    "Creates a crosshatched blur effect, based on the Gimpressionist. \nfile:FU_artist_crosshatch.scm"
     "Eddy Verlinden <eddy_verlinden@hotmail.com>"
     "Eddy Verlinden"
     "2007, juli"
@@ -133,5 +135,5 @@
     SF-DRAWABLE   "Drawable"                        0
     SF-TOGGLE     "Merge layers when complete?"     FALSE
 )
- 
-; end of script
+
+; end of script 

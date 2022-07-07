@@ -72,6 +72,7 @@
             (nlayer 0)   
             (indexed 0)            ; was (car )
             (img 0)
+            (achannel)
             )
     
     (gimp-image-undo-group-start inImage) 
@@ -97,6 +98,10 @@
     (gimp-drawable-levels theNewlayer HISTOGRAM-VALUE 0.0 0.55 TRUE 1.0 0.0 1.0 TRUE)
     (plug-in-vinvert 1 inImage theNewlayer)
     (gimp-layer-set-mode theNewlayer LAYER-MODE-GRAIN-MERGE) 
+    
+    (set! achannel (car (gimp-image-get-active-channel inImage)))
+    (plug-in-dilate RUN-NONINTERACTIVE inImage theNewlayer 1 achannel 0.8 5 0 30); 0.99 5 0 50
+     
     ;;(gimp-image-merge-down inImage theNewlayer EXPAND-AS-NECESSARY)
     
     (set! nlayer (car (gimp-image-get-active-layer inImage)))
@@ -105,6 +110,9 @@
     (gimp-image-set-active-layer inImage nlayer)
     (gimp-item-set-name nlayer "Watercolor Layer")
     
+    
+   
+        
     (if (= inMerge TRUE)
         (gimp-image-merge-visible-layers inImage EXPAND-AS-NECESSARY)
     )
