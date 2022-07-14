@@ -1,7 +1,7 @@
 ; Asphalt rel 0.01a
 ; Created by Graechan; updated by Karl Hofmeyr (karlhof26)
 ; You will need to install GMIC to run this Scipt
-; GMIC can be downloaded from http://sourceforge.net/projects/gmic/files/ 
+; GMIC can be downloaded from http://gmic.eu 
 ; Comments directed to http://gimpchat.com or http://gimpscripts.com
 ;
 ; License: GPLv3
@@ -157,17 +157,17 @@
 ) ;endprocedure
 
 (script-fu-register "script-fu-asphalt"              
-  "Asphalt"
-  "Creates a pattern of Asphalt on drawable or within selection if one exists, requires the GMIC plugin to complete the pattern. \nfile:Asphalt_02.scm"
-  "Graechan"
-  "Graechan - http://gimpchat.com"
-  "Feb 2014"
-  "RGB*"
-  SF-IMAGE      "image"      0
-  SF-DRAWABLE   "drawable"   0
-  SF-ADJUSTMENT "Cracks Opacity" '(60 0 100 1 10 0 0)
-  SF-ADJUSTMENT "Cracks Density" '(12 .1 20 .1 1 1 0)
-  SF-TOGGLE     "Merge the Layers"   FALSE
+    "Asphalt"
+    "Creates a pattern of Asphalt on drawable or within selection if one exists, requires the GMIC plugin to complete the pattern. \nfile:Asphalt_02.scm"
+    "Graechan"
+    "Graechan - http://gimpchat.com"
+    "Feb 2014"
+    "RGB*"
+    SF-IMAGE      "image"      0
+    SF-DRAWABLE   "drawable"   0
+    SF-ADJUSTMENT "Cracks Opacity" '(60 0 100 1 10 0 0)
+    SF-ADJUSTMENT "Cracks Density" '(12 .1 20 .1 1 1 0)
+    SF-TOGGLE     "Merge the Layers"   FALSE
 )
 
 (script-fu-menu-register "script-fu-asphalt" "<Toolbox>/Script-Fu/Patterns")
@@ -209,8 +209,8 @@
     (cond ((defined? 'gimp-item-is-layer)
         (if (gimp-item-is-layer drawable)
             (gimp-layer-translate diff-clouds offset-x offset-y)))
-    (else
-        (if (gimp-drawable-is-layer drawable)
+        (else
+            (if (gimp-drawable-is-layer drawable)
             (gimp-layer-translate diff-clouds offset-x offset-y)))
     ) ;endcond
     ; Show the solid noise dialog

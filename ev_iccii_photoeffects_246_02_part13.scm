@@ -145,7 +145,7 @@
 
 (script-fu-register
   "script-fu-inkpen-ga"
-  "<Toolbox>/Script-Fu/Decor/Photo Effects/Artist/Inkpen..."
+  "<Toolbox>/Script-Fu/Artist/Inkpen blue..."
   "Creates a inkpen drawing effect. \n: file:photoeffects_246_02_part13.scm"
   "Eddy Verlinden <eddy_verlinden@hotmail.com>"
   "Eddy Verlinden"
@@ -153,7 +153,7 @@
   "RGB* GRAY*"
   SF-IMAGE      "Image"             0
   SF-DRAWABLE   "Drawable"          0
-  SF-COLOR      "Ink Color"       '(0 0 0)
+  SF-COLOR      "Ink Color"       '(31 31 237)
   SF-ADJUSTMENT "Lightness"       '(0 -100 100 1 10 0 0)
   SF-ADJUSTMENT "Stroke length"   '(30 10 50 1 10 0 0)
   SF-TOGGLE     "Outlines"       TRUE
@@ -173,8 +173,10 @@
             drawable
             brightness
             contrast
+            gimpressOpt
             wild?
             canvas?
+            threshAdj
     )
     
     (gimp-image-undo-group-start img)
@@ -198,35 +200,53 @@
         (gimp-drawable-fill old-selection FILL-WHITE)) ; so Empty and All are the same.
     (gimp-selection-none img)
 ;-------------------------------------------------------
-    (if (eqv? (car (gimp-palettes-get-list "conte_ev8")) 0)
-    (begin
-        (gimp-palette-new "conte_ev8")
-        (gimp-palette-add-entry "conte_ev8" "1" '(117 96 91))
-        (gimp-palette-add-entry "conte_ev8" "2" '(139 91 87))
-        (gimp-palette-add-entry "conte_ev8" "3" '(164 91 85))
-        (gimp-palette-add-entry "conte_ev8" "4" '(185 103 89))
-        (gimp-palette-add-entry "conte_ev8" "5" '(240 238 239))
-        (gimp-palette-add-entry "conte_ev8" "6" '(205 212 220))
-        (gimp-palette-add-entry "conte_ev8" "7" '(90 93 100))
-        (gimp-palette-add-entry "conte_ev8" "8" '(51 51 51))
-    ))
-    (if (> (car (gimp-palettes-get-list "conte_ev8 ")) 0)
-        (gimp-message "There is/are palette(s) 'conte_ev8 *'. The best is to delete all palettes 'conte_ev8' (in the dialog 'palettes'). A new original will be created the next time this script is activated"))
-    (if (> (car (gimp-palettes-get-list "conte_ev8#")) 0)
-        (gimp-message "There is/are palette(s) 'conte_ev8#'. The best is to delete all palettes 'conte_ev8' (in the dialog 'palettes'). A new original will be created the next time this script is activated"))
+    (if (eqv? (car (gimp-palettes-get-list "conte_ev_yellow")) 0)
+    ;(begin
+    ;    (gimp-palette-new "conte_ev8")
+    ;    (gimp-palette-add-entry "conte_ev8" "1" '(117 96 91))
+    ;    (gimp-palette-add-entry "conte_ev8" "2" '(139 91 87))
+    ;    (gimp-palette-add-entry "conte_ev8" "3" '(164 91 85))
+    ;    (gimp-palette-add-entry "conte_ev8" "4" '(185 103 89))
+    ;    (gimp-palette-add-entry "conte_ev8" "5" '(240 238 239))
+    ;    (gimp-palette-add-entry "conte_ev8" "6" '(205 212 220))
+    ;    (gimp-palette-add-entry "conte_ev8" "7" '(90 93 100))
+    ;    (gimp-palette-add-entry "conte_ev8" "8" '(51 51 51))
+    ;)
+        (begin
+            (gimp-message "conte_ev_yellow create palette")
+            (gimp-palette-new "conte_ev_yellow")
+            (gimp-palette-add-entry "conte_ev_yellow" "0" '(159 146 118))
+            (gimp-palette-add-entry "conte_ev_yellow" "1" '(136 109 22))
+            (gimp-palette-add-entry "conte_ev_yellow" "2" '(197 157 34))
+            (gimp-palette-add-entry "conte_ev_yellow" "3" '(215 183 81))
+            (gimp-palette-add-entry "conte_ev_yellow" "4" '(226 204 136))
+            (gimp-palette-add-entry "conte_ev_yellow" "5" '(244 240 228))
+            (gimp-palette-add-entry "conte_ev_yellow" "6" '(234 223 190))
+            (gimp-palette-add-entry "conte_ev_yellow" "7" '(212 184 107))
+            (gimp-palette-add-entry "conte_ev_yellow" "8" '(134 118 50))
+        )
+    
+    
+    )
+    
+    
+    (if (> (car (gimp-palettes-get-list "conte_ev_yellow ")) 0)
+        (gimp-message "There is/are palette(s) 'conte_ev-yellow'. The best is to delete all palettes 'conte_ev_yellow' (in the dialog 'palettes'). A new original will be created the next time this script is activated"))
+    (if (> (car (gimp-palettes-get-list "conte_ev_yellow#")) 0)
+        (gimp-message "There is/are palette(s) 'conte_ev_yellow'. The best is to delete all palettes 'conte_ev_yellow' (in the dialog 'palettes'). A new original will be created the next time this script is activated"))
 ;-------------------------------------------------------
     (gimp-drawable-fill layer-tempa FILL-TRANSPARENT)
-    (gimp-image-add-layer img layer-tempa -1)
+    (gimp-image-insert-layer img layer-tempa 0 -1)
     (gimp-edit-copy drawable)
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-tempa 0)))
     (gimp-drawable-fill layer-tempb FILL-TRANSPARENT)
-    (gimp-image-add-layer img layer-tempb -1)
+    (gimp-image-insert-layer img layer-tempb 0 -1)
     (gimp-edit-copy drawable)
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-tempb 0)))
     
     (plug-in-neon 1 img layer-tempa 5.0 0)
-    (gimp-invert layer-tempa)
-    (gimp-desaturate layer-tempa)
+    (gimp-drawable-invert layer-tempa FALSE)
+    (gimp-drawable-desaturate layer-tempa DESATURATE-LUMINANCE)
     
     (gimp-brightness-contrast layer-tempb (* brightness 1.25) (* contrast 1.25))
     (plug-in-gauss 1 img layer-tempb 2.0 2.0 0)
@@ -234,9 +254,27 @@
     (gimp-edit-copy layer-tempb)
     
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-tempc 0)))
-    (plug-in-gimpressionist 1 img layer-tempc "ev_strokes45r")
+    (cond
+        ((= gimpressOpt 0)
+            ;(gimp-message "GimpressOpt 0")
+            (plug-in-gimpressionist 1 img layer-tempc "Line-Art-2")
+        )
+        ((= gimpressOpt 1)
+            ;(gimp-message "GimpressOpt 1")
+            (plug-in-gimpressionist 1 img layer-tempc "Felt-marker")
+        )
+        ((= gimpressOpt 2)
+            ;(gimp-message "GimpressOpt 2")
+            (plug-in-gimpressionist 1 img layer-tempc "Flowerbed")
+        )
+        ((= gimpressOpt 3)
+            ;(gimp-message "GimpressOpt 3")
+            ;(plug-in-gimpressionist 1 img layer-tempc "Line-art")
+        )
+    )
+    ;(plug-in-gimpressionist 1 img layer-tempc "Line-Art-2")
     (plug-in-dog 1 img layer-tempc 7.0 2.0 TRUE TRUE)
-    (gimp-threshold layer-tempc 250 255)
+    (gimp-drawable-threshold layer-tempc HISTOGRAM-VALUE (/ threshAdj 255) 1.0)
     
     (gimp-layer-set-mode layer-tempc 3)
     (gimp-layer-set-mode layer-tempb 3)
@@ -251,7 +289,7 @@
     (gimp-image-add-layer img2 layer-temp2 -1)
     (gimp-drawable-fill layer-temp2 FILL-TRANSPARENT)
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-temp2 0)))
-    (gimp-image-convert-indexed img2 0 4 0 0 0 "conte_ev8")
+    (gimp-image-convert-indexed img2 0 4 0 0 0 "conte_ev_yellow")
     (gimp-edit-copy layer-temp2)
     (gimp-image-delete img2)
     
@@ -262,7 +300,29 @@
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-tempd 0)))
     (if (eqv? wild? TRUE)
         (begin
-            (plug-in-gimpressionist 1 img layer-tempd "graphite2")
+            (cond 
+                ((= gimpressOpt 0)
+                    ;(gimp-message "Wild GimpressOpt 0")
+                    (plug-in-gimpressionist 1 img layer-tempd "Parquette")
+                )
+                ((= gimpressOpt 1)
+                    ;(gimp-message "Wild GimpressOpt 1")
+                    (plug-in-gimpressionist 1 img layer-tempd "Flowerbed")
+                )
+                ((= gimpressOpt 2)
+                    ;(gimp-message "Wild GimpressOpt 2")
+                    (plug-in-gimpressionist 1 img layer-tempd "Furry")
+                )
+                ((= gimpressOpt 3)
+                    ;(gimp-message "Wild GimpressOpt 3")
+                    ;(plug-in-gimpressionist 1 img layer-tempd "Furry")
+                )
+                (else 
+                   ;(gimp-message "Wild GimpressOpt else")
+                   (plug-in-gimpressionist 1 img layer-tempd "Parquette")
+                )
+            )
+            
         )
     )
     (gimp-layer-set-mode layer-tempd 19)
@@ -303,7 +363,7 @@
 
 (script-fu-register
   "script-fu-conte-ga"
-  "<Toolbox>/Script-Fu/Decor/Photo Effects/Artist/Conte..."
+  "<Toolbox>/Script-Fu/Artist/Conte Yellow"
   "Creates an image that looks like a conte sketch.  \n: file:photoeffects_246_02_part13.scm"
   "Eddy Verlinden <eddy_verlinden@hotmail.com>"
   "Eddy Verlinden"
@@ -313,8 +373,10 @@
   SF-DRAWABLE   "Drawable"          0
   SF-ADJUSTMENT "Brightness"        '(50 -100 100 1 10 0 0)
   SF-ADJUSTMENT "Contrast"          '(80 -100 100 1 10 0 0)
+  SF-OPTION "Gimoressionist Option" '("LineArt+Parquette" "Felt+Flower" "Flowerbed+Furry" "Option4 Base Yellow")
   SF-TOGGLE     "Wild"          TRUE
   SF-TOGGLE     "Canvas"        TRUE
+  SF-ADJUSTMENT "Threshold for scracth/edges"          '(250 150 254 1 10 0 0)
 )
 
 
