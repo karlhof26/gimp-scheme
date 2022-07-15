@@ -85,10 +85,12 @@
 (define (FU-frame-poster image drawable width border-colour signature-text font-name)
   (gimp-display-new
    (FU-frame-poster-batch image drawable width border-colour signature-text font-name))
-  (gimp-displays-flush))
+  (gimp-displays-flush)
+)
 
 (define (%top-layer image)
-  (aref (cadr (gimp-image-get-layers image)) 0))
+  (aref (cadr (gimp-image-get-layers image)) 0)
+)
 
 (define (FU-frame-hover-batch image drawable width signature-text font-name)
   (let* (
@@ -120,16 +122,17 @@
     (gimp-context-set-background '(255 255 255))
     (script-fu-round-corners new-image
                 drawable
-                (trunc (/ size 2))  ; edge radius
-                TRUE                ; add drop shadow
-                (trunc (/ size 3))  ; shadow x offset
-                (trunc (/ size 3))  ; shadow y offset
-                (trunc (/ size 2))	; shadow blur radius
-                TRUE                ; add background
+                (trunc (* size 1.3))    ; edge radius ; was /2 
+                TRUE                    ; add drop shadow
+                (trunc (/ size 3))      ; shadow x offset
+                (trunc (/ size 3))      ; shadow y offset
+                (trunc (/ size 2))      ; shadow blur radius
+                TRUE                   ; add background ; was T
                 ;; don't make another copy as we just made one
                 FALSE)
     (if (> size 20)
         (begin
+            ;(gimp-message "size >20")
             (gimp-image-set-active-layer new-image (%top-layer new-image))
             (let* ((text-layer (car (gimp-text-fontname new-image
                             -1 ; drawable, -1 = new layer
@@ -167,6 +170,13 @@
             (size (/ (sqrt (* width height)) 20))
             (foreground (car (gimp-context-get-foreground)))
             (background (car (gimp-context-get-background)))
+            (black-layer (car (gimp-layer-new new-image
+                                            width; (car (gimp-image-width new-image))
+                                            height; (car (gimp-image-height new-image))
+                                            RGB-IMAGE
+                                            "Black layer"
+                                            100
+                                            LAYER-MODE-NORMAL)))
         )
         (gimp-image-undo-group-start new-image)
         
@@ -181,18 +191,24 @@
             0.3             ; amount
             0               ; threshold
         )
-        (gimp-context-set-foreground '(200 200 200))
+        (gimp-context-set-foreground '(0 0 0)) ; ws 250 250 250
         (gimp-context-set-background '(0 0 0))
         (script-fu-round-corners new-image
                 drawable
-                (trunc (/ size 3))  ; edge radius
+                (trunc (* size 0.9))  ; edge radius ; was  / 3
                 FALSE       ; no shadow
                 0           ; shadow x offset
                 0           ; shadow y offset
                 0           ; shadow blur radius
-                TRUE        ; add background
+                FALSE       ; add background
                 ;; don't make another copy as we just made one
                 FALSE)
+        (gimp-image-insert-layer new-image black-layer 0 1)
+        (gimp-edit-fill black-layer FILL-BACKGROUND)
+        (gimp-context-set-foreground '(200 200 200))
+        (gimp-display-new new-image)
+        ;(quit)
+        
         (gimp-image-merge-visible-layers new-image 0)
         (let ((background-layer (%top-layer new-image)))
             (if (> size 20)
@@ -219,8 +235,10 @@
                     )
                     (gimp-image-merge-visible-layers new-image 0)
                 )
-                (script-fu-addborder new-image background-layer
-                    (/ size 5) (/ size 5) '(0 0 0) 0)
+                (begin
+                    (script-fu-addborder new-image background-layer
+                        (/ size 5) (/ size 5) '(0 0 0) 0)
+                )
             )
         )
         (gimp-context-set-foreground foreground)
