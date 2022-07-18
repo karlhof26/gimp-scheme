@@ -82,6 +82,8 @@
             
             ; blank line
             ;; values now to be between 0 and 1 
+            (aset control_pts 0                      0.0)
+            (aset control_pts 1                      0.0)
             (while (< count randomx)
                 (begin
                     (aset control_pts  (+ (* count 4) 2) (/ (* step (+ (* count 2) 1)) 255))
@@ -91,12 +93,11 @@
                     (set! count (+ count 1))
                 )
             )
-            (aset control_pts 0 0.0)
-            (aset control_pts 1 0.0)
-            (aset control_pts (- (* point-num 2) 2) 1.0) ; was 255 now 1
-            (aset control_pts (- (* point-num 2) 1) 1.0) ; was 255 now 1
+            
+            (aset control_pts (- (* point-num 2) 2)  1.0) ; was 255 now 1
+            (aset control_pts (- (* point-num 2) 2)  1.0) ; was 255 now 1
             (gimp-drawable-curves-spline drawable HISTOGRAM-VALUE (* point-num 2) control_pts)
-            ; blank line
+            ; blank line   
             ;;
             (if (eqv? image-type RGBA-IMAGE)
                 (begin
@@ -118,23 +119,23 @@
 )
 
 (script-fu-register "script-fu-chrome-image-ga"
-    "Chrome Image..."
-    "Create chrome image.  Useful when you want to create metallic surfaces. Works best on a layer with transparency and non-black colors. \nfile:ev_iccii_photoeffects_246_02_part1.scm"
+    "Chrome Image Art version"
+    "Create chrome image.  Useful when you want to create metallic surfaces. Works best on a layer with transparency and non-black colors. Try very low values for all settings if a normal non-transparent image is used. \nfile:ev_iccii_photoeffects_246_02_part1.scm"
     "Iccii <iccii@hotmail.com>"
     "Iccii"
     "2002, Feb"
     "RGB* GRAY*"
     SF-IMAGE      "Image"           0
     SF-DRAWABLE   "Drawable"        0
-    SF-COLOR      "Color"           '(255 127 0)
+    SF-COLOR      "Color"           '(203 199 203) ;(203 127 0)
     SF-ADJUSTMENT "Contrast"        '(107 0 127 1 1 0 SF-SPINNER)
-    SF-ADJUSTMENT "Deformation"     '(36 1 50 1 10 0 SF-SPINNER)
-    SF-ADJUSTMENT "Ramdomness"      '(5 1 7 1 10 0 SF-SPINNER)
+    SF-ADJUSTMENT "Deformation"     '(15 1 50 1 10 0 SF-SPINNER)
+    SF-ADJUSTMENT "Ramdomness"      '(3 1 7 1 10 0 SF-SPINNER)
     SF-TOGGLE     "Enable Emboss"    TRUE
     SF-TOGGLE     "Stop at Emboss"   FALSE
 )
 
-(script-fu-menu-register "script-fu-chrome-image-ga" "<Toolbox>/Script-Fu/Decor/Photo Effects/Artist/")
+(script-fu-menu-register "script-fu-chrome-image-ga" "<Toolbox>/Script-Fu/Effects/")
 
 
 ;*************************************************************************************** 
@@ -222,7 +223,7 @@
 
 (script-fu-register "script-fu-cross-light-gab"
     "Cross Light..."
-    "Cross light effect. X shaped bohek on the brightest spots in the image.\nfile:ev_iccii_photoeffects_246_02_part1.scm"
+    "Cross light effect. X shaped bokeh on the brightest spots in the image.\nfile:ev_iccii_photoeffects_246_02_part1.scm"
     "karlhof26"
     "Iccii & karlhof26"
     "March 2020"
@@ -235,6 +236,6 @@
     SF-ADJUSTMENT "Threshold -- Bigger 1 to 255 Smaller"    '(223 1 255 1 10 0 0)
 )
 
-(script-fu-menu-register "script-fu-cross-light-gab" "<Toolbox>/Script-Fu/Decor/Photo Effects/Style")
+(script-fu-menu-register "script-fu-cross-light-gab" "<Toolbox>/Script-Fu/Photo/Style")
 
 ;end of script;
