@@ -3,7 +3,7 @@
 ; Copyright (C) 1995 Spencer Kimball and Peter Mattis
 ;
 ; Rule of Thirds Grid script  for GIMP 2.10.22
-; Copyright (C) 2007 Saul Goode
+; Copyright (C) 2007 Saul Goode 
 ;
 ; Tags: tool, preset grid
 ;
