@@ -21,7 +21,7 @@
 ; This program is distributed in the hope that it will be useful,
 ; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-; GNU General Public License for more details.
+; GNU General Public License for more details. 
 ; 
 ; You should have received a copy of the GNU General Public License
 ; along with this program; if not, write to the Free Software
@@ -33,6 +33,7 @@
             inImage
             inDrawable
             inEffect
+            inBrightBoost
     )
     
   (let* 
@@ -49,10 +50,10 @@
     )
     (gimp-drawable-set-name theNewlayer "New layer")
     (gimp-image-insert-layer inImage theNewlayer 0 -1)
-
+    (if (= inBrightBoost TRUE)
+        (gimp-drawable-brightness-contrast theNewlayer 0.85 0.10)
+    )
     ;; not working (plug-in-laplace 1 inImage theNewlayer) 
-
-
     (plug-in-edge 1 inImage theNewlayer 5 2 0)
     (gimp-layer-set-mode theNewlayer LAYER-MODE-SUBTRACT)
     (gimp-drawable-posterize theNewlayer 8)
@@ -73,7 +74,8 @@
     "RGB*, GRAY*"
     SF-IMAGE        "Image"	        0
     SF-DRAWABLE     "Drawable"      0
-    SF-ADJUSTMENT   "Effect Size (pixels)"      '(4 0 70 1 10 0 0)
+    SF-ADJUSTMENT   "Effect Size (pixels)"      '(45 0 150 1 10 0 0)
+    SF-TOGGLE       "Brightness boost"          TRUE
 )
 
 ;end of script
