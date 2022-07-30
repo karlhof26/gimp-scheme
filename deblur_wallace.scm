@@ -84,33 +84,7 @@
     SF-IMAGE      "Image"           0                   
     SF-DRAWABLE   "Layer"           0
     SF-ADJUSTMENT "Blur Radius"     '(15 1 500 1 10 0 0)
-    SF-OPTION       "Set Layer Mode" '(
-                                    "NORMAL-MODE"
-                                    "DISSOLVE-MODE"
-                                    "BEHIND-MODE"
-                                    "MULTIPLY-MODE"
-                                    "SCREEN-MODE"
-                                    "OVERLAY-MODE"
-                                    "DIFFERENCE-MODE"
-                                    "ADDITION-MODE"
-                                    "SUBTRACT-MODE"
-                                    "DARKEN-ONLY-MODE"
-                                    "LIGHTEN-ONLY-MODE"
-                                    "HUE-MODE"
-                                    "SATURATION-MODE"
-                                    "COLOR-MODE"
-                                    "VALUE-MODE"
-                                    "DIVIDE-MODE"
-                                    "DODGE-MODE"
-                                    "BURN-MODE"
-                                    "HARDLIGHT-MODE"
-                                    "SOFTLIGHT-MODE"
-                                    "GRAIN-EXTRACT-MODE"
-                                    "GRAIN-MERGE-MODE"
-                                    "COLOR-ERASE-MODE"
-                                    "ERASE-MODE"
-                                    "REPLACE-MODE"
-                                    "ANTI-ERASE-MODE")
+    SF-ENUM       "Set Layer Mode"  '("LayerModeEffects" "grain-merge-mode") ; "normal-mode"
     SF-ADJUSTMENT "Opacity"         '(50 0 100 1 10 0 0)
 )
 
