@@ -69,15 +69,15 @@
                                       inblurshade
                                       outblurshade
                                       inblurline
-									  outblurline
-									  iterations
-									  val
-									  line-opacity
-									  shade-opacity
-									  keep-selection
-									  conserve)
-
-        (gimp-image-undo-group-start image)		
+                                      outblurline
+                                      iterations
+                                      val
+                                      line-opacity
+                                      shade-opacity
+                                      keep-selection
+                                        conserve)
+    
+    (gimp-image-undo-group-start image)
     
   (let* ( 
             (shadeLayer (car (gimp-image-get-active-layer image)))
@@ -127,11 +127,11 @@
                 25 ;argc-matrix [The number of elements in the following array. Should be always 25.]  
                 matrix
                 FALSE ;alpha-alg [Enable weighting by alpha channel]
-                50 ;divisor
-                0 ;offset
+                10 ;divisor 50
+                0 ;offset 0
                 5 ;argc-channels [The number of elements in following array. Should be always 5.]
-                #(1 1 1 1 0) ;channels
-                2 ;bmode ;[Mode for treating image borders] { EXTEND (0), WRAP (1), CLEAR (2) }
+                #(1 1 1 1 0) ;channels 
+                1 ;bmode ;[Mode for treating image borders] { EXTEND (0), WRAP (1), CLEAR (2) } ; was 2
             )
             (set! i (- i 1))
         ) ;endwhile
@@ -143,7 +143,7 @@
         (gimp-layer-set-opacity lineLayer line-opacity)
         
         (set! drawable (car (gimp-layer-copy shadeLayer FALSE)))
-        (pencil-shade-include-layer image drawable shadeLayer 0)	;stack 0=above 1=below
+        (pencil-shade-include-layer image drawable shadeLayer 0)    ;stack 0=above 1=below
         (gimp-layer-set-mode drawable LAYER-MODE-MULTIPLY)
         (gimp-layer-set-opacity drawable shade-opacity)
         (set! shadeLayer (car (gimp-image-merge-down image drawable EXPAND-AS-NECESSARY)))
@@ -164,7 +164,7 @@
         (gimp-displays-flush)
         (gimp-image-undo-group-end image)
         (gimp-context-pop)
-        
+        (gc) ; memory cleanup; garbage clean
     )
 )
 
@@ -183,8 +183,8 @@
     SF-ADJUSTMENT "Inner Blur Line" '(3 1 100 1 5 0 0)
     SF-ADJUSTMENT "Outer Blur Line" '(1 1 100 1 5 0 0)
     SF-ADJUSTMENT "Matrix Iteratioons" '(2 1 10 1 1 0 0)
-    SF-ADJUSTMENT "Matrix Value" '(16.0 0 25 .1 1 1 0)
-    SF-ADJUSTMENT "Opacity Line" '(70 0 100 1 5 0 0)
+    SF-ADJUSTMENT "Matrix Value" '(5.9 4.4 7.9 .01 .1 2 0)
+    SF-ADJUSTMENT "Opacity Line" '(90 0 100 1 5 0 0)
     SF-ADJUSTMENT "Darken Shade" '(0 0 100 1 5 0 0)
     SF-TOGGLE     "Keep selection"          FALSE
     SF-TOGGLE     "Keep the Layers"   FALSE
@@ -194,10 +194,14 @@
 (define (script-fu-wisps image layer
                                inblurshade
                                iterations
+                               wispiterations
                                cpu
                                spacial
                                keep-selection-in
                                 conserve
+                                desatfinal
+                                invertlinear
+                                equalisefinal
                                 )
     
     (gimp-image-undo-group-start image)     
@@ -270,7 +274,7 @@
                                       3 ;inblurline
                                       1 ;outblurline
                                       iterations
-                                      16 ;val
+                                      5.9 ;val 16
                                       70 ;line-opacity
                                       0 ;shade-opacity
                                       TRUE ;keep selection
@@ -289,11 +293,18 @@
     (set! lineLayer (car (gimp-image-merge-down image shadeLayer EXPAND-AS-NECESSARY)))
     (gimp-colorize lineLayer 187 70 -15) ; +7 to blue, +20 sat, -15 lightness
     (gimp-displays-flush)
+    ;(gimp-message "Skipping gmic step start")
+    ;(gimp-message (not (defined? 'plug-in-gmic-qt)))
     
     ;=====================================================
     ; Add Effect to Pencil Script (GnuTux)
     ;=====================================================
-        		    				
+        (if (not (defined? 'plug-in-gmic-qt)) ; removed not to test (not (defined?
+            (begin
+                (gimp-message "You will need to Install\nthe Plugin Gmic (http://gmic.eu to have full effect of this script")
+                (gimp-message "Skipping gmic step.")
+            )
+            (begin
                 
                 ;; Render dreamsmooth using G'MIC.
                 (plug-in-gmic-qt 
@@ -301,29 +312,47 @@
                     image lineLayer 1 0
                     (string-append
                         "-v - " ; To have a silent output. Remove it to display errors from the G'MIC interpreter on stderr.
-                        "-fx_dreamsmooth 2,1,1,0.8,0,0.8,"
+                        "-fx_dreamsmooth "
+                        (number->string wispiterations)
+                        ",1,1,0.8,0,0.8,"
                         (number->string cpu) "," 
                         (number->string spacial) ",0"
                                  
                     )
                 )
-    (set! layer (car (gimp-image-get-active-layer image)))
-    (gimp-selection-invert image)
-    (gimp-edit-clear layer)
-    (gimp-selection-invert image)
+                
+                
+                
+                
+            )
+            
+        )
     
+    (set! layer (car (gimp-image-get-active-layer image)))
+                (gimp-selection-invert image)
+                (gimp-edit-clear layer)
+                (gimp-selection-invert image)
     ;end [GMIC]
     ;=========================================================
+    (if (= desatfinal TRUE)
+        (gimp-drawable-desaturate layer DESATURATE-LUMINANCE)
+                
+    )
+    (if (= equalisefinal TRUE)
+        (gimp-drawable-levels-stretch layer)
+                
+    )
+    (gimp-drawable-invert layer invertlinear)
     
     ;;;;finish the script
-    (gimp-image-scale image final-width final-height)	
+    (gimp-image-scale image final-width final-height)
     (if (= conserve FALSE) (set! layer (car (gimp-image-merge-down image layer EXPAND-AS-NECESSARY))))
-    (cond ((= ver 2.8) (gimp-item-set-name layer (string-append layer-name "\n-Wisps")))
-          (else (gimp-drawable-set-name layer (string-append layer-name "\n-Wisps")))
+    (cond ((= ver 2.8) (gimp-item-set-name layer (string-append layer-name "-Wisps")))
+          (else (gimp-drawable-set-name layer (string-append layer-name "-Wisps")))
     ) ;endcond
     (if (= keep-selection FALSE) (gimp-selection-none image))
     (if (= conserve FALSE) (gimp-image-remove-channel image selection-channel))
-    (if (and (= conserve FALSE) (= alpha FALSE)) (gimp-layer-flatten layer))		
+    (if (and (= conserve FALSE) (= alpha FALSE)) (gimp-layer-flatten layer))
     
     (gimp-displays-flush)
     (gimp-image-undo-group-end image)
@@ -342,11 +371,16 @@
     SF-IMAGE      "image"      0
     SF-DRAWABLE   "drawable"   0
     SF-ADJUSTMENT "Inner Blur Shade"                    '(25 1 100 1 5 0 0)
-    SF-ADJUSTMENT "Matrix Iteratioons"                  '(3 1 10 1 1 0 0)
-    SF-OPTION     "Number of threads (CPU's)"           '("Auto" "1 Thread" "2 Threads" "4 Threads" "8 Threads" "16 Threads")
+    SF-ADJUSTMENT "Matrix Iterations"                  '(3 1 10 1 1 0 0)
+    SF-ADJUSTMENT "Wisp iterations"                    '(2 1 10 1 5 0 0)
+    SF-OPTION     "Banding removal Number of threads"    '("Auto" "1 Thread" "2 Threads" "4 Threads" "8 Threads" "16 Threads")
     SF-ADJUSTMENT "Spacial overlap"                     '(24 0 256 1 10 0 0)
+    
     SF-TOGGLE     "Keep selection"                      FALSE
     SF-TOGGLE     "Keep the Layers"                     FALSE
+    SF-TOGGLE     "Desaturate"               TRUE
+    SF-TOGGLE     "Invert Linear"               FALSE
+    SF-TOGGLE     "Equalise"               TRUE
 )
 
 (script-fu-menu-register "script-fu-wisps" "<Toolbox>/Script-Fu/Artistic")
