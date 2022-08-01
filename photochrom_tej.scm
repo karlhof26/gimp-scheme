@@ -2,10 +2,12 @@
 ; 
 ; last modified/tested by Karl Hofmeyr
 ; 
-; 22/09/2020 on GIMP-2.10.20
+; 23/09/2020 on GIMP-2.10.20
+; 01/08/2022 on GIMP-2.10.32
 ;
 ; 
-; Chnaged to work in Gimp-2.10.22 and also changed menu location 
+; Changed to work in Gimp-2.10.22 and also changed menu location 
+; Photochrom, Fotochrom, Photochrome or the Ac process is a process for producing colorized images from a single black-and-white photographic negative via the direct photographic transfer of the negati…
 ;
 ;==============================================================
 ;
@@ -15,12 +17,12 @@
 ;	Windows Vista/7/8)
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
+;	C:\Users\YOUR-NAME\.gimp-2.10\scripts
 ;	
 ;	Windows 10
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;	C:\Documents and Settings\yourname\.gimp-2.10\scripts   
 ;    
 ;	Linux
 ;	/home/yourname/.gimp-2.8/scripts  
@@ -52,7 +54,7 @@
 ;
 ;
 ;photochrom
-(define (photochrom aimg adraw
+(define (photochrom-tej aimg adraw
             color1
             color2
             contrast
@@ -60,14 +62,17 @@
             num1
             num2
             dodge
-            retro)
+            retro
+            desatinitial
+            usemasks
+            invertMult)
     
     (let* (
             (img (car (gimp-drawable-get-image adraw)))
             (owidth (car (gimp-image-width img)))
             (oheight (car (gimp-image-height img)))
-            (offset1 (* oheight (/ num1 100)))
-            (offset2 (* oheight (/ num2 100)))
+            (offset1 (min (- oheight 1) (* oheight (/ num1 100))) ) ; was without * 0.8
+            (offset2 (min (- oheight 1) (* oheight (/ num2 100))) )
             (dodge-layer (car (gimp-layer-copy adraw FALSE)))
             (contrast-layer1 (car (gimp-layer-copy adraw FALSE)))
             (contrast-layer2 (car (gimp-layer-copy adraw FALSE)))
@@ -96,7 +101,7 @@
                     oheight
                     RGBA-IMAGE
                     "Multiply"
-                    10
+                    80
                     LAYER-MODE-MULTIPLY)))
             (multiply-mask (car (gimp-layer-create-mask multiply-layer ADD-MASK-WHITE)))
             (retro-layer (car (gimp-layer-new img
@@ -122,13 +127,38 @@
                     "Gradient Overlay"
                     100
                     LAYER-MODE-OVERLAY)))
+            (dummyflip 0)
           )
         ; init
         (gimp-context-push)
-        (gimp-image-undo-group-start img)
+        (gimp-image-undo-group-start aimg)
         (if (= (car (gimp-drawable-is-gray adraw )) TRUE)
             (gimp-image-convert-rgb img)
         )
+        
+        (if (= desatinitial TRUE)
+            (begin
+                (gimp-drawable-desaturate adraw DESATURATE-LUMINANCE)
+                (set! dodge-layer (car (gimp-layer-copy adraw FALSE)))
+            )
+        )
+        
+        ;(if (< num2 num1)
+        ;    (begin
+        ;        (set! dummyflip num2)
+        ;        (set! num2 num1)
+        ;        (set! num1 dummyflip)
+        ;    )
+        ;)
+        
+        (if (< offset1 0)
+            (begin
+                (set! offset1 (max 0 (* oheight (/ num1 100))))
+                (set! offset2 (max 0 (* oheight (/ num2 100))))
+            )
+        )
+        
+        
         ;set extra color layer
         (gimp-image-insert-layer img lum-layer 0 0)
         (gimp-drawable-set-name lum-layer "Luminosity")
@@ -170,10 +200,10 @@
         
         
         ;set dodge layer
-        (gimp-image-insert-layer img dodge-layer 0 -1)
-        (gimp-drawable-set-name dodge-layer "Dodge")
-        (gimp-layer-set-mode dodge-layer LAYER-MODE-DODGE)
-        (gimp-layer-set-opacity dodge-layer 50)
+        ;(gimp-image-insert-layer img dodge-layer 0 -1)
+        ;(gimp-drawable-set-name dodge-layer "Dodge")
+        ;(gimp-layer-set-mode dodge-layer LAYER-MODE-DODGE)
+        ;(gimp-layer-set-opacity dodge-layer 50)
         
         ;set merge layer
         (gimp-image-insert-layer img merge-layer 0 -1)
@@ -183,11 +213,15 @@
         (gimp-layer-add-mask merge-layer merge-mask)
         (gimp-context-set-foreground '(255 255 255))
         (gimp-context-set-background '(0 0 0))
-        (gimp-edit-blend merge-mask BLEND-FG-BG-RGB
-            LAYER-MODE-NORMAL GRADIENT-LINEAR
-            100 0 REPEAT-NONE
-            TRUE FALSE 1 0
-            TRUE 0 offset1 0 offset2)
+        (if (= usemasks TRUE)
+            (begin
+                (gimp-edit-blend merge-mask BLEND-FG-BG-RGB
+                    LAYER-MODE-NORMAL GRADIENT-LINEAR
+                    100 0 REPEAT-NONE
+                    TRUE FALSE 1 0
+                    TRUE 0 offset1 0 offset2)
+            )
+        )
         
         ;set screen layer
         (gimp-image-insert-layer img screen-layer 0 -1)
@@ -198,26 +232,37 @@
         (gimp-context-set-foreground '(255 255 255))
         (gimp-context-set-background '(0 0 0))
         
-        (gimp-edit-blend screen-mask BLEND-FG-BG-RGB
-            LAYER-MODE-NORMAL GRADIENT-LINEAR
-            100 0 REPEAT-NONE
-            TRUE FALSE 1 0
-            TRUE 0 offset1 0 offset2)
+        (if (= usemasks TRUE)
+            (begin
+                (gimp-edit-blend screen-mask BLEND-FG-BG-RGB
+                    LAYER-MODE-NORMAL GRADIENT-LINEAR
+                    100 0 REPEAT-NONE
+                    TRUE FALSE 1 0
+                    TRUE 0 offset1 0 offset2)
+            )
+        )
         
         ;set multiply layer
         (gimp-image-insert-layer img multiply-layer 0 -1)
         (gimp-selection-all aimg)
         (gimp-context-set-foreground color2)
         (gimp-edit-bucket-fill multiply-layer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 0 FALSE 0 0)
-        (gimp-layer-add-mask multiply-layer multiply-mask)
+        
         (gimp-context-set-foreground '(255 255 255))
         (gimp-context-set-background '(0 0 0))
-        (gimp-edit-blend multiply-mask BLEND-FG-BG-RGB
-            LAYER-MODE-NORMAL GRADIENT-LINEAR
-            100 0 REPEAT-NONE
-            TRUE FALSE 1 0
-            TRUE 0 offset1 0 offset2)
         
+        (if (= usemasks TRUE)
+            (begin
+                (gimp-layer-add-mask multiply-layer multiply-mask)
+                (gimp-edit-blend multiply-mask BLEND-FG-BG-RGB
+                    LAYER-MODE-NORMAL GRADIENT-LINEAR
+                    100 0 REPEAT-TRIANGULAR ; was 100 0 REPEAT-NONE
+                    invertMult FALSE 1 0 ; was T F 1 0
+                    TRUE 0 offset1 0 offset2); was TRUE 0 offset1 0 offset2)
+            )
+        )
+        ;(gimp-message (number->string offset1))
+        ;(gimp-message (number->string offset2))
         
         ;optional retro colors
         (if(= retro TRUE)
@@ -254,38 +299,48 @@
             )
         )
         ;dodge b/w
-        (if(= dodge TRUE)
+        (if (= dodge TRUE)
             (begin
+                ;set dodge layer
+                (gimp-image-insert-layer img dodge-layer 0 -1)
+                (gimp-drawable-set-name dodge-layer "Dodge")
+                (gimp-layer-set-mode dodge-layer LAYER-MODE-DODGE)
+                (gimp-layer-set-opacity dodge-layer 50)
+                
                 (gimp-drawable-desaturate dodge-layer DESATURATE-LUMINANCE)
                 (gimp-drawable-set-visible extra-layer FALSE)
             )
         )
         ; tidy up
-        (gimp-image-undo-group-end img)
+        (gimp-image-undo-group-end aimg)
         (gimp-displays-flush)
         (gimp-context-pop)
+        (gc) ; garbage cleanup ; memory cleanup
     ) 
 )
 
-(script-fu-register "photochrom"
+(script-fu-register "photochrom-tej"
     "_Photochrom"
-    "Photochrom effect from 1890. \nfile:phorochrom_tej.scm"
-    "tejesh <tejeshagrawal@gmail.com>"
-    "surya <suryakant.bharti@gmail.com>"
-    "03/10/13"
+    "Photochrom effect from 1890. Process for producing colorized images from a single black-and-white photographic negative. Ends of offset can be flipped to swap direction of the the gradient. \nfile:phorochrom_tej.scm"
+    "Original: Tejesh Grawal and Surya Bharti"
+    "karlhof26"
+    "01/08/22"
     "RGB*"
-    SF-IMAGE "Input image" 0
-    SF-DRAWABLE "Input drawable" 0
-    SF-COLOR "Screen & Grain Merge" '(255 128 0)
-    SF-COLOR "Multiply" '(255 68 112)
-    SF-ADJUSTMENT "Contrast" '(60 0 100 1 10 0 0)
-    SF-ADJUSTMENT "B/W Merging" '(60 0 100 1 10 0 0)
-    SF-ADJUSTMENT "Gradient Begin Offset" '(0 -100 200 1 10 0 0)
-    SF-ADJUSTMENT "Gradient End Offset" '(100 -100 200 1 10 0 0)
-    SF-TOGGLE "B/W Dodging" FALSE
-    SF-TOGGLE "Retro" FALSE
+    SF-IMAGE "Input image"                      0
+    SF-DRAWABLE "Input drawable"                0
+    SF-COLOR "Screen & Grain Merge"                 '(255 128 0)
+    SF-COLOR "Multiply"                             '(255 68 112)
+    SF-ADJUSTMENT "Contrast"                        '(60 0 100 1 10 0 0)
+    SF-ADJUSTMENT "B/W Merging"                     '(60 0 100 1 10 0 0)
+    SF-ADJUSTMENT "Gradient Begin Offset"           '(0 0 100 1 10 0 0)
+    SF-ADJUSTMENT "Gradient End Offset"             '(100 -100 200 1 10 0 0)
+    SF-TOGGLE "B/W Dodging"                         FALSE
+    SF-TOGGLE "Retro"                               FALSE
+    SF-TOGGLE "Desaturate Initial image"            TRUE
+    SF-TOGGLE "Use masks"                           TRUE
+    SF-TOGGLE "Multiply mask inversion on off"      FALSE
 )
 
-(script-fu-menu-register "photochrom" "<Toolbox>/Script-Fu/Effects")
+(script-fu-menu-register "photochrom-tej" "<Toolbox>/Script-Fu/Effects")
 
 ;end of script
