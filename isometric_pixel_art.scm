@@ -52,28 +52,50 @@
 )
 
 (define (pa-color color)
-    (gimp-context-set-foreground color)
+    (let* (
+               (dummy1 0)
+          )
+        (gimp-message "setting colour")
+        (gimp-context-set-foreground color)
+    )
 )
 
 (define (pa-fill-by-fuzzy-select image layer x y)
-    ;(gimp-fuzzy-select layer x y 0 CHANNEL-OP-REPLACE FALSE FALSE 0 FALSE)
-    (gimp-image-select-contiguous-color image CHANNEL-OP-REPLACE layer x y)
-    
-    (gimp-edit-bucket-fill-full layer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 0 FALSE TRUE SELECT-CRITERION-COMPOSITE x y)
+    (let* (
+            (dummy2 0)
+        )
+        ;(gimp-message "line 67")
+        (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+        (gimp-context-set-sample-transparent TRUE)
+        (gimp-context-set-diagonal-neighbors FALSE)
+        (gimp-context-set-sample-threshold-int 15)
+        
+        (gimp-message "line 72")
+        (gimp-message (number->string x))
+        (gimp-message (number->string y))
+        (gimp-fuzzy-select layer x y 0 CHANNEL-OP-REPLACE FALSE FALSE 0 FALSE)
+        (gimp-image-select-contiguous-color image CHANNEL-OP-REPLACE layer x y)
+        
+        (gimp-edit-bucket-fill-full layer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 0 FALSE TRUE SELECT-CRITERION-COMPOSITE x y)
+        
+        (gimp-displays-flush)
+        
+        
+    )
 )
 
 (define (pa-add-layer img name w h)
   (let* (
-      (layer
+      (layerout
         (car
           (gimp-layer-new img w h RGBA-IMAGE name 100 LAYER-MODE-NORMAL)
         )
       )
     )
-    (gimp-image-insert-layer img layer 0 -1)
-    (gimp-edit-clear layer)
+    (gimp-image-insert-layer img layerout 0 -1)
+    (gimp-edit-clear layerout)
     
-    layer
+    layerout
   )
 )
 
@@ -82,28 +104,29 @@
 )
 
 (define (pa-make-power-of-two x)
-  (if
-    (= 0 (modulo x 2))
+    ; it is noted that this does not square the value
+  (if (= 0 (modulo x 2))
     x
     (+ x 1)
   )
 )
 
 (define (pa-pixel-mode)
-    (gimp-context-set-brush "Pixel (1x1 square)")
+    ;(gimp-context-set-brush "Pixel (1x1 square)")
+    (gimp-context-set-brush "1. Pixel")
 )
 
 (define (pa-draw-line layer x1 y1 x2 y2)
     (gimp-pencil layer 4 (pa-a4double x1 y1 x2 y2))
 )
 
-(define (pa-draw-line-down layer x1 y1 length)
+(define (pa-draw-line-down layer x1 y1 length1)
   (let* (
       (x 0)
       (y 0)
     )
     
-    (while (< x length)
+    (while (< x length1)
         (pa-put-segment layer (+ x x1) (+ y y1))
         
         (set! x (+ x 2))
@@ -112,13 +135,13 @@
   )
 )
 
-(define (pa-draw-line-up layer x1 y1 length)
+(define (pa-draw-line-up layer x1 y1 length2)
   (let* (
             (x 0)
             (y 0)
     )
     
-    (while (< x length)
+    (while (< x length2)
         (pa-put-segment layer (+ x x1) (+ y y1))
         
         (set! x (+ x 2))
@@ -128,24 +151,38 @@
 )
 
 (define (pa-draw-line-v layer x y h)
-  (pa-draw-line layer x y x (- y (- h 1)))
+    (pa-draw-line layer x y x (- y (- h 1)))
 )
 
 ; TODO refactor it
-(define (pa-box img width height depth color-main color-shading color-lighting color-dark-border color-light-border)
+(define (pa-box img width height depth
+        color-main
+        color-shading
+        color-lighting
+        color-dark-border
+        color-light-border
+        tile
+        tilebase
+        tilewidth
+        tileheight)
   (let* (
           (w (pa-make-power-of-two width))
           (h (pa-make-power-of-two height))
           (d (pa-make-power-of-two depth))
           (w-half (/ w 2))
           (h-half (/ h 2))
-          (new-layer-width (+ (+ w h) -2))
-          (new-layer-height (+ (+ w-half h-half) -1))
+          (new-layer-width (+ (+ (+ w h) -2) 0))
+          (new-layer-height (+ (+ (+ w-half h-half) -1) 0))
           (x 0)
           (y 0)
           (ymax (- new-layer-height 1))
           (xmax (- new-layer-width 1))
           (layer 0)
+          
+          (linewidth 1)
+          (tile-layer)
+          (imgwidth (car (gimp-image-width img)))
+          (imgheight (car (gimp-image-height img)))
         )
         
     ; apply depth if needed
@@ -161,8 +198,24 @@
         )
     )
     
-    (gimp-context-push)
-    (gimp-image-undo-disable img)
+    ;(gimp-context-push)
+    (gimp-image-undo-group-start img)
+    
+    (set! linewidth (car (gimp-context-get-brush-size)))
+    ; linewdith must be at most 1/4 of smallest dimension or less or 1
+    (if (> (* linewidth 4) (min w h))
+        (begin
+            (set! linewidth (round (* linewidth 0.25)))
+            (if (< linewidth 1)
+                (begin
+                    (gimp-message "Less than 1")
+                    (set! linewidth 1)
+                )
+            )
+            (gimp-message (string-append "Linewidth exceeds 25% of smallest dimension - changed to 25% Now=" (number->string linewidth)))
+            (gimp-context-set-brush-size linewidth)
+        )
+    )
     
     (set! layer (pa-add-layer img "box" new-layer-width new-layer-height))
         
@@ -216,40 +269,80 @@
     )
     ;
     ; fill with colors
+    ;(gimp-displays-flush)
+    ;(gimp-message "Ready to color in")
     
-    (if (> depth 1)
+    
+    (set! linewidth (car (gimp-context-get-brush-size)))
+    ;(gimp-message "line243")
+    (if (> depth 2)
         (begin
             ; top wall fill
             (pa-color color-lighting)
-            (pa-fill-by-fuzzy-select img layer 2 (- h-half 1))
+            (gimp-message "line248")
+            ;(pa-fill-by-fuzzy-select img layer (+ linewidth 2) (- h-half 1)) ; was 2 for x
+            ;(pa-fill-by-fuzzy-select img layer (- (- (+ w h) (* linewidth 2)) 1) (+ linewidth 2))
+            (pa-fill-by-fuzzy-select img layer  (round (- (* (+ w h) (/ h (+ w h))) 1)) (round (+ linewidth 3)) )
+            
+            (gimp-displays-flush)
             ;
             ; left wall fill
             (pa-color color-main)
-            (pa-fill-by-fuzzy-select img layer 2 (+ (+ (- h-half 1) depth) -1))
-            ; 
+            (if (< w h)
+                ;(pa-fill-by-fuzzy-select img layer 2 (+ (+ (- h-half 1) depth) -1))
+                (pa-fill-by-fuzzy-select img layer (+ linewidth 1) (+ (+ h-half linewidth) 1))
+                (pa-fill-by-fuzzy-select img layer (+ linewidth 1) (+ (+ w-half linewidth) 1))
+            )
+            (gimp-displays-flush)
+            
+            
             ; right wall fill
             (pa-color color-shading)
-            (pa-fill-by-fuzzy-select img layer (+ (+ w -2 ) 2) (+ (+ w-half h-half) -2))
+            ;(pa-fill-by-fuzzy-select img layer (+ (+ w -2 ) 2) (+ (+ w-half h-half) -2))
+            (pa-fill-by-fuzzy-select img layer (- (- (+ w h) 3) (* linewidth 1)) (+ (+ (max h-half w-half) linewidth) 0))
+            
+            (gimp-displays-flush)
+            ;(quit)
         )
         (begin
             ; tile fill
             (pa-color color-main)
-            (pa-fill-by-fuzzy-select img layer 2 (- h-half 1))
+            ;(pa-fill-by-fuzzy-select img layer 2 (- h-half 1))
+            (pa-fill-by-fuzzy-select img layer (+ linewidth linewidth) (- (min h-half w-half) 2))
         )
     )
+    (gimp-message "tiling")
     
-    (gimp-context-pop)
-    (gimp-image-undo-enable img)
+    (if (= tile TRUE)
+            (begin
+                (if (= tilebase TRUE)
+                    (begin
+                        (set! tile-layer (car (gimp-layer-new img imgwidth imgheight RGBA-IMAGE "Tiled" 100 LAYER-MODE-NORMAL)))
+                        (gimp-image-insert-layer img tile-layer 0 -1)
+                        (set! tile-layer (car (plug-in-tile 1 img layer imgwidth imgheight FALSE)))
+                    )
+                    (begin
+                        (set! tile-layer (car (gimp-layer-new img tilewidth tileheight RGBA-IMAGE "Tiled" 100 LAYER-MODE-NORMAL)))
+                        (gimp-image-insert-layer img tile-layer 0 -1)
+                        (set! tile-layer (car (plug-in-tile 1 img layer tilewidth tileheight FALSE)))
+                    )
+                )
+            )
+    )
+    
+    
+    ;(gimp-context-pop)
+    (gimp-image-undo-group-end img)
     
     (gimp-displays-flush)
   )
 )
 
-; ----- scripts registering -----
+; ----- scripts registering ------
 
 (script-fu-register "pa-box"
-    "<Image>/File/Create/Isometric Pixel Art/Box OR Tile..."
-    "Isometric Pixel Art :: Box OR Tile \nfile:isometric_pixel_art.scm"
+    "<Image>/File/Create/Isometric Pixel Art Box..."
+    "Isometric Pixel Art - Box  (or Tile). Creates a new layer in an existing image. Depends on Pencil brush size. \nfile:isometric_pixel_art.scm"
     "Bartłomiej Wójtowicz"
     ":)"
     "2013"
@@ -263,4 +356,8 @@
     SF-COLOR "Lighting"             '(159 215 255)
     SF-COLOR "Dark edge border"     '(0 0 0)
     SF-COLOR "Light edge border"    '(255 255 255)
+    SF-TOGGLE "Tile image"          TRUE
+    SF-TOGGLE "Tile to base image"  FALSE
+    SF-ADJUSTMENT "Tile Image width"  '(600 1 3000 1 10 0 0)
+    SF-ADJUSTMENT "Tile Image height"  '(800 1 3000 1 10 0 0)
 )

@@ -96,22 +96,32 @@
         inFlatten
     )
     
+  (let* (
+             (dummy 0)
+             (LayerBase)
+             (LayerSobel)
+             (LayerSemi)
+             (maschera)
+             (LayerPieno)
+             (LayerCarta)
+             (posterizzazione)
+        )
     (gimp-image-undo-group-start inImage)               ; Prepare any undo 
     (if (not (= RGB (car (gimp-image-base-type inImage))))
             (gimp-image-convert-rgb inImage))           ; convert to RGB if not already....
     (gimp-selection-all inImage)                        ; Select whole image
-    (define LayerBase (car(gimp-image-flatten inImage)))    ; Set the Layer to whole image flattened on one level
+    (set! LayerBase (car(gimp-image-flatten inImage)))    ; Set the Layer to whole image flattened on one level
     (gimp-item-set-name LayerBase "Base")               ; the name of LayerBase picture is Base
     
     ;   Crea il piano LayerSobel
     ;
-    (define LayerSobel 
-        (car (gimp-layer-copy LayerBase TRUE))
-    )           ; Copy current layer into "LayerSobel"
+    (set! LayerSobel (car (gimp-layer-copy LayerBase TRUE)))           ; Copy current layer into "LayerSobel"
     (gimp-image-insert-layer inImage LayerSobel 0 -1)   ; New layer at the top of layers
     (gimp-item-set-name LayerSobel "Sobel")	            ; picture plan's name "Sobel"
-    (if (> preaffila 0) 
-        (plug-in-sharpen TRUE inImage LayerSobel preaffila)
+    (if (> preaffila 0)
+        (begin
+            (plug-in-sharpen TRUE inImage LayerSobel preaffila)
+        )
     )           ; Pre-sharp
     
     (if (> sfocaintelligente 0)     
@@ -124,13 +134,17 @@
         )
     )           ; Equalize image
     (if (> incisaree 0)
-        (plug-in-unsharp-mask 
-            TRUE inImage LayerSobel 3.3 incisaree 29)
+        (begin
+            (plug-in-unsharp-mask 
+                TRUE inImage LayerSobel 3.3 incisaree 29)
+        )
     )           ; adjacent areas blurer
     
     (if (> postaffila 0)
-        (plug-in-sharpen 
-            TRUE inImage LayerSobel postaffila)
+        (begin
+            (plug-in-sharpen 
+                TRUE inImage LayerSobel postaffila)
+        )
     )           ; Post-sharp
     
     (gimp-drawable-brightness-contrast LayerSobel 0.23 0.43)     ; Change Contrast was 60 32 0.23 0.12
@@ -147,8 +161,11 @@
     
     
     (if (> tela 0)
-        (plug-in-apply-canvas 
-            TRUE inImage LayerSobel 0 (round tela))
+        (begin
+            (gimp-message "apply canvas")
+            (plug-in-apply-canvas 
+                TRUE inImage LayerSobel 0 (round tela))
+        )
     )                                               ; canvas?
     (gimp-drawable-brightness-contrast LayerSobel 0.01 -0.0784)     ; Uncontrast 0 -20
     (gimp-drawable-brightness-contrast LayerSobel -0.183 0.337)    ; Uncontrast -62 86 -0.243 0.337
@@ -157,7 +174,7 @@
     ;    Make scratched levels
     ;
     
-    (define LayerSemi 
+    (set! LayerSemi 
         (car (gimp-layer-copy LayerBase TRUE))
     )               ; Copy basic layer into New
     (gimp-image-insert-layer inImage LayerSemi 0 -1)     ; New layer at the top of layers
@@ -168,16 +185,16 @@
     (plug-in-normalize TRUE inImage LayerSemi)          ; Spread contrast to whole scale
     
     
-    (define maschera 
+    (set! maschera 
         (car (gimp-layer-create-mask LayerSemi ADD-MASK-COPY))
     )       ; Create a mask based on current layer's gray copy
     (gimp-layer-add-mask LayerSemi maschera)            ; Apply trasparency mask to current layer
     (gimp-layer-remove-mask LayerSemi MASK-DISCARD)       ; load mask into layer
     (gimp-item-set-name LayerSemi "semi")               ; new layer's name is "semi"
     (gimp-displays-flush)
-  ;  (quit)
+    ;  (quit)
     
-    (define LayerPieno 
+    (set! LayerPieno 
         (car (gimp-layer-new-from-drawable LayerBase inImage))
     )   ; Crete a new layer 
     (gimp-item-set-name LayerPieno "Pieno")             ; layer PIENO's name is "PIENO"
@@ -187,11 +204,12 @@
     ;
     ;  Paper plane
     ;
-    (define LayerCarta 
+    (set! LayerCarta 
         (car (gimp-layer-copy LayerBase TRUE))
     )               ; Copy basic layer into Paper
     (gimp-image-insert-layer inImage LayerCarta 0 100)  ; Add layer at the end
     (gimp-context-set-background carta)                 ; prepare paper colour
+    (gimp-item-set-name LayerCarta "LayerCarta")
     
     ; Modalità piani                Method plans          
     ; 0 = Normale                   0 = Normal            
@@ -217,8 +235,8 @@
     ; 21 = fusione grani            21 = blend grain      
     
     
-    (define posterizzazione FALSE)				; only some filters posterize the result
-    (gimp-image-raise-item-to-top inImage LayerSobel)	; Put sobel layer at the top
+    (set! posterizzazione FALSE)                        ; only some filters posterize the result
+    (gimp-image-raise-item-to-top inImage LayerSobel)   ; Put sobel layer at the top
     ;
     ; Tipologie di output
     ;  
@@ -247,7 +265,7 @@
             LayerCarta  0   0)
     )
     
-    (if (= tipo 3)              ;Pastelli graffiati
+    (if (= tipo 3)                  ;Pastelli graffiati
         (Zaza LayerSobel    17  100
             LayerSemi   18  87 
             LayerBase   18  100
@@ -255,15 +273,15 @@
             LayerCarta  0   0)
     )
     
-    (if (= tipo 4)              ;Matite scolorate
+    (if (= tipo 4)                  ;Matite scolorate
         (Zaza LayerSobel    3   100
             LayerSemi   18  58 
             LayerBase   18  16
             LayerPieno  0   100
             LayerCarta  0   0)
-    )	
-        
-    (if (= tipo 5)              ;Yoga
+    )
+    
+    (if (= tipo 5)                  ;Yoga
         (Zaza LayerSobel    3   100
             LayerSemi   19  48 
             LayerBase   18  0
@@ -333,6 +351,18 @@
             (set! posterizzazione TRUE)
         )
     )
+    
+    (if (= tipo 12)                 ;karlhof26 special
+        (begin
+            (Zaza LayerSobel    28   34
+                LayerSemi   28   40 
+                LayerBase   28   78
+                LayerPieno  37   80
+                LayerCarta  28   100)    
+            (set! propagazione TRUE)
+            (set! posterizzazione TRUE)
+        )
+    )
     ;
     ;  Spread background colour to soften
     ;
@@ -352,7 +382,11 @@
     ;  Posterization
     ;
     (if (= posterizzazione TRUE)
-        (gimp-posterize LayerBase 50)
+        (begin
+            ;(gimp-message "Posterize")
+             ; (gimp-drawable-posterize LayerBase 50)
+            (gimp-drawable-posterize LayerBase 8)
+        )
     )
     ;
     ;  Paint paper
@@ -368,10 +402,13 @@
     ;	(script-fu-carve-it inImage LayerBase LayerBase TRUE))
     ;   Close
     ;
-    (gimp-selection-none inImage)  			;Unselect
-    (if (= inFlatten TRUE)(gimp-image-flatten inImage))
-    (gimp-image-undo-group-end inImage)		;Any Undo
-    (gimp-displays-flush) 			;Re-visualize
+    (gimp-selection-none inImage)           ;Unselect
+    (if (= inFlatten TRUE)
+        (gimp-image-flatten inImage)
+    )
+    (gimp-image-undo-group-end inImage)     ;Any Undo
+    (gimp-displays-flush)                   ;Re-visualize
+  )
 )
 
 ;  set all plans depending on selection
@@ -388,9 +425,15 @@
     (gimp-layer-set-mode e1 e2)                 ; 
     (gimp-layer-set-opacity e1 e3)              ; 
     (if (= a3 0)
-        (gimp-item-set-visible a1 0)
+        (begin
+            (gimp-item-set-visible a1 0)
+        )
     )                                           ; unset layer if it has any effect
-    (if (= b3 0)    (gimp-item-set-visible b1 0)    )   ; "
+    (if (= b3 0)
+        (begin
+            (gimp-item-set-visible b1 0)
+        )
+    )   ; "
     (if (= c3 0)    (gimp-item-set-visible c1 0)    )   ; "
     (if (= d3 0)    (gimp-item-set-visible d1 0)    )   ; "
     (if (= e3 0)    (gimp-item-set-visible e1 0)    )   ; "
@@ -402,9 +445,7 @@
     "<Toolbox>/Script-Fu/Effects/Sepoina Graffix Pen Watercol pencil"
     "Alter a picture into a scratched image or a watercoloured paint.\n 
     Full details, demostrative examples and any new versions on...\n
-    
-    http://www.sepoina.it/grafix/index.htm
-    
+    http://www.sepoina.it/grafix/index.htm 
     If you find other levels merges output types
     send it to me at software@sepoina.it !\n
     Same address for Bug!
@@ -437,6 +478,7 @@
                                                 "Acquarelguson (time expansive)"
                                                 "Watercolour Faber (time expansive)"
                                                 "Grainy special"
+                                                "Colourite"
                                                 )
     SF-TOGGLE     "Flatten image when complete?"    FALSE
 )
