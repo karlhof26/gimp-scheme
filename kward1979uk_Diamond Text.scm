@@ -73,7 +73,7 @@
             (plug-in-rgb-noise 1 image (car inset-layer) 0 0 0.10 0.10 0.10 0)
             (gimp-selection-none image)
             (plug-in-bump-map 1 image (car inset-layer) (car inset-layer) 112 12.5 46 -1 0 0.26 1.00 1 0 0)
-            ;(gimp-message "line75")
+            ;(gimp-message "line76")
             
             (set! new-layer (car (gimp-image-merge-visible-layers
                 image EXPAND-AS-NECESSARY)))

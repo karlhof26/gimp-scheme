@@ -11,7 +11,7 @@
 ;    This program is distributed in the hope that it will be useful,
 ;    but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-;    GNU General Public License for more details.
+;    GNU General Public License for more details. 
 ;
 ;    To view a copy of the GNU General Public License
 ;    visit: http://www.gnu.org/licenses/gpl.html
@@ -84,7 +84,7 @@
                 (set! indraw (car (gimp-image-get-active-drawable image)))
                 (gimp-edit-copy indraw)
                 
-                ;(gimp-rect-select (car newimage) (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2) 2 0 0)
+                ;(gimp-rect-select (car newimage) (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2) 2 0 0) 
                 (gimp-context-set-feather FALSE)
                 (gimp-image-select-rectangle (car newimage) CHANNEL-OP-REPLACE (* (- x 1)(+ maxw 2)) (* (- y 1)(+ maxh 2)) (+ maxw 2) (+ maxh 2))
                 
