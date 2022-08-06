@@ -1,8 +1,9 @@
 ; 
-; Add film grain, 2.8
+; Add film grain, 2.10.32
 ;
 ; Martin Egger (martin.egger@gmx.net)
 ; (C) 2012, Bern, Switzerland 
+; (C) 2022, Karl Hofmeyr - tweet me @karlhof26
 ;
 ; You can find more about adding realistic film grain to BW images at
 ; http://www.outbackphoto.com/workflow/wf_95/essay.html
@@ -26,11 +27,12 @@
 ;
 ; Define the function
 ;
-(define (script-fu-Eg-AddFilmGrainB InImage InLayer InFlatten InShadCol InShadRad InMid1Blur InMid2Blur InShad1Blur InShad2Blur)
+(define (script-fu-Eg-AddFilmGrainB InImage InLayer InFlatten InShadCol InNoiseAmt InShadRad InMid1Blur InMid2Blur InShad1Blur InShad2Blur)
     ;
-    ; Save history			
+    ; Save history		
     ;
     (gimp-image-undo-group-start InImage)
+    (gimp-context-push)
     (if (= (car (gimp-drawable-is-rgb InLayer)) FALSE ) (gimp-image-convert-rgb InImage))
     (gimp-context-set-foreground '(128 128 128))
     ;
@@ -49,16 +51,20 @@
         (gimp-image-insert-layer InImage ShadHL1Layer 0 -1)
         (gimp-image-insert-layer InImage ShadHL2Layer 0 -1)
         ;
-        (plug-in-hsv-noise TRUE InImage Midtone1Layer 2 0 0 100)
-        (plug-in-hsv-noise TRUE InImage Midtone2Layer 2 0 0 100)
+        (plug-in-hsv-noise TRUE InImage Midtone1Layer 2 0 0 (+ 0 InNoiseAmt))
+        (plug-in-hsv-noise TRUE InImage Midtone2Layer 2 0 0 (+ 0  InNoiseAmt))
         ;
         (gimp-context-set-antialias TRUE)
         (gimp-context-set-feather TRUE)
         (gimp-context-set-feather-radius 3 3)
         (gimp-context-set-sample-merged TRUE)
+        (gimp-context-set-sample-threshold-int InShadRad)
+        (gimp-context-set-sample-criterion 0)
+        
+        
         (gimp-image-select-color InImage CHANNEL-OP-REPLACE InLayer InShadCol)
-        (plug-in-hsv-noise TRUE InImage ShadHL1Layer 3 0 4 100) ; was 2 0 0 100)
-        (plug-in-hsv-noise TRUE InImage ShadHL2Layer 3 0 4 80) ; was 2 0 0 100)
+        (plug-in-hsv-noise TRUE InImage ShadHL1Layer 3 0 4 InNoiseAmt) ; was 2 0 0 100)
+        (plug-in-hsv-noise TRUE InImage ShadHL2Layer 3 0 4 (* InNoiseAmt 0.75)) ; was 2 0 0 100)
         (gimp-selection-none InImage)
         ;
         (plug-in-gauss TRUE InImage Midtone1Layer InMid1Blur InMid1Blur TRUE)
@@ -88,6 +94,7 @@
     ;
     ; Finish work
     ;
+    (gimp-context-pop)
     (gimp-image-undo-group-end InImage)
     (gimp-displays-flush)
     ;
@@ -95,22 +102,25 @@
 ;
 (script-fu-register 
     "script-fu-Eg-AddFilmGrainB"
-    "Add film grain - verB"
+    "Add film grain - ver. Basic"
     "Add realistic film grain to BW images. \nfile:egger-AddFilmGrain.scm"
     "Martin Egger (martin.egger@gmx.net)"
-    "Martin Egger, Bern, Switzerland"
+    "Karl Hofmeyr, Reading, UK"
     "29.02.2012"
     "RGB* GRAY*"
-    SF-IMAGE    "The Image"     0
-    SF-DRAWABLE "The Layer"     0
-    SF-TOGGLE   "Flatten Image" FALSE
-    SF-COLOR    "Shadow Color"  '(35 35 35)
-    SF-ADJUSTMENT   "Shadow Selection Range"    '(50.0 1.0 100.0 1.0 0 2 0)
+    SF-IMAGE    "The Image"             0
+    SF-DRAWABLE "The Layer"             0
+    SF-TOGGLE   "Flatten Image"         FALSE
+    SF-COLOR    "Shadow Color"          '(35 35 35)
+    SF-ADJUSTMENT   "Noise Amount"              '(36 1 250 1 10 0 0)
+    SF-ADJUSTMENT   "Shadow Selection Range"    '(16 1 200 1 10 0 0)
     SF-ADJUSTMENT   "Midtone 1 Blur Radius"     '(3.0 0.5 50.0 0.5 0 2 0)
     SF-ADJUSTMENT   "Midtone 2 Blur Radius"     '(1.5 0.5 10.0 0.5 0 2 0)
     SF-ADJUSTMENT   "Shadow 1 Blur Radius"      '(3.0 0.5 50.0 0.5 0 2 0)
     SF-ADJUSTMENT   "Shadow 2 Blur Radius"      '(1.5 0.5 10.0 0.5 0 2 0)
 )
 ;
+
 (script-fu-menu-register "script-fu-Eg-AddFilmGrainB" "<Toolbox>/Script-Fu/Distorts/Grain")
-;
+
+; end of script 
