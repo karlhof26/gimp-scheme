@@ -1,5 +1,5 @@
 ; The GIMP -- an image manipulation program
-; Copyright (C) 1995 Spencer Kimball and Peter Mattis 
+; Copyright (C) 1995 Spencer Kimball and Peter Mattis  
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -27,80 +27,87 @@
                               ssmooth sthreshhold
                               lsmooth lthreshhold
                               contrast edge color)
-  (let* ((img (car (gimp-item-get-image adraw)))
-         (owidth (car (gimp-image-width img)))
-         (oheight (car (gimp-image-height img)))
-         (colorlayer (car (gimp-layer-new img
+  (let* (
+            (img (car (gimp-item-get-image adraw)))
+            (owidth (car (gimp-image-width img)))
+            (oheight (car (gimp-image-height img)))
+            (colorlayer (car (gimp-layer-new img
                                           owidth 
                                           oheight
                                           1
                                           "Color" 
                                           100 
                                           LAYER-MODE-NORMAL)))
-         (shadowlayer 0)
-         (lineslayer 0)
-         )
-    
-    ; init
-    (gimp-context-push)
-    (gimp-image-undo-group-start img)
-    (if (= (car (gimp-drawable-is-gray adraw )) TRUE)
-        (gimp-image-convert-rgb img)
+            (shadowlayer 0)
+            (lineslayer 0)
         )
-    (gimp-context-set-foreground color)
-    (gimp-context-set-background '(255 255 255))
-    
-    ;set smoothness
-    (if (> ssmooth 0)
-        (plug-in-gauss 1 img adraw ssmooth ssmooth 0)
+        
+        ; init
+        (gimp-context-push)
+        (gimp-image-undo-group-start img)
+        (if (= (car (gimp-drawable-is-gray adraw )) TRUE)
+            (gimp-image-convert-rgb img)
         )
-    
-    ;add color layer
-    (gimp-image-insert-layer img colorlayer 0 -1)
-    (gimp-drawable-fill colorlayer FILL-TRANSPARENT)
-    (gimp-selection-all img)
-    (gimp-edit-bucket-fill colorlayer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 0 FALSE 0 0)
-    (gimp-selection-none img)
-    
-    ;copy and add original image two times
-    (set! shadowlayer (car (gimp-layer-copy adraw FALSE)))
-    (set! lineslayer (car (gimp-layer-copy adraw FALSE)))
-    (gimp-image-insert-layer img shadowlayer 0 -1)
-    (gimp-image-insert-layer img lineslayer 0 -1)
-    (gimp-item-set-name shadowlayer "Shadow")
-    (gimp-item-set-name lineslayer "Lines")
-    
-    ;threshhold on shadow layer
-    (gimp-threshold shadowlayer sthreshhold 255)
-    (gimp-layer-set-mode shadowlayer LAYER-MODE-MULTIPLY)
-    
-    ;high contrast, edge detection and threshhold on lines layer
-    (if (> contrast 0)
-        (plug-in-unsharp-mask 1 img lineslayer 60 contrast 0)
-    )
-    
-    ;edge detection
-    (if (= edge 0) (plug-in-neon 1 img lineslayer 5 0))
-    (if (= edge 1) (plug-in-sobel 1 img lineslayer 1 1 1))
-
-    ;(gimp-invert lineslayer)
-    (gimp-drawable-invert lineslayer FALSE)
-    (gimp-levels-stretch lineslayer)
-    
-    (if (> lsmooth 0)
-        (begin
-            (plug-in-gauss 1 img lineslayer lsmooth lsmooth 0)
+        (gimp-context-set-foreground color)
+        (gimp-context-set-background '(255 255 255))
+        
+        ;set smoothness
+        (if (> ssmooth 0)
+            (plug-in-gauss 1 img adraw ssmooth ssmooth 0)
         )
-    )
-    (gimp-threshold lineslayer lthreshhold 255)
-    (gimp-layer-set-mode lineslayer LAYER-MODE-MULTIPLY)
-    
-    ; tidy up
-    (gimp-image-undo-group-end img)
-    (gimp-displays-flush)
-    (gimp-context-pop)
-    )
+        
+        ;add color layer
+        (gimp-image-insert-layer img colorlayer 0 -1)
+        (gimp-drawable-fill colorlayer FILL-TRANSPARENT)
+        (gimp-selection-all img)
+        (gimp-edit-bucket-fill colorlayer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 0 FALSE 0 0)
+        (gimp-selection-none img)
+        
+        ;copy and add original image two times
+        (set! shadowlayer (car (gimp-layer-copy adraw FALSE)))
+        (set! lineslayer (car (gimp-layer-copy adraw FALSE)))
+        (gimp-image-insert-layer img shadowlayer 0 -1)
+        (gimp-image-insert-layer img lineslayer 0 -1)
+        (gimp-item-set-name shadowlayer "Shadow")
+        (gimp-item-set-name lineslayer "Lines")
+        
+        ;threshhold on shadow layer
+        ;(gimp-threshold shadowlayer sthreshhold 255)
+        (gimp-drawable-threshold shadowlayer HISTOGRAM-VALUE (/ sthreshhold 255) 1.0)
+        (gimp-layer-set-mode shadowlayer LAYER-MODE-MULTIPLY)
+        
+        ;high contrast, edge detection and threshhold on lines layer
+        (if (> contrast 0)
+            (plug-in-unsharp-mask 1 img lineslayer 60 contrast 0)
+        )
+        
+        ;edge detection
+        (if (= edge 0)
+            (plug-in-neon 1 img lineslayer 5 0)
+        )   
+        (if (= edge 1)
+            (plug-in-sobel 1 img lineslayer 1 1 1)
+        )
+        
+        ;(gimp-invert lineslayer)
+        (gimp-drawable-invert lineslayer FALSE) 
+        (gimp-drawable-levels-stretch lineslayer)
+        
+        (if (> lsmooth 0)
+            (begin
+                (plug-in-gauss 1 img lineslayer lsmooth lsmooth 0)
+            )
+        )
+        ;(gimp-threshold lineslayer lthreshhold 255)
+        (gimp-drawable-threshold lineslayer HISTOGRAM-VALUE (/ lthreshhold 255) 1.0)
+        (gimp-layer-set-mode lineslayer LAYER-MODE-MULTIPLY)
+        
+        ; tidy up
+        (gimp-image-undo-group-end img)
+        (gimp-displays-flush)
+        (gimp-context-pop)
   )
+)
 
 (script-fu-register "elsamuko-che-guevara"
                     "Che Guevara"
@@ -120,7 +127,7 @@ Latest version can be downloaded from http://registry.gimp.org \n file:elsamuko-
                     SF-OPTION     _"Edge Detection"     '("Neon"
                                                           "Sobel")
                     SF-COLOR      _"Background Color"   '(255 0 0)
-                    )
+)
 
 (script-fu-menu-register "elsamuko-che-guevara" "<Image>/Script-Fu/Artistic")
 
