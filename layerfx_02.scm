@@ -524,11 +524,16 @@
                 (gimp-selection-load alphaSel)
                 (draw-blurshape img shadowmask steps (- growamt chokeamt) alphaSel 1)
             )
-            (draw-blurshape img shadowmask steps (- growamt chokeamt) alphaSel 0)
+            (begin
+                (draw-blurshape img shadowmask steps (- growamt chokeamt) alphaSel 0)
+            )
         )
         (gimp-selection-none img)
         (if (> contour 0)
-            (apply-contour-kh shadowmask 0 contour)
+            (begin
+                (gimp-message "line534 apply contour")
+                (apply-contour-kh shadowmask 0 contour)
+            )
         )
         (if (= merge 0)
             (begin
@@ -540,8 +545,15 @@
             )
         )
         (if (> noise 0)
-            (apply-noise img drawable shadowlayer noise)
+            (begin
+                (apply-noise img drawable shadowlayer noise)
+            )
         )
+        
+        (gimp-displays-flush)
+        ;(gimp-message "line554")
+        
+        
         (gimp-layer-remove-mask shadowlayer 0)
         (if (= merge 1)
             (if (= source 0)
@@ -716,7 +728,17 @@
             (origmask 0)
             (alphamask 0)
         )
-        (gimp-message "inner glow - line669")
+        
+        (gimp-context-push)
+        (gimp-message "inner glow - line732")
+        
+        (gimp-context-set-sample-threshold-int 1)
+        (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+        (gimp-context-set-sample-transparent FALSE)
+        (gimp-context-set-feather TRUE)
+        (gimp-context-set-feather-radius 1 1)
+        (gimp-context-set-antialias FALSE)
+        
         (gimp-message (number->string (get-blending-mode mode)))
         (gimp-message (number->string mode))
         
@@ -726,7 +748,7 @@
         (gimp-context-set-foreground color)
         (gimp-edit-fill glowlayer FILL-FOREGROUND)
         (gimp-selection-none img)
-        (gimp-message "inner glow - line676")
+        (gimp-message "inner glow - line750")
         (set! glowmask (car (gimp-layer-create-mask glowlayer ADD-MASK-BLACK))) ; was 1
         (gimp-layer-add-mask glowlayer glowmask)
         ;(gimp-selection-layer-alpha drawable)
@@ -735,10 +757,10 @@
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
         (set! alphaSel (car (gimp-selection-save img)))
-        (gimp-message "inner glow - line685")
+        (gimp-message "inner glow - line759")
         (if (= source 0)
             (begin
-                (gimp-message "inner glow - line692 - inside source=0")
+                (gimp-message "inner glow - line762 - inside source=0")
                 (gimp-selection-all img)
                 (gimp-context-set-foreground '(255 255 255))
                 (gimp-edit-fill glowmask FILL-FOREGROUND)
@@ -747,7 +769,7 @@
             )
             (draw-blurshape img glowmask steps (* shrinkamt -1) alphaSel 0)
         )
-        (gimp-message "inner glow - line700")
+        (gimp-message "inner glow - line771")
         (gimp-selection-none img)
         (if (> contour 0)
             (apply-contour-kh glowmask 0 contour)
@@ -760,7 +782,7 @@
                 (gimp-edit-fill glowmask 0)
             )
         )
-        (gimp-message "inner glow - line713")
+        (gimp-message "inner glow - line784")
         (if (> noise 0)
             (apply-noise img drawable glowlayer noise)
         )
@@ -800,7 +822,7 @@
                 )
             )
         )
-        (gimp-message "inner glow - line753")
+        (gimp-message "inner glow - line824")
         (gimp-selection-none img)
         (gimp-context-set-foreground origfgcolor)
         (gimp-selection-load origselection)
@@ -809,8 +831,9 @@
         (gimp-message "inner glow - line759")
         (gimp-message "inner glow - ending")
         (gimp-image-undo-group-end img)
+        (gimp-context-pop)
         (gimp-displays-flush)
-        (gc)
+        (gc) ; memory cleanup; garbage cleanup
     )
     
 )
@@ -855,8 +878,21 @@
             (halfsizec 0)
             (origmask 0)
             (alphamask 0)
+            
+            (expandedsel)
+            (floatingselshad)
+            (bumpcopyresult)
         )
-        (gimp-message "emboss line 830")
+        (gimp-context-push)
+        (gimp-message "emboss line 885")
+        
+        (gimp-context-set-sample-threshold-int 1)
+        (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+        (gimp-context-set-sample-transparent FALSE)
+        (gimp-context-set-feather TRUE)
+        (gimp-context-set-feather-radius 1 1)
+        (gimp-context-set-antialias FALSE)
+        
         (cond
             ((= style 0)
                 (begin
@@ -913,24 +949,29 @@
         (gimp-layer-set-offsets shadowlayer (caddr layersize) (cadddr layersize))
         (gimp-layer-set-offsets highlightlayer (caddr layersize) (cadddr layersize))
         
-        (gimp-message "emboss line 887")
-        (gimp-displays-flush)
+        (gimp-message "emboss line 950")
+        ;(gimp-displays-flush)
         
         
         ; was (gimp-selection-all img)
         (gimp-image-select-item img CHANNEL-OP-ADD drawable)
         
         
-        ;added by kh to enable colours to expand correctly
+        ;added by karlhof26 to enable colours to expand correctly
         (set! halfsizec (floor (/ size 2)))
-        (gimp-message (number->string halfsizec))
+        ;(gimp-message (number->string halfsizec))
         (if (= style 0)
-            (gimp-selection-grow img size)
-            (if (or (= style 2) (= style 3))
-                (gimp-selection-grow img halfsizec)
+            (begin
+                (gimp-selection-grow img size)
+            )
+            (begin
+                (if (or (= style 2) (= style 3))
+                    (begin
+                        (gimp-selection-grow img halfsizec)
+                    )
+                )
             )
         )
-        
         
         (gimp-context-set-foreground highlightcolor)
         (gimp-edit-fill highlightlayer 0)
@@ -939,8 +980,8 @@
         (gimp-context-set-foreground '(0 0 0))
         (gimp-displays-flush)
         (gimp-edit-fill bumpmaplayer FILL-FOREGROUND)
-        (gimp-message "emboss line 901")
-        (gimp-displays-flush)
+        ;(gimp-message "emboss line 901")
+        ;(gimp-displays-flush)
         
         ;added by kh to enable colours to expand correctly
         (if (= style 0)
@@ -956,7 +997,7 @@
         (gimp-layer-add-mask highlightlayer highlightmask)
         (gimp-layer-add-mask shadowlayer shadowmask)
         
-        (gimp-displays-flush)
+        ;(gimp-displays-flush)
         
         
         ;(gimp-selection-layer-alpha drawable)
@@ -969,8 +1010,8 @@
             (gimp-selection-combine (car (gimp-layer-get-mask drawable)) 3)
         )
         (set! alphaSel (car (gimp-selection-save img)))
-        (gimp-displays-flush)
-        (gimp-message "emboss line 941")
+        ;(gimp-displays-flush)
+        ;(gimp-message "emboss line 941")
         
         
         (cond
@@ -981,7 +1022,9 @@
                 )
             )
             ((= style 1)
-                (draw-blurshape img bumpmaplayer size 0 alphaSel 0)
+                (begin
+                    (draw-blurshape img bumpmaplayer size 0 alphaSel 0)
+                )
             )
             ((= style 2)
                 (begin
@@ -989,8 +1032,9 @@
                     (draw-blurshape img bumpmaplayer size halfsizec alphaSel 0)
                 )
             )
-            (
+            (else
                 (begin
+                    (gimp-message "emboss line 1013")
                     (set! halfsizef (floor (/ size 2)))
                     (set! halfsizec (- size halfsizef))
                     (gimp-selection-all img)
@@ -1001,12 +1045,12 @@
                 )
             )
         )
-        (gimp-message "emboss line 1003")
+        (gimp-message "emboss line 1024")
         (gimp-displays-flush)
         ;(quit)
         
         (gimp-image-select-item img CHANNEL-OP-ADD bumpmaplayer)
-        (gimp-message "emboss line 1008")
+        (gimp-message "emboss line 1029")
         ;(gimp-selection-all img)
         
         (gimp-context-set-foreground '(127 127 127))
@@ -1017,20 +1061,22 @@
         
         (if (> surfacecontour 0)
             (begin
-                (gimp-message "line1019")
+                (gimp-message "line1040")
                 (apply-contour-kh bumpmaplayer 0 surfacecontour)
             )
         )
-        (gimp-message "emboss line 1023")
+        (gimp-message "emboss line 1044")
+        (gimp-message (number->string style))
         (gimp-message (number->string surfacecontour))
         
         (gimp-message (number->string angle))
         (gimp-message (number->string altitude))
         (gimp-message (number->string depth))
         (gimp-message (number->string direction))
-        (gimp-message "emboss line 1030")
+        (gimp-message "emboss line 1051")
         (gimp-displays-flush)
-        ;(quit)
+        
+        
         (gimp-selection-none img)
         ;(gimp-image-select-item img CHANNEL-OP-ADD bumpmaplayer)
         
@@ -1040,18 +1086,23 @@
                 (set! angle (+ angle 360))
             )
         )
-        ;(plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 0)
-        (plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 0)
-        (gimp-displays-flush)
         
+        (gimp-message "emboss line 1066")
+        ;(plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 0)
+        (plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 1)
+        (gimp-displays-flush)
+        ;(quit)
         
         (gimp-image-select-item img CHANNEL-OP-ADD bumpmaplayer)
-        (gimp-message "emboss line 1048")
+        (gimp-message "emboss line 1073")
         (if (> glosscontour 0)
             (begin
                 (gimp-message "gloss contour")
                 (apply-contour-kh highlightmask 0 glosscontour)
                 (apply-contour-kh highlightlayer 0 glosscontour)
+            )
+            (begin
+                (gimp-message "No gloss")
             )
         )
         (if (> soften 0)
@@ -1060,21 +1111,27 @@
                 (plug-in-gauss-rle 1 img highlightmask soften 1 1)
             )
         )
-        (if (> invert 0) 
+        (if (= invert TRUE) ;;(> invert 0) 
             (begin
                 (gimp-message "invert")
                 (gimp-drawable-invert highlightmask FALSE)
             )
+            (begin
+                (gimp-message "invert FALSE")
+            )
         )
-        (gimp-message "emboss line 1036")
+        (gimp-message "emboss line 1099")
         (gimp-displays-flush)
         ;(quit)
         
         (gimp-channel-combine-masks shadowmask highlightmask CHANNEL-OP-SUBTRACT 0 0)
-        ;(gimp-channel-combine-masks shadowmask bumpmaplayer CHANNEL-OP-ADD 0 0)
+        ;(if (>= style 2)
+        ;    (gimp-channel-combine-masks shadowmask bumpmaplayer CHANNEL-OP-ADD 0 0)
+        ;)
         
-        (gimp-message "emboss line 1042")
-        
+        (gimp-message "emboss line 1106")
+        (gimp-displays-flush)
+        ;(quit)
         
         (gimp-drawable-levels highlightmask HISTOGRAM-VALUE 0.4 1.0 TRUE 1.0 0.0 1.0 TRUE)  ; was 0 127 255 1.0 0 255 ; 0.5 1.0 TRUE 1.0...
         (gimp-drawable-levels shadowmask HISTOGRAM-VALUE 0.0 0.55 TRUE 1.3 0.0 1.0 TRUE) ; was 0 0 127 1.0 255 0; 0.0 0.49 TRUE 1.0...
@@ -1087,32 +1144,103 @@
         ;(quit)
         
         (if (= style 0)
-            (gimp-selection-grow img size)
-            (if (or (= style 2) (= style 3))
-                (gimp-selection-grow img halfsizec)
+            (begin
+                (gimp-message "emboss line 1128 style0 grow")
+                (gimp-selection-grow img size)
+                
+                (gimp-context-set-foreground '(255 255 255))
+                (gimp-edit-fill shadowmask FILL-FOREGROUND)
+                
+            )
+            (begin
+                (if (or (= style 2) (= style 3))
+                    (begin
+                        (gimp-message "style 2 or 3")
+                        
+                                
+                        
+                        ;(gimp-selection-grow img halfsizec)
+                        
+                        ; karlhof26 addition
+                        ;(gimp-selection-grow img size)
+                        ;(gimp-context-set-foreground '(0 0 0))
+                        ;(gimp-edit-fill shadowlayer FILL-FOREGROUND)
+                        
+                        (gimp-selection-grow img halfsizec)
+                        (gimp-context-set-foreground '(255 255 255))
+                        (gimp-edit-fill shadowmask FILL-FOREGROUND)
+                        
+                        
+                        ;(gimp-selection-grow img halfsizec)
+                        
+                        
+                        
+                    )
+                )
+            )
+            (begin
+                (gimp-message "emboss line 1162 style1 no grow needed")
+                ;(gimp-selection-grow img size)
+                
+                (gimp-context-set-foreground '(255 255 255))
+                (gimp-edit-fill shadowmask FILL-FOREGROUND)
             )
         )
-        
+        (gimp-message "line1169 emboss")
         (gimp-displays-flush)
         ;(quit)
         
-        (gimp-message "emboss line 1066")
+        (gimp-message "emboss line 1127")
         (gimp-selection-invert img)
+        
         (gimp-context-set-foreground '(0 0 0))
-        (gimp-edit-fill shadowmask 0)
+        (gimp-edit-fill shadowmask FILL-FOREGROUND)
+        
+        ; new addition
+        ; now create a selection to get the needed from bummaplayer
+        ;invert back
+        
+        (gimp-selection-invert img)
+        ; make the inner selection
+        (gimp-selection-shrink img size)
+        (set! expandedsel (car (gimp-selection-save img)))
+        
+        ; make outer selection and subtract
+        (gimp-selection-grow img size)
+        (gimp-image-select-item img CHANNEL-OP-SUBTRACT expandedsel)
+        
+        ; coppy from bummaplayer to shadowlayer
+        (set! bumpcopyresult (car (gimp-edit-copy bumpmaplayer)))
+        (set! floatingselshad (car (gimp-edit-paste shadowlayer FALSE)))
+        
+        (gimp-floating-sel-anchor floatingselshad)
+        
+        (gimp-image-select-item img CHANNEL-OP-REPLACE expandedsel)
+         
+        (gimp-context-set-foreground '(0 0 0))
+        (gimp-edit-fill shadowmask FILL-FOREGROUND)
+        
+                        
         (gimp-displays-flush)
         ;(quit)
         
+        (gimp-message "emboss 1205")
         (gimp-selection-none img)
         
-        
+        ; can't remove shadowlayer - need it an masks for follow-on scripts and actions
         (gimp-image-remove-layer img bumpmaplayer)
-        ;(gimp-image-remove-layer img shadowlayer)
         
-        (if (= merge 1)
+        
+        (gimp-displays-flush)
+        ;(quit)
+        
+        (gimp-message "emboss 1215")
+        (if (= merge TRUE)
+          (begin
+            (gimp-message "emboss 1218")
             (if (= style 1)
                 (begin
-                    (gimp-message "emboss line 1081 style 1")
+                    ;(gimp-message "emboss line 1081 style 1")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (begin
@@ -1125,15 +1253,17 @@
                     (set! highlightlayer (car (gimp-image-merge-down img highlightlayer 0)))
                     (gimp-drawable-set-name highlightlayer layername)
                     (gimp-layer-add-mask highlightlayer alphamask)
-                    ;(gimp-message "emboss line 811")
+                    (gimp-message "emboss line 1234")
                     (gimp-layer-remove-mask highlightlayer 0)
                     
                     (if (> origmask -1)
-                        (gimp-layer-add-mask highlightlayer origmask)
+                        (begin
+                            (gimp-layer-add-mask highlightlayer origmask)
+                        )
                     )
                 )
                 (begin
-                    (gimp-message "emboss line 1102 merge style 0 & >=2")
+                    (gimp-message "emboss line 1244 merge style 0 or >=2")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (gimp-layer-remove-mask drawable 0)
@@ -1145,9 +1275,14 @@
                     ;(gimp-drawable-brightness-contrast img highlightlayer 1.5 1.5)
                 )
             )
+          )
+          (begin
+                (gimp-message "emboss 1258 No merge")
+          )
         )
         
-        (gimp-drawable-brightness-contrast highlightlayer 0.48 0.45)
+        (gimp-message "emboss 1262")
+        (gimp-drawable-brightness-contrast highlightlayer 0.47 0.45)
         
         (gimp-context-set-foreground origfgcolor)
         (gimp-selection-load origselection)
@@ -1155,8 +1290,10 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
     )
+    (gimp-message "emboss - Good finish OK")
+    (gimp-context-pop)
     (gimp-image-undo-group-end img)
-    (gc)
+    (gc) ; garbage cleanup; memory cleanup ; array was used.
 )
 
 (define (script-fu-layerfx-satin img
@@ -1193,6 +1330,17 @@
             (alphamask 0)
         )
         (gimp-image-undo-group-start img)
+        (gimp-context-push)
+        (gimp-message "satin line 1332")
+        
+        (gimp-context-set-sample-threshold-int 1)
+        (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+        (gimp-context-set-sample-transparent FALSE)
+        (gimp-context-set-feather TRUE)
+        (gimp-context-set-feather-radius 1 1)
+        (gimp-context-set-antialias FALSE)
+        
+        
         (add-over-layer img satinlayer drawable)
         (gimp-layer-set-offsets satinlayer (- (car drwoffsets) lyrgrowamt) (- (cadr drwoffsets) lyrgrowamt))
         (gimp-selection-all img)
@@ -1281,6 +1429,7 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
+        (gimp-context-pop)
         ;(gimp-message "OK line 1092")
         (gc)
   )
@@ -1313,6 +1462,17 @@
             (innerwidth 0)
             (growamt 0)
         )
+        (gimp-context-push)
+        (gimp-message "stroke line 1464")
+        
+        (gimp-context-set-sample-threshold-int 1)
+        (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+        (gimp-context-set-sample-transparent FALSE)
+        (gimp-context-set-feather TRUE)
+        (gimp-context-set-feather-radius 1 1)
+        (gimp-context-set-antialias FALSE)
+        
+        
         (if (= position 0)
             (begin
                 (set! strokelayer (car (gimp-layer-new img drwwidth drwheight (cond ((= (car (gimp-image-base-type img)) 0) 1) ((= (car (gimp-image-base-type img)) 1) 3)) (string-append layername "-stroke") opacity (get-blending-mode mode))))
@@ -1397,8 +1557,9 @@
                 )
             )
         )
-        (if (and (< position 100) (> position 1))
+        (if (and (< position 100) (>= position 1))
             (begin
+                (gimp-message "stroke line1516")
                 (set! outerwidth (round (* (/ position 100) size)))
                 (set! innerwidth (- size outerwidth))
                 (set! growamt (round (* outerwidth 1.2)))
@@ -1433,7 +1594,7 @@
                 )
             )
         )
-        
+        (gimp-message "stroke line1551")
         (gimp-context-set-foreground origfgcolor)
         (gimp-selection-load origselection)
         (gimp-image-remove-channel img alphaselection)
@@ -1441,8 +1602,9 @@
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
         (gimp-image-undo-group-end img)
+        (gimp-context-pop)
         (gc)
-        ;(gimp-message "Ok line 1251")
+        (gimp-message "Ok stroke line 1560")
   )
 )
 
@@ -1465,7 +1627,17 @@
             (origmask 0)
             (alphamask 0)
           )
-          
+        (gimp-context-push)
+        (gimp-message "color overlay line 1629")
+        
+        (gimp-context-set-sample-threshold-int 1)
+        (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+        (gimp-context-set-sample-transparent FALSE)
+        (gimp-context-set-feather TRUE)
+        (gimp-context-set-feather-radius 1 1)
+        (gimp-context-set-antialias FALSE)
+        
+        
         (add-over-layer img colorlayer drawable)
         (gimp-layer-set-offsets colorlayer (car drwoffsets) (cadr drwoffsets))
         (gimp-selection-all img)
@@ -1505,6 +1677,7 @@
         (gimp-selection-load origselection)
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
+        (gimp-context-pop)
         (gimp-image-undo-group-end img)
         (gc)
         ;;(gimp-message "Ok line 1358")
@@ -1573,6 +1746,15 @@
           (gc) ; garbage clean
         (gimp-image-undo-group-start img)
         (gimp-message "layerfx gradover start")
+        
+        (gimp-context-push)
+        
+        (gimp-context-set-sample-threshold-int 1)
+        (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+        (gimp-context-set-sample-transparent FALSE)
+        (gimp-context-set-feather TRUE)
+        (gimp-context-set-feather-radius 1 1)
+        (gimp-context-set-antialias FALSE)
         
         (gimp-message "list-ref test")
         (gimp-message "in= 15")
@@ -1846,6 +2028,7 @@
         (gimp-selection-load origselection)
         ;(gimp-message "eight")
         (gimp-image-remove-channel img origselection)
+        (gimp-context-pop)
         (gimp-image-undo-group-end img)
         
         (gimp-displays-flush)
@@ -1873,6 +2056,16 @@
             (origmask 0)
             (alphamask 0)
        )
+        (gimp-context-push)
+        
+        (gimp-context-set-sample-threshold-int 1)
+        (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+        (gimp-context-set-sample-transparent FALSE)
+        (gimp-context-set-feather TRUE)
+        (gimp-context-set-feather-radius 1 1)
+        (gimp-context-set-antialias FALSE)
+        
+       
         (add-over-layer img patternlayer drawable)
         (gimp-layer-set-offsets patternlayer (car drwoffsets) (cadr drwoffsets))
         (gimp-selection-all img)
@@ -1912,6 +2105,7 @@
         (gimp-selection-load origselection)
         (gimp-image-remove-channel img origselection)
         (gimp-displays-flush)
+        (gimp-context-pop)
         (gimp-image-undo-group-end img)
         ;(gimp-message "Ok")
   )
@@ -1921,7 +2115,7 @@
 
 (script-fu-register "script-fu-layerfx-drop-shadow"
             "<Toolbox>/Script-Fu/Layer Effects/Drop Shadow..."
-            "Adds a drop shadow to a layer. Does not add a shadow to an unfilled or drawn selection. \nfile:layerfx_02.scm"
+            "Adds a drop shadow to a layer. Does not add a shadow to an unfilled or drawn selection. Requires a layer with transparency and a filled in area.\nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1943,7 +2137,7 @@
 
 (script-fu-register "script-fu-layerfx-inner-shadow"
             "<Toolbox>/Script-Fu/Layer Effects/Inner Shadow..."
-            "Adds an inner shadow to a layer. \nfile:layerfx_02.scm"
+            "Adds an inner shadow to a layer.  Requires a layer with transparency and a filled in area.\nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1965,7 +2159,7 @@
 
 (script-fu-register "script-fu-layerfx-outer-glow"
             "<Toolbox>/Script-Fu/Layer Effects/_Outer Glow..."
-            "Creates an outer glow effect around a layer. \nfile:layerfx_02.scm"
+            "Creates an outer glow effect around a layer. Requires a layer with transparency and a filled in area. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -1985,7 +2179,7 @@
 
 (script-fu-register "script-fu-layerfx-inner-glow"
             "<Toolbox>/Script-Fu/Layer Effects/_Inner Glow..."
-            "Creates an inner glow effect around a layer. \nfile:layerfx_02.scm"
+            "Creates an inner glow effect around a layer.  Requires a layer with transparency and a filled in area.\nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -2005,7 +2199,7 @@
 
 (script-fu-register "script-fu-layerfx-bevel-emboss"
             "<Toolbox>/Script-Fu/Layer Effects/Bevel and Emboss..."
-            "Creates beveling and embossing effects over a layer. \nfile:layerfx_02.scm"
+            "Creates beveling and embossing effects over a layer.  Requires a layer with transparency and a filled in area.\nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -2022,10 +2216,10 @@
             SF-OPTION       "Gloss Contour"         '("Linear" "Cone" "Cone - Inverted" "Cove - Deep" "Cove-Shallow" "Gaussian" "Half Round" "Ring" "Ring - Double" "Rolling Slope - Descending" "Rounded Steps" "Sawtooth 1")
             SF-COLOR        "Highlight Color"       '(255 255 255)
             SF-OPTION       "Highlight Mode"        '("Normal" "Dissolve" "Multiply" "Divide" "Screen" "Overlay" "Dodge" "Burn" "Hard Light" "Soft Light" "Grain Extract" "Grain Merge" "Difference" "Addition" "Subtract" "Darken Only" "Lighten Only" "Hue" "Saturation" "Color" "Value")
-            SF-ADJUSTMENT   "Highlight Opacity"     '(75 0 100 1 10 1 0)
+            SF-ADJUSTMENT   "Highlight Opacity"     '(50 0 100 1 10 1 0)
             SF-COLOR        "Shadow Color"          '(0 0 0)
             SF-OPTION       "Shadow Mode"           '("Normal" "Dissolve" "Multiply" "Divide" "Screen" "Overlay" "Dodge" "Burn" "Hard Light" "Soft Light" "Grain Extract" "Grain Merge" "Difference" "Addition" "Subtract" "Darken Only" "Lighten Only" "Hue" "Saturation" "Color" "Value")
-            SF-ADJUSTMENT   "Shadow Opacity"        '(75 0 100 1 10 1 0)
+            SF-ADJUSTMENT   "Shadow Opacity"        '(89 0 100 1 10 1 0)
             SF-OPTION       "Surface Contour"       '("Linear" "Cone" "Cone - Inverted" "Cove - Deep" "Cove-Shallow" "Gaussian" "Half Round" "Ring" "Ring - Double" "Rolling Slope - Descending" "Rounded Steps" "Sawtooth 1")
             SF-TOGGLE       "Invert"                FALSE
             SF-TOGGLE       "Merge with layer"      FALSE
@@ -2033,7 +2227,7 @@
 
 (script-fu-register "script-fu-layerfx-satin"
             "<Toolbox>/Script-Fu/Layer Effects/_Satin..."
-            "Creates a satin effect over a layer. \nfile:layerfx_02.scm"
+            "Creates a satin effect over a layer.  Requires a layer with transparency and a filled in area.\nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -2053,7 +2247,7 @@
 
 (script-fu-register "script-fu-layerfx-stroke"
             "<Toolbox>/Script-Fu/Layer Effects/Stroke..."
-            "Creates a stroke around a layer. \nfile:layerfx_02.scm"
+            "Creates a coloured border around a layer.  Requires a layer with transparency and a filled in area.\nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -2063,14 +2257,14 @@
             SF-COLOR        "Color"                 '(255 255 255) 
             SF-ADJUSTMENT   "Opacity"               '(100 0 100 1 10 1 0)
             SF-OPTION       "Blending Mode"         '("Normal" "Dissolve" "Multiply" "Divide" "Screen" "Overlay" "Dodge" "Burn" "Hard Light" "Soft Light" "Grain Extract" "Grain Merge" "Difference" "Addition" "Subtract" "Darken Only" "Lighten Only" "Hue" "Saturation" "Color" "Value")
-            SF-ADJUSTMENT   "Size"                  '(1 1 999 1 10 0 1)
-            SF-ADJUSTMENT   "Position 0 = inside, 100 = outside"      '(50 0 100 1 10 1 0)
+            SF-ADJUSTMENT   "Size"                  '(16 1 999 1 10 0 1)
+            SF-ADJUSTMENT   "Position 0 = inside, 100 = outside"      '(48 0 100 1 10 0 0)
             SF-TOGGLE       "Merge with layer"      FALSE
 )
 
 (script-fu-register "script-fu-layerfx-color-overlay"
             "<Toolbox>/Script-Fu/Layer Effects/Color Overlay..."
-            "Overlays a color over a layer. \nfile:layerfx_02.scm"
+            "Overlays a color over a layer.  Requires a layer with transparency and a filled in area. \nfile:layerfx_02.scm"
             "Jonathan Stipe <JonStipe@prodigy.net>"
             "Jonathan Stipe"
             "January 2008"
@@ -2085,7 +2279,7 @@
 
 (script-fu-register "script-fu-layerfx-gradient-overlay"
             "<Toolbox>/Script-Fu/Layer Effects/Gradient Overlay"
-            "Overlays a gradient over a layer.  Paint Layer Modes sets mode of the resulting layer. Blend mode only works if Paint Layer mode is normal.\n file:layerfx_02.scm"
+            "Overlays a gradient over a layer.  Paint Layer Modes sets mode of the resulting layer. Blend mode only works if Paint Layer mode is normal. Requires a layer with transparency and a filled in area.\n file:layerfx_02.scm"
             "Jonathan Stipe JonStipe@prodigy.net"
             "Jonathan Stipe"
             "January 2008"
@@ -2110,7 +2304,7 @@
 
 (script-fu-register "script-fu-layerfx-pattern-overlay"
     "<Toolbox>/Script-Fu/Layer Effects/Pattern Overlay..."
-    "Overlays a pattern over a layer. \nfile:layerfx_02.scm"
+    "Overlays a pattern over a layer.  Requires a layer with transparency and a filled in area.\nfile:layerfx_02.scm"
     "Jonathan Stipe <JonStipe@prodigy.net>"
     "Jonathan Stipe"
     "January 2008"
