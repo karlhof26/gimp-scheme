@@ -8,10 +8,10 @@
 ;	but WITHOUT ANY WARRANTY without even the implied warranty of										;;
 ;	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the										;;
 ;	GNU General Public License for more details.														;;
-;   																									;;
+;               																						;;
 ;   You should have received a copy of the GNU General Public License									;;
 ;   along with this program.  If not, see <http://www.gnu.org/licenses/>.								;;
-;   																									;;
+;               																						;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  v0.03 Mystical; Gimp v2.8.16 and now also Gimp 2.10.18                                              ;;
 ;;  (de) http://www.3d-hobby-art.de/news/196-gimp-script-fu-mythical.html                               ;;
@@ -108,7 +108,10 @@
             (object-layer-high-pass)
             (object-layer-high-pass-dupl)
             (main-object-group)
+            
+            (gradient-actual-name "Abstract 2")
         )
+        
         
         ;;
         (if  ( = (car (gimp-image-get-layer-by-name img "background")) -1)
@@ -119,6 +122,8 @@
         )
         
         (gimp-image-undo-group-start img)
+        
+        (gimp-context-push)
         
         (gimp-context-set-foreground '(0 0 0))
         (gimp-context-set-background '(255 255 255))
@@ -166,6 +171,7 @@
         (gimp-selection-layer-alpha brush-mask-layer)
         (gimp-item-set-visible brush-mask-layer FALSE)
         (gimp-message "line 168")
+        (gimp-displays-flush)
         
         ;;
         ;; ************************************************************************************************************************************
@@ -185,6 +191,7 @@
         (gimp-layer-set-mode object-group LAYER-MODE-NORMAL)
         (gimp-layer-set-opacity object-group 100)
         (gimp-image-insert-layer img object-group 0 2)
+        (gimp-displays-flush)
         
         ;;
         ;; ************************************************************************************************************************************
@@ -194,7 +201,7 @@
         ;; ************************************************************************************************************************************
         (set! Ls (car (gimp-layer-new-from-visible img img "Ls (tmp)")))
         (gimp-image-insert-layer img Ls 0 2)
-        (gimp-message "line 197")
+        (gimp-message "line 199")
         
         (if (= inLightDirection 0)
             (begin
@@ -202,17 +209,30 @@
                 ;; **********************************************************************************************************
                 (gimp-message (number->string inLightWidth)) 
                 ;(python-layerfx-gradient-overlay RUN-NONINTERACTIVE img Ls "Flare Rays - 3d-hobby-art.de" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL (/ ImageWidth 2) (/ ImageWidth 2) -40 inLightWidth FALSE)
-                (script-fu-layerfx-gradient-overlay img Ls BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Rays-3dhobbyartde" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (/ ImageWidth 2) (/ ImageWidth 2) -40 inLightWidth FALSE)
+                (script-fu-layerfx-gradient-overlay img Ls BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Radial 103" GRADIENT-LINEAR REPEAT-NONE
+                    FALSE 100 LAYER-MODE-NORMAL-LEGACY
+                    (/ ImageWidth 2)
+                    (/ ImageWidth 2)
+                    (- (/ ImageWidth 2) (* (/ ImageWidth 2) (/ inLightWidth 8000)))
+                    (+ (/ ImageHeight 2) (* (/ ImageHeight 2) (/ inLightWidth 8000)))
+                    FALSE)
                 (gimp-message "line 202")
             )
             (begin
                 (gimp-message "line 209")
                 (if (= inLightDirection 1)
                     (begin
+                        (gimp-message (number->string inLightWidth)) 
                         ;;
                         ;; *********************************************************************************************************
                         ;(python-layerfx-gradient-overlay RUN-NONINTERACTIVE img Ls "Flare Rays - 3d-hobby-art.de" GRADIENT-LINEAR REPEAT-NONE FALSE 100 NORMAL-MODE (/ ImageWidth 2) (/ ImageWidth 2) 40 inLightWidth FALSE)
-                        (script-fu-layerfx-gradient-overlay img Ls BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Rays-3dhobbyartde" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (/ ImageWidth 2) (/ ImageWidth 2) 40 inLightWidth FALSE)
+                        (script-fu-layerfx-gradient-overlay img Ls BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Radial 102" GRADIENT-LINEAR REPEAT-NONE
+                            FALSE 100 LAYER-MODE-NORMAL-LEGACY 
+                            (/ ImageWidth 2)
+                            (/ ImageHeight 2)
+                            (+ (/ ImageWidth 2) (* (/ ImageWidth 2) (/ inLightWidth 8000)))
+                            (* ImageHeight 0.75)
+                            FALSE)
                         (gimp-message "line 216")
                     )
                 )
@@ -251,7 +271,7 @@
         (gimp-image-insert-layer img streaks-layer light-group 0)
         (gimp-layer-set-name streaks-layer "light streaks")
         (gimp-image-set-active-layer img streaks-layer)
-        (gimp-message "line 254")
+        (gimp-message "line 256")
         
         (gimp-displays-flush)
         ;(quit)
@@ -269,14 +289,14 @@
                 (set! base-height (car (gimp-drawable-height base-layer)))
                 (if (= inLightDirection 0)
                     (begin
-                        (gimp-message "line 272")
+                        (gimp-message "line 274")
                         ;;
                         ;; *********************************************************************************************************
                         ; was angle = -50
                         (plug-in-mblur RUN-NONINTERACTIVE img streaks-layer 0 1330 310 (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)))
                     )
                     (begin
-                        (gimp-message "line 279")
+                        (gimp-message "line 281")
                         (if (= inLightDirection 1)
                             ;;
                             ;; *********************************************************************************************************
@@ -285,7 +305,8 @@
                     )
                 )
         )
-        (gimp-message "line 288")
+        (gimp-message "line 290")
+        (gimp-displays-flush)
         ;
         ; ************************************************************************************************************************************
         (set! move-layer (car (gimp-layer-copy (car (gimp-image-get-layer-by-name img "faded off object")) 0)))
@@ -300,7 +321,7 @@
                 (gimp-layer-translate move-layer 10 10)
             )
         )
-        (gimp-message "line 303")
+        (gimp-message "line 305")
         
         (let (
                 (pos-x 0)
@@ -329,7 +350,7 @@
             )
         )
         
-        (gimp-message "line 332")
+        (gimp-message "line 334")
         
         
         ;;
@@ -347,7 +368,7 @@
         (gimp-item-set-visible light-group TRUE)
         (gimp-item-set-visible object-group TRUE)
         (gimp-item-set-visible new-bg-layer TRUE)
-        (gimp-message "line 350")
+        (gimp-message "line 352")
         
         
         ;;
@@ -360,7 +381,7 @@
         ;(set! lmap-layer (gimp-selection-layer-alpha (car (gimp-image-get-layer-by-name img "Light map (tmp)"))))
         (gimp-selection-feather img 40)
         (gimp-item-set-visible (car (gimp-image-get-layer-by-name img "Light map (tmp)")) FALSE)
-        
+        (gimp-message "line371")
         (gimp-displays-flush)
         ;(quit)
         ;;
@@ -370,7 +391,7 @@
         (gimp-image-add-layer-mask img streaks-layer streaks-layer-mask)
         (gimp-layer-remove-mask streaks-layer MASK-APPLY)
         (gimp-selection-none img)
-        (gimp-message "line 373")
+        (gimp-message "line 375")
         
         (if (= inLightDirection 0)
             ;;
@@ -392,7 +413,7 @@
             (set! base-y (cadr (gimp-drawable-offsets base-layer)))
             (set! base-width  (car (gimp-drawable-width  base-layer)))
             (set! base-height (car (gimp-drawable-height base-layer)))
-            (gimp-message "line 395")
+            (gimp-message "line 397")
             (if (= inLightDirection 0)
                 (begin;;
                     ;; *********************************************************************************************************
@@ -409,7 +430,7 @@
                 
             )
         )
-        (gimp-message "line 412")
+        (gimp-message "line 414")
         ;;
         (set! streaks-layer-copy (car (gimp-layer-copy (car (gimp-image-get-layer-by-name img "light streaks")) 0)))
         (gimp-image-add-layer img streaks-layer-copy 3)
@@ -420,7 +441,7 @@
         (gimp-image-insert-layer img streaks-layer-copy2 0 3)
         (gimp-layer-set-name streaks-layer-copy2 "light streaks -copy (tmp) #2")
         (gimp-image-set-active-layer img streaks-layer-copy2)
-        (gimp-message "line 423")
+        (gimp-message "line 425")
         
         (gimp-image-merge-down img streaks-layer-copy2 CLIP-TO-BOTTOM-LAYER)
         
@@ -435,7 +456,7 @@
         (gimp-edit-fill ls-layer-mask FILL-BACKGROUND)
         (gimp-edit-fill ls-layer-mask FILL-BACKGROUND)
         
-        (gimp-message "line 438")
+        (gimp-message "line 440")
         
         (let* (
                 (base-x 0)
@@ -463,7 +484,7 @@
                 )
             )
         )
-        (gimp-message "line 466")
+        (gimp-message "line 468")
         
         (plug-in-gauss (if (= inRunMode TRUE) (begin RUN-INTERACTIVE) RUN-NONINTERACTIVE) img ls-layer-mask 10 10 1)
         ;;
@@ -479,7 +500,7 @@
         (gimp-item-set-visible streaks-layer FALSE)
         (gimp-item-set-visible object-group FALSE)
         
-        (gimp-message "line 482")
+        (gimp-message "line 484")
         ;;
         ;; ************************************************************************************************************************************
         (set! main-light-layer (car (gimp-layer-new-from-visible img img "main light")))
@@ -497,7 +518,7 @@
             (set! base-width  (car (gimp-drawable-width  base-layer)))
             (set! base-height (car (gimp-drawable-height base-layer)))
             ;;
-            (gimp-message "line 500")
+            (gimp-message "line 502")
             ;; *********************************************************************************************************
             (plug-in-mblur RUN-NONINTERACTIVE img main-light-layer 1 30 0 (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)))
         )
@@ -509,7 +530,7 @@
         ;;
         (gimp-item-set-visible streaks-layer TRUE)
         (gimp-item-set-visible object-group TRUE)
-        (gimp-message "line 512")
+        (gimp-message "line 514")
         ;;
         (gimp-edit-copy (car (gimp-image-get-layer-by-name img "faded off object")))
         
@@ -524,19 +545,19 @@
         (set! floating-selection (car (gimp-edit-paste object-fade-off-layer-mask 0)))
         (gimp-floating-sel-anchor floating-selection)
         (gimp-drawable-invert object-fade-off-layer-mask TRUE)
-        (gimp-message "line 527")
+        (gimp-message "line 529")
         ;;
         ;; *********************************************************************************************************
         ;(python-layerfx-color-overlay (if (= inRunMode TRUE) (begin RUN-INTERACTIVE) RUN-NONINTERACTIVE) img (car (gimp-image-get-layer-by-name img "object fade off")) '(0 0 0) 100 NORMAL-MODE FALSE)
         (script-fu-layerfx-color-overlay img (car (gimp-image-get-layer-by-name img "object fade off")) '(0 0 0) 100 LAYER-MODE-NORMAL-LEGACY FALSE)
-        (gimp-message "line 532")
+        (gimp-message "line 534")
         ;; 
         (gimp-image-reorder-item img (car (gimp-image-get-layer-by-name img "object fade off")) object-group 0)
         (gimp-image-reorder-item img (car (gimp-image-get-layer-by-name img "object fade off-color")) object-group 0)
         (gimp-layer-set-name (car (gimp-image-get-layer-by-name img "object fade off-color")) "object fade off -overlay")
         ;;
         
-        (gimp-message "line 539")
+        (gimp-message "line 541")
         (gimp-displays-flush)
         ;(quit)
         ; removed by karlhof26
@@ -548,7 +569,7 @@
         
         ;;
         ;; ************************************************************************************************************************************
-        (gimp-message "line 551")
+        (gimp-message "line 553")
         (set! mo-layer (car (gimp-layer-copy (car (gimp-image-get-layer-by-name img "faded off object")) 0)))
         
         (set! main-object-group (car (gimp-layer-group-new img)))
@@ -559,7 +580,8 @@
         (gimp-layer-set-name mo-layer "main object (tmp)")
         (gimp-context-set-foreground '(0 0 0))
         (gimp-context-set-background '(255 255 255))
-        (gimp-message "line 562")
+        (gimp-message "line 564")
+        (gimp-displays-flush)
         ;;
         ;; *********************************************************************************************************
         (let* (
@@ -581,40 +603,78 @@
             (set! calcx (- (+ base-x (/ base-width  2)) (/ 100  2)))
             (set! calcy (- (+ base-y (/ base-height  2)) (/ 100  2)))
             
+            (set! gradient-actual-name "Flare Radial 102")
+            (cond
+                ((= inGradientName 1)
+                            (set! gradient-actual-name "Incandescent") ;"Incandescent" "Horizon 1" "Nauseating Headache"
+                )
+                ((= inGradientName 2)
+                            (set! gradient-actual-name "Horizon 1")
+                )
+                ((= inGradientName 3)
+                           (set! gradient-actual-name "Nauseating Headache")
+                )
+                (else
+                    (gimp-message "crashed to the else")
+                           (set! gradient-actual-name "Flare Radial 101")
+                )
+            )
             (if (= inLightDirection 0)
                 (begin
-                    (gimp-message "line 586")
+                    (gimp-message "line 610")
+                    
                     ;;
                     ;; **********************************************************************************************************
                     ;(python-layerfx-gradient-overlay RUN-NONINTERACTIVE img (car (gimp-image-get-layer-by-name img "main object (tmp)")) (if (= inGradientName 0) "FG to BG (RGB)" (if (= inGradientName 1) "VG nach HG (RGB)")) GRADIENT-LINEAR REPEAT-NONE TRUE 100 NORMAL-MODE (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) -120 700 FALSE)
                     ;(script-fu-layerfx-gradient-overlay img (car (gimp-image-get-layer-by-name img "main object (tmp)")) BLEND-FG-BG-RGB LAYER-MODE-NORMAL-LEGACY "FG to BG (RGB)" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) -120 inLightWidth FALSE)
-                    (script-fu-layerfx-gradient-overlay img mo-layer BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Rays-3dhobbyartde" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (/ ImageWidth 2) (/ ImageWidth 2) -120 300 FALSE)
+                    (script-fu-layerfx-gradient-overlay img mo-layer BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY 
+                        (if (= inGradientName 0) "FG to BG (RGB)" (if (>= inGradientName 1) gradient-actual-name))
+                        GRADIENT-LINEAR
+                        REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY
+                        (* (/ ImageWidth 2) 1)
+                        (* (/ ImageHeight 2) 1)
+                        ;-120 300
+                        (* (/ ImageWidth 2) 0.1)
+                        (* ImageHeight 0.9)
+                        
+                        FALSE)
                     
                     ;test;;;(script-fu-layerfx-gradient-overlay img Ls BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Rays-3dhobbyartde" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (/ ImageWidth 2) (/ ImageWidth 2) -40 inLightWidth FALSE)
-                    (gimp-message "line 594")
+                    (gimp-message "line 619")
+                    (gimp-displays-flush)
                 )
                 (begin 
                     (if (= inLightDirection 1)
                         (begin
+                            (gimp-message "line626")
                             ;;
                             ;; *********************************************************************************************************
                             ;(python-layerfx-gradient-overlay RUN-NONINTERACTIVE img (car (gimp-image-get-layer-by-name img "main object (tmp)")) (if (= inGradientName 0) "FG to BG (RGB)" (if (= inGradientName 1) "VG nach HG (RGB)")) GRADIENT-LINEAR REPEAT-NONE FALSE 100 NORMAL-MODE (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 120 700 FALSE)
-                            (script-fu-layerfx-gradient-overlay img (car (gimp-image-get-layer-by-name img "main object (tmp)")) BLEND-FG-BG-RGB LAYER-MODE-NORMAL-LEGACY (if (= inGradientName 0) "FG to BG (RGB)" (if (= inGradientName 1) "VG nach HG (RGB)")) GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY
-                                (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 120 700 FALSE)
+                            (script-fu-layerfx-gradient-overlay img (car (gimp-image-get-layer-by-name img "main object (tmp)"))
+                                BLEND-FG-BG-RGB LAYER-MODE-NORMAL-LEGACY
+                                (if (= inGradientName 0) "FG to BG (RGB)" (if (>= inGradientName 1) gradient-actual-name))
+                                GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY
+                                (- (+ base-x (/ base-width  2)) (/ 100  2))
+                                (- (+ base-y (/ base-height 2)) (/ 100 2))
+                                (* ImageWidth 0.95) ; 120
+                                (* ImageHeight 0.95) ; 700
+                                FALSE)
+                            (gimp-displays-flush)
                         )
                     )
                 )
             )
-            (gimp-message "line 608")
+            (gimp-message "line 637")
         )
         
-        (gimp-message "line 611")
+        (gimp-message "line 640")
         ;;
         (gimp-item-set-visible (car (gimp-image-get-layer-by-name img "main object (tmp)")) FALSE)
         (gimp-item-set-visible streaks-layer FALSE)
         (gimp-item-set-visible (car (gimp-image-get-layer-by-name img "light source (tmp)")) FALSE)
         ;;
         (gimp-edit-copy-visible img)
+        (gimp-displays-flush)
         
         (gimp-item-set-visible (car (gimp-image-get-layer-by-name img "main object (tmp)")) TRUE)
         (set! main-object-layer-mask (car (gimp-layer-create-mask mo-layer ADD-MASK-WHITE)))
@@ -623,7 +683,7 @@
         (set! floating-selection (car (gimp-edit-paste main-object-layer-mask 0)))
         (gimp-floating-sel-anchor floating-selection)
         
-        (gimp-message "line 626")
+        (gimp-message "line 632")
         (gimp-displays-flush)
         ;(quit)
         
@@ -635,11 +695,13 @@
         (gimp-layer-set-mode (car (gimp-image-get-layer-by-name img "main object -group")) LAYER-MODE-SOFTLIGHT-LEGACY)
         (gimp-layer-set-opacity (car (gimp-image-get-layer-by-name img "main object")) 100)
         
-        (gimp-message "line 638")
+        (gimp-message "line 644")
+        (gimp-displays-flush)
         ;;
         ;; ************************************************************************************************************************************
         (set! light-zoom-layer (car (gimp-layer-new-from-visible img img "Light source zoom")))
         (gimp-image-insert-layer img light-zoom-layer 0 4)
+        (gimp-displays-flush)
         
         (let* (
                 (base-x 0)
@@ -648,33 +710,37 @@
                 (base-width (car (gimp-image-width  img)))
                 (base-height (car (gimp-image-height img)))
             )
-            (gimp-message "line 651")
+            (gimp-message "line 659")
             (set! base-x (car  (gimp-drawable-offsets base-layer)))
             (set! base-y (cadr (gimp-drawable-offsets base-layer)))
             (set! base-width  (car (gimp-drawable-width  base-layer)))
             (set! base-height (car (gimp-drawable-height base-layer)))
             ;;
             ;;
-            (gimp-message "line 658")
+            (gimp-message "line 666")
             ;;*********************************************************************************************************
             (plug-in-mblur RUN-NONINTERACTIVE img light-zoom-layer 2 90 0 (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)))
+            (gimp-displays-flush)
         )
         (gimp-layer-set-mode light-zoom-layer LAYER-MODE-SCREEN)
         (gimp-layer-set-opacity light-zoom-layer 24)
         (gimp-drawable-desaturate light-zoom-layer DESATURATE-LIGHTNESS)
-        (gimp-message "line 665")
+        (gimp-message "line 674")
+        (gimp-displays-flush)
         
         ;;
         (gimp-context-set-interpolation INTERPOLATION-CUBIC)
         (gimp-layer-scale light-zoom-layer (* ImageWidth 1.5) (* ImageHeight 1.5) TRUE)
         
-        (gimp-message "line 671")
+        (gimp-message "line 681")
         ;;
         ;; ************************************************************************************************************************************
         (gimp-image-insert-layer img contrast-layer 0 4)
         (gimp-context-set-foreground '(0 0 0))
         (gimp-context-set-background '(255 255 255))
         (gimp-edit-fill contrast-layer FILL-BACKGROUND)
+        (gimp-displays-flush)
+        
         (let* (
                 (base-x 0)
                 (base-y 0)
@@ -689,44 +755,64 @@
             
             (if (= inLightDirection 0)
                 (begin
-                    (gimp-message "line 692")
+                    (gimp-message "line 704")
                     ;;
                     ;; *********************************************************************************************************
                     ;(python-layerfx-gradient-overlay RUN-NONINTERACTIVE img contrast-layer (if (= inGradientName 0) "FG to BG (RGB)" (if (= inGradientName 1) "VG nach HG (RGB)")) GRADIENT-LINEAR REPEAT-NONE FALSE 100 NORMAL-MODE (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 0 (- ImageWidth (/ ImageWidth 3)) TRUE)
                     
                     ;(script-fu-layerfx-gradient-overlay img (car (gimp-image-get-layer-by-name img "main object (tmp)"))BLEND-FG-BG_RGB LAYER-MODE-NORMAL-LEGACY "FG to BG (RGB)" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) -120 inLightWidth FALSE)
-                    (script-fu-layerfx-gradient-overlay img contrast-layer BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Rays-3dhobbyartde" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (/ ImageWidth 2) (/ ImageWidth 2) 0 (- ImageWidth (/ ImageWidth 3)) FALSE)
+                    (script-fu-layerfx-gradient-overlay img contrast-layer BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Glow Radial 2" GRADIENT-LINEAR
+                        REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY 
+                        (/ ImageWidth 2)
+                        (/ ImageWidth 2)
+                        (+ (/ ImageWidth 2) (* (/ ImageWidth 2) 0.5)) ;0  
+                        (* ImageHeight 0.2)
+                        FALSE)
                     
                     ;test;;;(script-fu-layerfx-gradient-overlay img Ls BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Rays-3dhobbyartde" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (/ ImageWidth 2) (/ ImageWidth 2) -40 inLightWidth FALSE)
-                    (gimp-message "line 701")
+                    (gimp-message "line 713")
+                    (gimp-displays-flush)
                 )
                 (begin
-                    (gimp-message "line 704")
+                    (gimp-message "line 717")
                     (if (= inLightDirection 1)
                         (begin
                             ;;
                             ;; *********************************************************************************************************
-                            ;(python-layerfx-gradient-overlay RUN-NONINTERACTIVE img contrast-layer (if (= inGradientName 0) "FG to BG (RGB)" (if (= inGradientName 1) "VG nach HG (RGB)")) GRADIENT-LINEAR REPEAT-NONE TRUE 100 NORMAL-MODE (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 0 (- ImageWidth (/ ImageWidth 3)) TRUE)
-                            (script-fu-layerfx-gradient-overlay img (car (gimp-image-get-layer-by-name img "main object")) BLEND-FG-BG-RGB LAYER-MODE-NORMAL-LEGACY "FG to BG (RGB)" GRADIENT-LINEAR REPEAT-NONE TRUE 100 LAYER-MODE-NORMAL-LEGACY (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 0 (- ImageWidth (/ ImageWidth 3)) TRUE)
+                            ; Script-fu-layerfx-gradient-overlay MUst be called with Legacy layer-modes-only!
+                            ;(python-layerfx-gradient-overlay RUN-NONINTERACTIVE img contrast-layer (car (gimp-image-get-layer-by-name img "main object")) (if (= inGradientName 0) "FG to BG (RGB)" (if (= inGradientName 1) "VG nach HG (RGB)")) GRADIENT-LINEAR REPEAT-NONE TRUE 100 NORMAL-MODE (- (+ base-x (/ base-width  2)) (/ 100  2)) (- (+ base-y (/ base-height 2)) (/ 100 2)) 0 (- ImageWidth (/ ImageWidth 3)) TRUE)
+                            (script-fu-layerfx-gradient-overlay img contrast-layer BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Rays Radial 1" GRADIENT-LINEAR
+                                REPEAT-SAWTOOTH FALSE 100 LAYER-MODE-NORMAL-LEGACY 
+                                (/ ImageWidth 7)
+                                (/ ImageWidth 7)
+                                (* ImageWidth 0.8)
+                                (* ImageWidth 0.8)
+                                FALSE)
+                            (gimp-displays-flush)
                         )
                     )
                 )
             )
         )
-        (gimp-message "line 716")
+        (gimp-message "line 730")
         
-        (gimp-layer-set-mode (car (gimp-image-get-layer-by-name img "contrast")) LAYER-MODE-OVERLAY)
-        (gimp-layer-set-opacity (car (gimp-image-get-layer-by-name img "contrast")) 90)
+        (gimp-layer-set-mode (car (gimp-image-get-layer-by-name img "contrast-gradient")) LAYER-MODE-OVERLAY) ; was contrat
+        (gimp-layer-set-opacity (car (gimp-image-get-layer-by-name img "contrast-gradient")) 90) ; was contrast
+        (gimp-displays-flush)
         
         ;;
         ;; ************************************************************************************************************************************
         (gimp-image-insert-layer img clouds-layer 0 5)
         (set! seed (if (number? seed) seed (realtime)))
         (if (< seed 1)
-            (set! seed (srand 4500))
+            (set! seed (srand 9500))
         )
-        (plug-in-plasma RUN-NONINTERACTIVE img clouds-layer seed 3)
+        ; plasma has a bug - result is displaced 
+        ;(plug-in-plasma RUN-NONINTERACTIVE img clouds-layer seed 3)
+        (plug-in-solid-noise 1 img clouds-layer FALSE TRUE seed 3 3.5 2.26)
         (gimp-drawable-desaturate clouds-layer DESATURATE-LIGHTNESS)
+        (gimp-displays-flush)
+        (gimp-message "line 748")
         
         ;;
         ;; ************************************************************************************************************************************
@@ -735,26 +821,40 @@
         (gimp-drawable-fill grain-shadow-layer FILL-FOREGROUND)
         (gimp-image-insert-layer img grain-layer 0 5)
         (gimp-image-insert-layer img grain-shadow-layer 0 5)
-        (plug-in-hsv-noise TRUE img grain-layer 2 0 0 100)
-        (gimp-message "line 739")
+        (plug-in-solid-noise 1 img grain-layer 1 1 3141598 8 4 4)
+        (plug-in-hsv-noise 1 img grain-layer 2 0 0 150)
+        (gimp-message "line 759")
+        (gimp-displays-flush)
+        (gimp-message "quit 762")
+        ;(quit)
+        
         
         (gimp-context-set-antialias TRUE)
         (gimp-context-set-feather TRUE)
         (gimp-context-set-feather-radius 4 3)
         (gimp-context-set-sample-merged TRUE)
         (gimp-image-select-color img CHANNEL-OP-REPLACE (car (gimp-image-get-layer-by-name img "main light")) '(35 35 35))
-        (plug-in-hsv-noise TRUE img grain-shadow-layer 2 0 0 100)
+        (gimp-displays-flush)
+        (plug-in-hsv-noise 1 img grain-shadow-layer 2 5 5 100) ; was 2 1 0 100
         (gimp-selection-none img)
         (plug-in-colortoalpha RUN-NONINTERACTIVE img grain-shadow-layer '(128 128 128))
-        (plug-in-gauss (if (= inRunMode TRUE) (begin RUN-INTERACTIVE) RUN-NONINTERACTIVE) img grain-shadow-layer 3 3 1)
-        (gimp-message "line 750")
+        (plug-in-gauss 1 img grain-shadow-layer 3 3 1)
+        (gimp-message "line 842")
         
         ;;
         ;; ************************************************************************************************************************************
         (gimp-image-insert-layer img noise-layer 0 5)
         (gimp-context-set-background inBgColor)
         (gimp-edit-fill noise-layer FILL-BACKGROUND)
-        (plug-in-rgb-noise (if (= inRunMode TRUE) (begin RUN-INTERACTIVE) RUN-NONINTERACTIVE) img noise-layer FALSE FALSE 0.03 0.03 0.03 0.03)
+        (plug-in-solid-noise 1 img noise-layer 0 1 (rand 314159) 3 2 2)
+        (plug-in-solid-noise 1 img grain-layer 1 0 314159 3 2 2)
+        ;(plug-in-rgb-noise 1 img noise-layer FALSE FALSE 0.03 0.03 0.03 0.03)
+        (plug-in-rgb-noise 1 img noise-layer TRUE FALSE 0.3 0.3 0.3 0.01)
+        (gimp-layer-set-mode noise-layer LAYER-MODE-GRAIN-MERGE)
+        (gimp-message "line 854")
+        (gimp-displays-flush)
+        
+        ;(quit)
         
         ;;
         ;; ************************************************************************************************************************************
@@ -763,7 +863,8 @@
         (gimp-edit-fill color-layer FILL-BACKGROUND)
         ;(python-layerfx-color-overlay (if (= inRunMode TRUE) (begin RUN-INTERACTIVE) RUN-NONINTERACTIVE) img color-layer '(255 230 230) 100 LAYER-MODE-MULTIPLY-LEGACY FALSE)
         (script-fu-layerfx-color-overlay img color-layer '(255 230 230) 100 LAYER-MODE-MULTIPLY-LEGACY FALSE)
-        (gimp-message "line 766")
+        (gimp-message "line 866")
+        (gimp-displays-flush)
         
         
         (gimp-layer-set-name (car (gimp-image-get-layer-by-name img "color-color")) "Red Color (option)")
@@ -777,33 +878,37 @@
         (set! object-layer-high-pass (car (gimp-layer-copy (car (gimp-image-get-layer-by-name img "faded off object")) 0)))
         (gimp-image-insert-layer img object-layer-high-pass (car (gimp-image-get-layer-by-name img "Main object group")) 0) ; was main object -group
         (gimp-layer-set-opacity object-layer-high-pass 100)
-        (gimp-message "line 780")
+        (gimp-message "line 881")
+        (gimp-displays-flush)
         (gimp-layer-set-name object-layer-high-pass "object (highPass)")
         (set! object-layer-high-pass-dupl (car (gimp-layer-copy (car (gimp-image-get-layer-by-name img "object (highPass)")) 0)))
         (gimp-image-insert-layer img object-layer-high-pass-dupl (car (gimp-image-get-layer-by-name img "Main object group")) 0) ; was main object -group
         (gimp-drawable-invert object-layer-high-pass-dupl FALSE)
-        (gimp-message "line 785")
+        (gimp-message "line 887")
         
         (plug-in-gauss (if (= inRunMode TRUE) (begin RUN-INTERACTIVE) RUN-NONINTERACTIVE) img object-layer-high-pass-dupl (/ ImageWidth 80) (/ ImageWidth 80) 1)
         (gimp-layer-set-opacity object-layer-high-pass-dupl 50)
+        (gimp-displays-flush)
+        
         (gimp-image-merge-down img object-layer-high-pass-dupl CLIP-TO-BOTTOM-LAYER)
         (gimp-brightness-contrast (car (gimp-image-get-layer-by-name img "object (highPass)")) 0 90)
         (gimp-drawable-desaturate (car (gimp-image-get-layer-by-name img "object (highPass)")) DESATURATE-AVERAGE)
         (gimp-layer-set-mode (car (gimp-image-get-layer-by-name img "object (highPass)")) LAYER-MODE-OVERLAY)
-        (gimp-message "line 793")
+        (gimp-message "line 897")
         
         ;;
         ;; ************************************************************************************************************************************
         (gimp-image-remove-layer img (car (gimp-image-get-layer-by-name img "light streaks -copy (tmp)")))
         (gimp-image-remove-layer img (car (gimp-image-get-layer-by-name img "Light map (tmp)")))
-        (gimp-message "line 799")
+        (gimp-message "line 829")
+        (gimp-displays-flush)
         (gimp-image-remove-layer img (car (gimp-image-get-layer-by-name img "marker (tmp)")))
         (gimp-image-remove-layer img (car (gimp-image-get-layer-by-name img "light source (tmp)")))
         (gimp-layer-set-visible (car (gimp-image-get-layer-by-name img "light streaks")) TRUE)
-        (plug-in-gauss (if (= inRunMode TRUE) (begin RUN-INTERACTIVE) RUN-NONINTERACTIVE) img main-light-layer-mask 20 20 1)
-        (plug-in-gauss (if (= inRunMode TRUE) (begin RUN-INTERACTIVE) RUN-NONINTERACTIVE) img object-fade-off-layer-mask 30 30 1)
+        (plug-in-gauss 1 img main-light-layer-mask 20 20 1)
+        (plug-in-gauss 1 img object-fade-off-layer-mask 30 30 1)
         (gimp-layer-set-opacity (car (gimp-image-get-layer-by-name img "faded off object")) 90)
-         (gimp-message "line 806")
+        (gimp-message "line 911")
          
         ;;
         (gimp-selection-none img)
@@ -813,6 +918,7 @@
         (gimp-context-set-foreground old-fg)
         (gimp-image-set-active-layer img (car (gimp-image-get-layer-by-name img "Red Color (option)")))
         (gimp-message "Good finish OK")
+        (gimp-context-pop)
         (gimp-image-undo-group-end img)
         
         (gimp-displays-flush)
@@ -833,7 +939,7 @@
     SF-DRAWABLE     "The layer"                 0
     SF-COLOR        "Add background"           '(0 0 0)
     SF-ADJUSTMENT   "InLightWidth"       '(2500 0 8000 10 100 0 0)
-    SF-OPTION       "Gradient"                 '("FG to BG (RGB) (en)" "VG nach HG (RGB) (de)")
+    SF-OPTION       "Gradient"                 '("FG to BG (RGB) (en)" "Incandescent" "Horizon 1" "Nauseating Headache")
     SF-OPTION       "Direction"                '("Top Right to Bottom Left" "Top Left to Bottom Right")
     SF-TOGGLE       "Run Interactive Mode?"     FALSE
 )
