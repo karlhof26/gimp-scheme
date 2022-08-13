@@ -213,8 +213,8 @@
                     FALSE 100 LAYER-MODE-NORMAL-LEGACY
                     (/ ImageWidth 2)
                     (/ ImageWidth 2)
-                    (- (/ ImageWidth 2) (* (/ ImageWidth 2) (/ inLightWidth 8000)))
-                    (+ (/ ImageHeight 2) (* (/ ImageHeight 2) (/ inLightWidth 8000)))
+                    135 ; angle
+                    (* (* ImageHeight 0.75) (/ inLightWidth 8000)) ; width of the gradient
                     FALSE)
                 (gimp-message "line 202")
             )
@@ -230,8 +230,8 @@
                             FALSE 100 LAYER-MODE-NORMAL-LEGACY 
                             (/ ImageWidth 2)
                             (/ ImageHeight 2)
-                            (+ (/ ImageWidth 2) (* (/ ImageWidth 2) (/ inLightWidth 8000)))
-                            (* ImageHeight 0.75)
+                            45 ; angle
+                            (* (* ImageHeight 0.75) (/ inLightWidth 8000)) ; width of the gradient
                             FALSE)
                         (gimp-message "line 216")
                     )
@@ -633,9 +633,8 @@
                         REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY
                         (* (/ ImageWidth 2) 1)
                         (* (/ ImageHeight 2) 1)
-                        ;-120 300
-                        (* (/ ImageWidth 2) 0.1)
-                        (* ImageHeight 0.9)
+                        135 ; angle
+                        (* 300 (/ inLightWidth 8000)) ; width
                         
                         FALSE)
                     
@@ -656,8 +655,8 @@
                                 GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY
                                 (- (+ base-x (/ base-width  2)) (/ 100  2))
                                 (- (+ base-y (/ base-height 2)) (/ 100 2))
-                                (* ImageWidth 0.95) ; 120
-                                (* ImageHeight 0.95) ; 700
+                                45 ; angle
+                                (* 300 (/ inLightWidth 8000)) ; width of the grad
                                 FALSE)
                             (gimp-displays-flush)
                         )
@@ -765,8 +764,8 @@
                         REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY 
                         (/ ImageWidth 2)
                         (/ ImageWidth 2)
-                        (+ (/ ImageWidth 2) (* (/ ImageWidth 2) 0.5)) ;0  
-                        (* ImageHeight 0.2)
+                        135 ; angle  
+                        (* ImageWidth 0.8); gradient width
                         FALSE)
                     
                     ;test;;;(script-fu-layerfx-gradient-overlay img Ls BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY "Flare Rays-3dhobbyartde" GRADIENT-LINEAR REPEAT-NONE FALSE 100 LAYER-MODE-NORMAL-LEGACY (/ ImageWidth 2) (/ ImageWidth 2) -40 inLightWidth FALSE)
@@ -785,8 +784,8 @@
                                 REPEAT-SAWTOOTH FALSE 100 LAYER-MODE-NORMAL-LEGACY 
                                 (/ ImageWidth 7)
                                 (/ ImageWidth 7)
-                                (* ImageWidth 0.8)
-                                (* ImageWidth 0.8)
+                                45 ; angle
+                                (* ImageWidth 0.8) ; gradient width                               
                                 FALSE)
                             (gimp-displays-flush)
                         )
