@@ -91,6 +91,8 @@
 ;
 ; That's all folks. Have fun with this script !
 ; Another Grandmother Coffee House production.
+;
+; Updated by Karl Hofmeyr 2022 for Gimp 2.10.32 <karlhofmeyr at gmail.com>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -137,9 +139,11 @@
                 (g    "f")
                 (b    "bl")
                 (rgb  "h")
+                (finstring "")
+                (secondstring "")
              )
-        ;(gimp-message "line 141")
-        (set! brt (number->string brightness 10))
+        ;(gimp-message "line 145")
+        (set! brt (number->string brightness))
         (set! crt (number->string contrast 10))
         (set! ltn (number->string lightness 10))
         (set! stn (number->string saturation 10))
@@ -148,29 +152,56 @@
         (set! g (number->string(cadr art-color)))
         (set! b (number->string(caddr art-color)))
         (set! rgb (string-append "-c" "(" r "," g "," b ")"))
-        (string-append
+        
+        ;(gimp-message "line156")
+        ;(gimp-message brt)
+        ;(gimp-message crt)
+        ;(gimp-message bcls)
+        ;(gimp-message rgb)
+        ;(gimp-message b)
+        
+        (set! secondstring (string-append
             (cond 
                 ((= stmode 0) "Java")
                 ((= stmode 1) "Capuccino")
                 ((= stmode 2) "Expresso")
                 ((= stmode 3) "Mocha")
-                ((= stmode 4) "Latte"))
+                ((= stmode 4) "Latte")
+                (else "KH")
+            )
             (cond 
                 ((= tempmode 0) "")
                 ((= tempmode 1) "-85 degC")
                 ((= tempmode 2) "-90 degC")
-                ((= tempmode 3) "-95 degC"))
+                ((= tempmode 3) "-95 degC")
+                ((= tempmode 4) "-97 degC")
+                ((= tempmode 5) "-98 degC")
+                (else "KH")
+            )
+        ))
+        
+        ;(gimp-message "line183")
+        
+        (set! finstring (string-append
+            secondstring
+            
             (if  (= opmode 1)
                 bcls
-                "") 
+                "")
             (if  (eqv? texture? TRUE)
-                "-texture" "") 
+                "-texture"
+                "") 
             (if  (eqv? polychrome? TRUE)
                 "-polychrome" 
-                rgb)
+                rgb )
             (if  (eqv? ppdecaf? TRUE) 
-                "-Decaf" "")
+                "-Decaf"
+                "-nodecaf")
+          )
         )
+        
+        ;(gimp-message "line203")
+        finstring
       )
     )
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -191,7 +222,7 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;
     ;  Helper function to return matrix array
-    ;  with thanks to Iccii script
+    ;  with thanks to Iccii script 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     
     (define (get-matrix matrix-list)
@@ -292,6 +323,8 @@
             (latte-layer 0)
             (latte-layer1 0)
             (latte-layer2 0)
+            
+            (indexman)
         )
         
         (gimp-image-undo-group-start img)
@@ -302,7 +335,7 @@
         (gimp-edit-fill bg-layer FILL-WHITE)
         (if  (= opmode 0) 
             (begin
-                ;(gimp-message "line 305 Automatic")
+                ;(gimp-message "line 338 Automatic")
                 (gimp-image-insert-layer img grey-layer 0 -1)
                 (gimp-context-set-background '(128 128 128))
                 (gimp-edit-fill grey-layer FILL-BACKGROUND)                      ;  Grey Layer fill
@@ -310,19 +343,22 @@
                 (gimp-image-insert-layer img sobel-layer 0 -1)
                 (if  (> tempmode 0) 
                     (begin
+                        ;(gimp-message "line 346")
                         (let* (
                                 (matrix (get-matrix matrix-list))
-                                (index 5)
+                                (indummyx 5)
                                 
                                 (channels (get-channels sobel-layer FALSE TRUE TRUE TRUE FALSE))
                               )
                               
-                            ;(gimp-message "line 320")
-                            (set! index 0)
-                            (while (<  index tempmode)
+                            ;(gimp-message "line 354 do conv matrix a number of times")
+                            (set! indexman 0)
+                            (while (<  indexman tempmode)
                                 (plug-in-convmatrix 1 img sobel-layer 25 matrix TRUE      ;;  thanks to Iccii script
-                                    16 0 5 channels 0)
-                                (set! index (+ index 1))
+                                    16 0.07           ; divisor offset
+                                    5 channels 0) ; divisor was 16; offset was 0
+                                (set! indexman (+ indexman 1))
+                                ;(gimp-message "line 361")
                             )
                         ) 
                     )
@@ -332,28 +368,50 @@
                 (gimp-image-merge-down img grey-layer  EXPAND-AS-NECESSARY)
             )
         )
-        ;(gimp-message "line 335")
+        ;(gimp-message "line 371")
+        ;(gimp-displays-flush)
+        ;(quit)
+        
         (if  (= opmode  1) 
             (begin
                 ;(gimp-message "line 338 manual")
                 (gimp-image-insert-layer img sobel-layer 0 -1)
                     (if  (> tempmode 0) 
                         (begin
-                            (let* ((matrix (get-matrix matrix-list))
-                                (channels (get-channels sobel-layer FALSE TRUE TRUE TRUE FALSE)))
-                                (set! index 0)
-                                (while (<  index tempmode)
+                            ;(gimp-message "line 347 tempmode gr 0")
+                            (let* (
+                                    (matrix (get-matrix matrix-list))
+                                    (channels (get-channels sobel-layer FALSE TRUE TRUE TRUE FALSE))
+                                   )
+                                (set! indexman 0)
+                                (while (<  indexman tempmode)
                                     (plug-in-convmatrix 1 img sobel-layer 25 matrix TRUE      ;;  thanks to Iccii script
-                                        16 0 5 channels 0)
-                                    (set! index (+ index 1))
+                                        16 0.07 ; divisor was 16, offset was 0
+                                        5 channels 0)
+                                    (set! indexman (+ indexman 1))
+                                    ;(gimp-message "line 357 bing")
                                 )
                             ) 
                         )
+                        (begin
+                            ;(plug-in-sobel 1 img sobel-layer TRUE FALSE FALSE)
+                            ;(gimp-message "tempmode not gr 0")
+                        )
                     )
+                
+                (gimp-progress-update 0.81)
+                ;(gimp-message (number->string (/ lightness 100)))
+                ;(gimp-message (number->string (/ brightness 255)))
+                (gimp-displays-flush)
+                ;(quit)
                 ;(gimp-brightness-contrast sobel-layer brightness contrast)
                 (gimp-drawable-brightness-contrast sobel-layer (/ brightness 255) (/ contrast 255))
                 ;(gimp-hue-saturation sobel-layer 0 0 lightness saturation)
                 (gimp-drawable-hue-saturation sobel-layer HUE-RANGE-ALL 0 (/ lightness 100) (/ saturation 100) 0)
+                ;(gimp-message "line 372")
+                ;(gimp-displays-flush)
+                (gimp-progress-update 0.83)
+                ;(quit)
             )
         )
         
@@ -364,8 +422,8 @@
         ;(gimp-drawable-invert sobel-layer FALSE)
         ;(gimp-message "line 361")
         (gimp-displays-flush)
-        ;(gimp-message "line363")
-        
+        ;(gimp-message "line395")
+        (gimp-progress-update 0.85)
         
         
         (if  (= stmode 1)                                                                 ;  Capuccino - 5 spoons of steamed milk please
@@ -387,8 +445,8 @@
         (if  (<= stmode 1)     
             (if  (eqv? texture? TRUE)                                                        ; slow art brewing, go for a long Java coffee break
                 (begin
-                    ;(gimp-message "line 388")
-                    ;(gimp-message "stmode lt 1 and texture true")
+                    (gimp-message "line 388")
+                    (gimp-message "stmode lt 1 and texture true")
                     (gimp-image-insert-layer img impress-layer 0 -1)
                     (gimp-item-set-name impress-layer "impress-layer")
                     (gimp-image-set-active-layer img impress-layer)
@@ -450,7 +508,7 @@
         )  ; end of  expresso coffee (if  (> stmode 1)
         ;(gimp-message "line 449")
         
-        (gimp-displays-flush)
+        ;(gimp-displays-flush)
         ;(gimp-message "line452")
         
         
@@ -482,7 +540,9 @@
                 (eqv? ppdecaf? TRUE))                      ; Post processing coffee decaffeinator requires flatten mode
             (begin
                 (set! coffee-layer (car (gimp-image-flatten img)))
+                ;(gimp-message "line513 off to setname")
                 (gimp-drawable-set-name coffee-layer (coffee-name stmode tempmode texture? polychrome? art-color ppdecaf? opmode brightness contrast lightness saturation))
+                
                 (if  (eqv? ppdecaf? TRUE) 
                     (begin
                         ;(gimp-message "line 486")
@@ -506,6 +566,10 @@
                     )
                 )
             )
+            (begin
+                (gimp-drawable-set-name sobel-layer (coffee-name stmode tempmode texture? polychrome? art-color ppdecaf? opmode brightness contrast lightness saturation))
+                        
+            )
         )
         ;(gimp-message "line 508")
         (gimp-image-undo-group-end img)
@@ -528,18 +592,18 @@
     "RGB*"
     SF-IMAGE            "The Image"             0
     SF-DRAWABLE         "The Layer"             0
-    SF-OPTION           "Water Temperature"    '("80 deg C" "85 deg C" "90 deg C" "95 deg C")
-    SF-TOGGLE           "Post Processing Decaffeinator"          FALSE
+    SF-OPTION           "Water Temperature (base image fuzziness)"    '("80 deg C" "85 deg C" "90 deg C" "95 deg C" "97 degC " "98 degC")
+    SF-TOGGLE           "Post Processing Decaffeinator"                 FALSE
     SF-TOGGLE           "Flatten Image"        TRUE
     SF-TOGGLE           "Texture"              TRUE
     SF-TOGGLE           "Polychromatic"        FALSE
-    SF-COLOR            "Line Art Color"      '(220 219 219)  ;220 219 219
+    SF-COLOR            "Line Art Color"      '(220 217 219)  ;220 219 219
     SF-OPTION           "Art Style"            '("Java" "Capuccino" "Expresso" "Mocha" "Latte")
     SF-OPTION           "Adjustment"           '("Automatic" "Manual")
     SF-ADJUSTMENT       "Brightness"                 '(10 -127 127 1 10 0 0)
-    SF-ADJUSTMENT       "Contrast"                   '(-9 -127 127 1 10 0 0)
-    SF-ADJUSTMENT       "Lightness"                  '(100 -100 100 1 10 0 0)
-    SF-ADJUSTMENT       "Saturation"                 '(-70 -100 100 1 10 0 0)
+    SF-ADJUSTMENT       "Contrast"                   '(22 -127 127 1 10 0 0) ; was -9
+    SF-ADJUSTMENT       "Lightness"                  '(20 -100 100 1 10 0 0)
+    SF-ADJUSTMENT       "Saturation"                 '(-10 -100 100 1 10 0 0)
 )
 
 ;The technique may not be effective when used on images with large areas of high saturation.\
