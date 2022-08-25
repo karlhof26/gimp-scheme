@@ -36,41 +36,107 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(define (script-fu-match-colors img drawable master-img)
+(define (script-fu-match-colors img drawable master-img decompose)
   (let* (
             (width (car (gimp-drawable-width drawable)))
             (height (car (gimp-drawable-height drawable)))
-            (master-img (car (gimp-image-duplicate master-img)))
+            (master-img2 (car (gimp-image-duplicate master-img)))
             (layer-copy 0)
             (decomposed-new 0)
             (decomposed-old 0)
             (layers 0)
+            
+            (buffer)
+            (layer-copy1 0)
+            (layer-copy2 0)
+            (decomposetype "")
         )
         
         ; Start undo group    
         (gimp-image-undo-group-start img)
-        (gimp-image-undo-group-start master-img)
+        ;(gimp-image-undo-group-start master-img)
         
-        ;Add checks to make sure each image only has a single layer.
+        (cond
+            ((= decompose 0)
+                (set! decomposetype "YCbCr_ITU_R470_256")
+            )
+            ((= decompose 1)
+                (set! decomposetype "LCH")
+            )
+            ((= decompose 2)
+                (set! decomposetype "RGB")
+            )
+            ((= decompose 3)
+                (set! decomposetype "HSL")
+            )
+            ((= decompose 4)
+                (set! decomposetype "YCbCr_ITU_R709_256")
+            )
+            (else 
+                (set! decomposetype "YCbCr_ITU_R470")
+            ); 
+        )
+        ;Add checks to make sure each image only has a single layer.  
+        ;(gimp-message (number->string width))
         
-        ;Step 1
+        ; step1
         (gimp-image-scale master-img width height)
+        ;(gimp-image-scale master-img 50 50)
+        
+        ;Step 0
+        (gimp-selection-all img)
+        (set! layer-copy (car (gimp-layer-new master-img width height RGBA-IMAGE "layer-copie" 100 LAYER-MODE-NORMAL)))
+        (gimp-image-insert-layer master-img layer-copy 0 1)
+        ;(gimp-message "step0.1")
+        (set! buffer (car (gimp-edit-named-copy-visible img "jpg buffer")))
+        ;(gimp-message "step0.2")
+        (set! layer-copy (car (gimp-edit-named-paste layer-copy buffer TRUE)))
+        
+        ;(set! layer-copy2 (car (gimp-layer-new master-img width height RGBA-IMAGE "layer-copy2" 100 LAYER-MODE-NORMAL)))
+        ;(gimp-image-insert-layer master-img layer-copy2 0 -1)
+        ;(set! layer-copy2 (car (gimp-floating-sel-anchor layer-copy)))
+        
+        ;(layer (car (gimp-image-flatten new-image)))
+        ;(gimp-displays-flush)
+        
+        
+        
+        ;(set! layer-copy (car (gimp-layer-new-from-drawable drawable master-img)))
+        ;(gimp-image-insert-layer master-img layer-copy 0 -1)
+        ;(gimp-item-set-name layer-copy2 "master-img layercopy")
+        (gimp-item-set-name layer-copy "master-img layercopy crash now")
+        ;(gimp-display-new master-img)
+        ;(gimp-displays-flush)
+        ;(quit)
         
         ;Step 2
-        (gimp-image-convert-indexed master-img CONVERT-DITHER-NONE CONVERT-PALETTE-GENERATE 256
-                                                     FALSE TRUE "")
+        ;(gimp-message "step2")
+        (gimp-image-convert-indexed master-img CONVERT-DITHER-FS CONVERT-PALETTE-GENERATE 256  ; was 256
+                                                     FALSE TRUE "xkh") ; was convert dither-none
+        
         
         ;Step 3
         ;Check that copy returned true
-        (set! layer-copy (car (gimp-layer-new-from-drawable drawable master-img)))
-        (gimp-image-insert-layer master-img layer-copy 0 -1)
+        
+        ;(gimp-displays-flush)
+        ;(quit)
         
         ;Step 4
+        ;(gimp-message "step4")
         (gimp-image-convert-rgb master-img)
+        ;(gimp-image-raise-item master-img layer-copy)
         (set! layer-copy (car (gimp-image-flatten master-img)))
+        
+        ;(gimp-displays-flush)
+        ;(quit)
+        
         (set! decomposed-new (car (plug-in-decompose RUN-NONINTERACTIVE
                                                  master-img layer-copy
-                                                 "YCbCr_ITU_R470_256" TRUE)))
+                                                 decomposetype TRUE)))
+        
+        
+        (gimp-displays-flush)
+        ;(quit)
         
         ;(gimp-image-delete master-img)  ;We are done with this copy
         
@@ -78,64 +144,77 @@
         (set! drawable (car (gimp-image-flatten img)))
         (set! decomposed-old (car (plug-in-decompose RUN-NONINTERACTIVE
                                                  img drawable
-                                                 "YCbCr_ITU_R470_256" TRUE)))
+                                                 decomposetype TRUE)))
         
         ;Step 6
         (set! layers (cadr (gimp-image-get-layers decomposed-old)))
         (gimp-image-remove-layer decomposed-old (aref layers 1))
-        (gimp-image-remove-layer decomposed-old (aref layers 2))
+        (gimp-image-remove-layer decomposed-old (aref layers 2)) 
+        
+        
         
         ;Step 7 and 8
         (set! layers (cadr (gimp-image-get-layers decomposed-new)))
-        (set! layer-copy (car (gimp-layer-new-from-drawable (aref layers 1)
+        (set! layer-copy1 (car (gimp-layer-new-from-drawable (aref layers 1)
                                                         decomposed-old)))
-        (gimp-image-insert-layer decomposed-old layer-copy 0 1)
+        (gimp-image-insert-layer decomposed-old layer-copy1 0 1)
         ;(plug-in-blur RUN-NONINTERACTIVE decomposed-old layer-copy)
-        (plug-in-mblur RUN-NONINTERACTIVE decomposed-old layer-copy 0 3 0 1 1)
+        (plug-in-mblur RUN-NONINTERACTIVE decomposed-old layer-copy1 0 5 0 (/ width 2) (/ height 2))
+        ;(gimp-drawable-threshold layer-copy1 HISTOGRAM-VALUE 0.40 0.95)
+        (gimp-drawable-levels-stretch layer-copy1)
         
-        (set! layer-copy (car (gimp-layer-new-from-drawable (aref layers 2)
+        (set! layer-copy2 (car (gimp-layer-new-from-drawable (aref layers 2)
                                                          decomposed-old)))
-        (gimp-image-insert-layer decomposed-old layer-copy 0 2)
-        ;(plug-in-blur RUN-NONINTERACTIVE decomposed-old layer-copy)
-        (plug-in-mblur RUN-NONINTERACTIVE decomposed-old layer-copy 0 3 0 1 1)
+        (gimp-image-insert-layer decomposed-old layer-copy2 0 2)
+        (plug-in-blur RUN-NONINTERACTIVE decomposed-old layer-copy2)
+        (gimp-drawable-levels-stretch layer-copy2)
+        (gimp-drawable-levels layer-copy2 HISTOGRAM-VALUE 0.0 1.0 TRUE 1.65 0.0 1.0 FALSE)
+        ;(plug-in-mblur RUN-NONINTERACTIVE decomposed-old layer-copy 0 5 0 1 1)
         
-        ;(gimp-image-delete decomposed-new)  ;We are done with this image
+        ;(gimp-image-delete decomposed-new)  ;We are done with this image 
+        
+        ;(gimp-displays-flush)
+        ;(gimp-display-new decomposed-old)
+        ;(gimp-display-new decomposed-new)
+        ;(gimp-displays-flush)
+        ;(quit)
         
         ;Step 9
         (set! layers (cadr (gimp-image-get-layers decomposed-old)))
         (set! decomposed-new (car (plug-in-drawable-compose RUN-NONINTERACTIVE
                                                         decomposed-old
-                                                        drawable ; inserted
+                                                        drawable ; not used
                                                         (aref layers 0)
                                                         (aref layers 1)
                                                         (aref layers 2)
                                                         ;-1
-                                                        "YCbCr_ITU_R470_256" ; HSL
+                                                        "HSL"
                                                          )))
         
-      ;  (gimp-image-delete decomposed-old)  ;We are done with this image
-        (gimp-display-new decomposed-old)
+        (gimp-image-delete decomposed-old)  ;We are done with this image
+      ;  (gimp-display-new decomposed-old)
         (gimp-display-new decomposed-new)
         
         (gimp-image-undo-group-end img)
-        (gimp-image-undo-group-end master-img)
+        ;(gimp-image-undo-group-end master-img)
         (gimp-displays-flush)
   )
 )
 
 (script-fu-register "script-fu-match-colors"
-    "Match Colors..."
-    "Match the colors of a single layer image to the colors of another single layer image. \nfile: cozens-match-colours_02.scm"
+    "Combine Mix Colors..."
+    "Combine the colors of a single layer image to the colors of another single layer image. Note that elements from the source image are transferred. The images are mixed together. e.g. same image with a complex curve applied mixed with original produces a mixture. \nfile: cozens-match-colours_02.scm"
     "Kevin Cozens <kevin@ve3syb.ca>"
     "Kevin Cozens"
     "September 12, 2007"
     "RGB*"
     SF-IMAGE    "Image"             0
     SF-DRAWABLE "Drawable"          0
-    SF-IMAGE    "Image to match"    0
+    SF-IMAGE    "Image to fetch colors from (mix)"    0
+    SF-OPTION  "Decompose Type"  '("YCbCr_ITU_R470_256" "LCH" "RGB" "HSL" "YCbCr_ITU_R709_256")
 )
 
 (script-fu-menu-register "script-fu-match-colors"
-                            "<Image>/Script-Fu/Toolbox/Color/")
+                            "<Toolbox>/Script-Fu/Colors/")
 
 ; end of script
