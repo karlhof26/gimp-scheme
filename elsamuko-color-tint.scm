@@ -1,5 +1,5 @@
 ; The GIMP -- an image manipulation program ;
-; Copyright (C) 1995 Spencer Kimball and Peter Mattis
+; Copyright (C) 1995 Spencer Kimball and Peter Mattis 
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ; http://www.gnu.org/licenses/gpl-3.0.html
-;
+; 
 ; Copyright (C) 2008 elsamuko <elsamuko@web.de>
 ;
 
@@ -85,7 +85,7 @@
     (gimp-layer-set-mode tint-layer LAYER-MODE-SCREEN)
     (gimp-layer-set-opacity tint-layer opacity)
     
-    ;get saturation layer
+    ;get saturation layer 
     (set! imgHSV (car (plug-in-decompose 1 imgTMP copy-layer "HSV" TRUE)))
     (set! layersHSV (gimp-image-get-layers imgHSV))
     (set! layerS (aref (cadr layersHSV) 1))
@@ -114,8 +114,7 @@
 
 (script-fu-register "elsamuko-color-tint"
                     "Elsamuko Color Tint"
-                    "Add color tint layer.
- \n file: elsamuko-color-tint.scm"
+                    "Add color tint layer.\nfile: elsamuko-color-tint.scm"
                     "elsamuko <elsamuko@web.de>"
                     "elsamuko"
                     "16/04/10"
@@ -128,4 +127,4 @@
                     SF-TOGGLE      "Desaturate Image"    FALSE
                     )
 
-(script-fu-menu-register "elsamuko-color-tint"  "<Toolbox>/Script-Fu/Toolbox/Color")
+(script-fu-menu-register "elsamuko-color-tint"  "<Toolbox>/Script-Fu/Colors")
