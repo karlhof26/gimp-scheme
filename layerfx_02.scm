@@ -25,8 +25,10 @@
             (result 0)
             ;dropped 'leading the #
             ; must allocate memory for the vectors - or they will be limited to 10
+            ;(lineArray (make-vector 8 0.0))
+            ;(*newpoint* (cons-array 4 'double))
             
-            (modenumbersk '(0 1 3 6 4 5 16 17 18 19 20 37 38 39 8 9 10 11 12 13 14 33 26 31 63 63))
+            (modenumbersk '(0 1 3 6 4 5 16 17 18 19 20 37 38 39 8 9 10 11 12 13 14 33 26 31 63 63 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28))
             
             (k '(1 2 3 45))
             (res 0)
@@ -42,7 +44,7 @@
         ;(gimp-message "crashing here maybe not...returning")
         ;(set! res (+ res 24))
         
-        (result)
+        result
         
     )
 )
@@ -1002,7 +1004,7 @@
         
         ;(gimp-selection-layer-alpha drawable)
         (gimp-image-select-item img CHANNEL-OP-ADD drawable)
-        (gimp-message "emboss line 915")
+        ;(gimp-message "emboss line 1007")
         
         
         
@@ -1011,13 +1013,13 @@
         )
         (set! alphaSel (car (gimp-selection-save img)))
         ;(gimp-displays-flush)
-        ;(gimp-message "emboss line 941")
+        ;(gimp-message "emboss line 1016")
         
         
         (cond
             ((= style 0)
                 (begin
-                    (gimp-message "style 0")
+                    ;(gimp-message "emboss line 1022 style 0")
                     (draw-blurshape img bumpmaplayer size size alphaSel 0)
                 )
             )
@@ -1034,7 +1036,7 @@
             )
             (else
                 (begin
-                    (gimp-message "emboss line 1013")
+                    ;(gimp-message "emboss line 1039")
                     (set! halfsizef (floor (/ size 2)))
                     (set! halfsizec (- size halfsizef))
                     (gimp-selection-all img)
@@ -1045,12 +1047,12 @@
                 )
             )
         )
-        (gimp-message "emboss line 1024")
-        (gimp-displays-flush)
+        ;(gimp-message "emboss line 1050")
+        ;(gimp-displays-flush)
         ;(quit)
         
         (gimp-image-select-item img CHANNEL-OP-ADD bumpmaplayer)
-        (gimp-message "emboss line 1029")
+        ;(gimp-message "emboss line 1055")
         ;(gimp-selection-all img)
         
         (gimp-context-set-foreground '(127 127 127))
@@ -1061,20 +1063,20 @@
         
         (if (> surfacecontour 0)
             (begin
-                (gimp-message "line1040")
+                ;(gimp-message "emboss line 1066")
                 (apply-contour-kh bumpmaplayer 0 surfacecontour)
             )
         )
-        (gimp-message "emboss line 1044")
-        (gimp-message (number->string style))
-        (gimp-message (number->string surfacecontour))
-        
-        (gimp-message (number->string angle))
-        (gimp-message (number->string altitude))
-        (gimp-message (number->string depth))
-        (gimp-message (number->string direction))
-        (gimp-message "emboss line 1051")
-        (gimp-displays-flush)
+        ;(gimp-message "emboss line 1070")
+        ;(gimp-message (number->string style))
+        ;(gimp-message (number->string surfacecontour))
+        ; 
+        ;(gimp-message (number->string angle))
+        ;(gimp-message (number->string altitude))
+        ;(gimp-message (number->string depth))
+        ;(gimp-message (number->string direction))
+        ;(gimp-message "emboss line 1078")
+        ;(gimp-displays-flush)
         
         
         (gimp-selection-none img)
@@ -1082,46 +1084,46 @@
         
         (if (< angle 0)
             (begin
-                (gimp-message "angle change")
+                (gimp-message "emboss line 1087 angle change")
                 (set! angle (+ angle 360))
             )
         )
         
-        (gimp-message "emboss line 1066")
+        ;(gimp-message "emboss line 1092")
         ;(plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 0)
         (plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 1)
-        (gimp-displays-flush)
+        ;(gimp-displays-flush)
         ;(quit)
         
         (gimp-image-select-item img CHANNEL-OP-ADD bumpmaplayer)
         (gimp-message "emboss line 1073")
         (if (> glosscontour 0)
             (begin
-                (gimp-message "gloss contour")
+                (gimp-message "emboss line 1102 gloss contour")
                 (apply-contour-kh highlightmask 0 glosscontour)
                 (apply-contour-kh highlightlayer 0 glosscontour)
             )
             (begin
-                (gimp-message "No gloss")
+                ;(gimp-message "emboss line 1107 No gloss")
             )
         )
         (if (> soften 0)
             (begin
-                (gimp-message "soften blur")
+                ;(gimp-message "emboss line 1112 soften blur")
                 (plug-in-gauss-rle 1 img highlightmask soften 1 1)
             )
         )
         (if (= invert TRUE) ;;(> invert 0) 
             (begin
-                (gimp-message "invert")
+                ;(gimp-message "emboss line 1118 invert")
                 (gimp-drawable-invert highlightmask FALSE)
             )
             (begin
-                (gimp-message "invert FALSE")
+                ;(gimp-message "emboss line 1122 invert FALSE")
             )
         )
-        (gimp-message "emboss line 1099")
-        (gimp-displays-flush)
+        ;(gimp-message "emboss line 1125")
+        ;(gimp-displays-flush)
         ;(quit)
         
         (gimp-channel-combine-masks shadowmask highlightmask CHANNEL-OP-SUBTRACT 0 0)
@@ -1129,23 +1131,23 @@
         ;    (gimp-channel-combine-masks shadowmask bumpmaplayer CHANNEL-OP-ADD 0 0)
         ;)
         
-        (gimp-message "emboss line 1106")
+        ;(gimp-message "emboss line 1134")
         (gimp-displays-flush)
         ;(quit)
         
         (gimp-drawable-levels highlightmask HISTOGRAM-VALUE 0.4 1.0 TRUE 1.0 0.0 1.0 TRUE)  ; was 0 127 255 1.0 0 255 ; 0.5 1.0 TRUE 1.0...
         (gimp-drawable-levels shadowmask HISTOGRAM-VALUE 0.0 0.55 TRUE 1.3 0.0 1.0 TRUE) ; was 0 0 127 1.0 255 0; 0.0 0.49 TRUE 1.0...
         (gimp-drawable-levels highlightmask HISTOGRAM-VALUE 0.0 1.0 TRUE 1.9 0.0 1.0 TRUE)
-        (gimp-displays-flush)
+        ;(gimp-displays-flush)
         ;(quit)
         
         (gimp-selection-load alphaSel)
-        (gimp-displays-flush)
+        ;(gimp-displays-flush)
         ;(quit)
         
         (if (= style 0)
             (begin
-                (gimp-message "emboss line 1128 style0 grow")
+                ;(gimp-message "emboss line 1150 style0 grow")
                 (gimp-selection-grow img size)
                 
                 (gimp-context-set-foreground '(255 255 255))
@@ -1155,7 +1157,7 @@
             (begin
                 (if (or (= style 2) (= style 3))
                     (begin
-                        (gimp-message "style 2 or 3")
+                        ;(gimp-message "emboss line 1160 style 2 or 3")
                         
                                 
                         
@@ -1179,18 +1181,18 @@
                 )
             )
             (begin
-                (gimp-message "emboss line 1162 style1 no grow needed")
+                ;(gimp-message "emboss line 1184 style1 no grow needed")
                 ;(gimp-selection-grow img size)
                 
                 (gimp-context-set-foreground '(255 255 255))
                 (gimp-edit-fill shadowmask FILL-FOREGROUND)
             )
         )
-        (gimp-message "line1169 emboss")
+        ;(gimp-message "emboss line 1191")
         (gimp-displays-flush)
         ;(quit)
         
-        (gimp-message "emboss line 1127")
+        ;(gimp-message "emboss line 1195")
         (gimp-selection-invert img)
         
         (gimp-context-set-foreground '(0 0 0))
@@ -1224,23 +1226,23 @@
         (gimp-displays-flush)
         ;(quit)
         
-        (gimp-message "emboss 1205")
+        ;(gimp-message "emboss line 1229")
         (gimp-selection-none img)
         
         ; can't remove shadowlayer - need it an masks for follow-on scripts and actions
         (gimp-image-remove-layer img bumpmaplayer)
         
         
-        (gimp-displays-flush)
+        ;(gimp-displays-flush)
         ;(quit)
         
-        (gimp-message "emboss 1215")
+        ;(gimp-message "emboss line 1239")
         (if (= merge TRUE)
           (begin
-            (gimp-message "emboss 1218")
+            ;(gimp-message "emboss line 1242")
             (if (= style 1)
                 (begin
-                    ;(gimp-message "emboss line 1081 style 1")
+                    ;(gimp-message "emboss line 1245 style 1")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (begin
@@ -1253,7 +1255,7 @@
                     (set! highlightlayer (car (gimp-image-merge-down img highlightlayer 0)))
                     (gimp-drawable-set-name highlightlayer layername)
                     (gimp-layer-add-mask highlightlayer alphamask)
-                    (gimp-message "emboss line 1234")
+                    ;(gimp-message "emboss line 1258")
                     (gimp-layer-remove-mask highlightlayer 0)
                     
                     (if (> origmask -1)
@@ -1263,7 +1265,7 @@
                     )
                 )
                 (begin
-                    (gimp-message "emboss line 1244 merge style 0 or >=2")
+                    ;(gimp-message "emboss line 1268 merge style 0 or >=2")
                     (set! origmask (car (gimp-layer-get-mask drawable)))
                     (if (> origmask -1)
                         (gimp-layer-remove-mask drawable 0)
@@ -1277,11 +1279,11 @@
             )
           )
           (begin
-                (gimp-message "emboss 1258 No merge")
+                ;(gimp-message "emboss line 1282 No merge")
           )
         )
         
-        (gimp-message "emboss 1262")
+        ;(gimp-message "emboss line 1286")
         (gimp-drawable-brightness-contrast highlightlayer 0.47 0.45)
         
         (gimp-context-set-foreground origfgcolor)
@@ -1739,7 +1741,7 @@
             (gradslopeoffsetpercent 0)
             
             (listk '(1 2 5 11 21 34 12 18 2 4 11 12 13 14 13 133 1333 12 11 8 4))
-            (modekk '(0 1 3 6 4 5 16 17 18 19 20 37 38 39 40 32 42 43 44 45 46 47 57 58 62 63 28 27))
+            (modekk '(0 1 3 6 4 5 16 17 18 19 20 37 38 39 40 32 42 43 44 45 46 47 57 58 62 63 28 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 28 28 28 28 28 28 28 28 28 28 28 28 28 28))
             
             
           )
@@ -1788,9 +1790,9 @@
         ;(gimp-message (number->string angkh))
         ;(gimp-message "G x calcs")
         ;(gimp-message (number->string offsetX))
-        (if (< (abs offsetX) (/ gradsize 15))
+        (if (< (abs offsetX) (/ gradsize 25)) ; was15
             (begin
-                ;(gimp-message "G offset v close to zero so add a bit=1") ; this messes with the angle a bit but enables a difference
+                (gimp-message "G offset v close to zero so add a bit=1") ; this messes with the angle a bit but enables a difference
                 (set! offsetX (+ offsetX 1))
                 (set! x1 (+ (- cx offsetX) (car drwoffsets)))
                 (set! x2 (+ (+ cx offsetX) (car drwoffsets)))
@@ -1854,7 +1856,7 @@
         (gimp-message (number->string gradblendmode))
         (gimp-message (number->string fingrad))
         (gimp-message "paintmode=")
-        ;(gimp-message (number->string paintmode))
+        (gimp-message (number->string paintmode))
     
         ;(set! mappaintmode (get-blending-mode paintmode))
         (set! mappaintmode (list-ref modekk paintmode))
@@ -1922,9 +1924,9 @@
             (begin
                 ;(gimp-message "grad type 2 or 3")
                 (set! x1 (+ (+ cx 0) (car drwoffsets)))
-                (set! y1 (+ (- cy (/ gradsize 5)) (cadr drwoffsets)))
-                (set! x2 (+ (+ cx (* gradsize 0.8)) (car drwoffsets)))
-                (set! y2 (+ (+ cy (* gradsize 0.75)) (cadr drwoffsets)))
+                (set! y1 (+ (- cy (* gradsize 0.001)) (cadr drwoffsets)))
+                (set! x2 (+ (+ cx (* gradsize 0.80)) (car drwoffsets)))
+                (set! y2 (+ (+ cy (* gradsize 0.80)) (cadr drwoffsets)))
                 (if (< y1 1)
                     (set! y1 1)
                 )
@@ -2209,7 +2211,7 @@
             SF-OPTION       "Style"         '("Outer Bevel" "Inner Bevel" "Emboss" "Pillow Emboss")
             SF-ADJUSTMENT   "Depth"         '(3 1 65 1 10 0 0)
             SF-OPTION       "Direction"     '("Up" "Down")
-            SF-ADJUSTMENT   "Size"          '(5 0 250 1 10 0 0) 
+            SF-ADJUSTMENT   "Size"          '(20 0 250 1 10 0 0) 
             SF-ADJUSTMENT   "Soften"        '(0 0 16 1 2 0 0)
             SF-ADJUSTMENT   "Angle"         '(120 -180 180 1 10 1 0)
             SF-ADJUSTMENT   "Altitude"      '(30 0 90 1 10 1 0)
@@ -2297,7 +2299,7 @@
             SF-ADJUSTMENT   "Center X"          '(500 1 262144 1 10 0 1)
             SF-ADJUSTMENT   "Center Y"          '(400 1 262144 1 10 0 1)
             SF-ADJUSTMENT   "Gradient Angle"    '(90 -180 180 1 10 0 1)
-            SF-ADJUSTMENT   "Gradient Width"    '(120 0.1 262144 1 10 1 1)
+            SF-ADJUSTMENT   "Gradient Width"    '(350 0.1 262144 1 10 1 1)
             SF-TOGGLE       "Merge with layer"    FALSE
 )
 ;;   0       1           3          6           4         5        16      17     18            19             20              21           6            7         8            9            10          11      12          13      14
