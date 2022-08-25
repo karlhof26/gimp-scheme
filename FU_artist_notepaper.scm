@@ -99,8 +99,8 @@
     (gimp-selection-none img)
     (gimp-image-insert-layer img layer-copy1 0 -1)
     (gimp-image-insert-layer img layer-copy2 0 -1)
-    (gimp-desaturate layer-copy2)
-    (gimp-desaturate layer-copy1)
+    (gimp-drawable-desaturate layer-copy2 0)
+    (gimp-drawable-desaturate layer-copy1 0)
     (cond
       ((eqv? bg-type 0)
             (gimp-edit-fill layer-copy1 FILL-WHITE)
@@ -155,7 +155,7 @@
     (gimp-context-set-foreground bg-color)
     (gimp-drawable-fill layer-color2 FILL-FOREGROUND)
     (gimp-floating-sel-anchor (car (gimp-edit-paste color-mask2 0)))
-    (gimp-invert color-mask2)
+    (gimp-drawable-invert color-mask2 FALSE)
     
     (gimp-layer-set-mode layer-copy2 LAYER-MODE-SCREEN-LEGACY)
     (gimp-layer-set-opacity layer-copy2 75)

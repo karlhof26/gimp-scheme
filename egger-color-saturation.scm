@@ -5,7 +5,7 @@
 ; Color Saturation script for GIMP 2.4
 ; Original author: Martin Egger (martin.egger@gmx.net)
 ; (C) 2005, Bern, Switzerland 
-;
+; 
 ; Tags: saturation, color 
 ;
 ;
@@ -45,35 +45,35 @@
             (minus 1.1)
             (ColorLayer (car (gimp-layer-copy inLayer TRUE)))
         )
-        (gimp-message "ColorSat start")
-        (set! factor (* InIntensity .50))
+       ; (gimp-message "ColorSat start")
+        (set! factor (* InIntensity 0.50))
         (set! plus (+ 1 (* 2 factor)))
         (set! minus (* -1 factor))
         
-        (gimp-message (number->string factor))
-        (gimp-message (number->string plus))
-        (gimp-message (number->string minus))
+       ; (gimp-message (number->string factor))
+       ; (gimp-message (number->string plus))
+       ; (gimp-message (number->string minus))
         (if (> plus 2)
             (begin
-                (gimp-message "plus gt 2 out of range")
+                ;(gimp-message "plus gt 2 out of range")
                 (set! plus 2.0)
             )
         )
        (if (< plus -2)
             (begin
-                (gimp-message "plus lt -2 out of range")
+                ;(gimp-message "plus lt -2 out of range")
                 (set! plus -2.0)
             )
         )
         (if (> minus 2)
             (begin
-                (gimp-message "minus gt 2 out of range")
+                ;(gimp-message "minus gt 2 out of range")
                 (set! minus 2.0)
             )
         )
         (if (< minus -2)
             (begin
-                (gimp-message "minus lt -2 out of range")
+                ;(gimp-message "minus lt -2 out of range")
                 (set! minus -2.0)
             )
         )
@@ -108,7 +108,7 @@
 ; Register the function with the GIMP
 ;
 (script-fu-register "script-fu-eg-colorsaturation-a"
-    "<Toolbox>/Script-Fu/Toolbox/Color/Eg Color Saturation A"
+    "<Toolbox>/Script-Fu/Colors/Eg Color Saturation A"
     "Saturate or desaturate color images. \nfile:egger-color-saturation.scm"
     "Martin Egger"
     "2005, Martin Egger, Bern, Switzerland"

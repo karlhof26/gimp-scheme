@@ -11,15 +11,11 @@
 ; Installation: 
 ; This script should be placed in the user or system-wide script folder.
 ;
-;	Windows Vista/7/8)
+;	Windows 10
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
-;	
-;	Windows XP
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;	C:\Users\YOUR-NAME\.gimp-2.10\scripts
+; 
 ;    
 ;	Linux
 ;	/home/yourname/.gimp-2.8/scripts  
@@ -113,7 +109,7 @@
 )
 
 (script-fu-register "FU-artist-water-paint-effect"
-    "<Image>/Script-Fu/Artist/WaterColor"
+    "<Toolbox>/Script-Fu/Artist/WaterColor"
     "Draw with water paint effect \n file:FU-artist_water-paint-effect.scm"
     "Iccii <iccii@hotmail.com> & karlhof26"
     "Iccii"
