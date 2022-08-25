@@ -9,15 +9,12 @@
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
-;	Windows Vista/7/8)
+;	Windows 10
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
-;	
-;	Windows XP
+;	C:\Users\YOUR-NAME\.gimp-2.10\scripts
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;	C:\Documents and Settings\yourname\.gimp-2.10\scripts   
 ;    
 ;	Linux
 ;	/home/yourname/.gimp-2.8/scripts  
@@ -28,18 +25,17 @@
 ; ALSO NEED TO COPY:
 ; ev_paletknife2.txt
 ;
-;	Windows Vista/7
+;	Windows 10
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\gimpressionist\presets
 ;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\gimpressionist\presets 
-;	
-;	Windows XP
+;	C:\Users\YOUR-NAME\.gimp-2.10\gimpressionist\presets 
+;	or
 ;	C:\Program Files\GIMP 2\share\gimp\2.0\gimpressionist\preset
 ;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\gimpressionist\presets  
+;	C:\Documents and Settings\yourname\.gimp-2.10\gimpressionist\presets  
 ;    
 ;	Linux
-;	/home/yourname/.gimp-2.8/gimpressionist/presets 
+;	/home/yourname/.gimp-2.10/gimpressionist/presets 
 ;	or
 ;	Linux - system-wide
 ;	/usr/share/gimp/2.0/gimpressionist/Presets 
@@ -64,11 +60,16 @@
 ; Original information 
 ; Palette Knife image script  for GIMP 2.2
 ; Copyright (C) 2007 Eddy Verlinden <eddy_verlinden@hotmail.com>
+;
+; Update by karlhof26
+; The orginal presets are around on the web but I have used the best default values to ensure no dependencies.
 ;==============================================================
 
 (define (FU-paletteknife
         img
         drawable
+        gimpressOption
+        gimpressName
         inMerge
     )
     
@@ -94,8 +95,26 @@
     (gimp-edit-copy drawable)
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-temp1 0)))
     
-    ;;(plug-in-gimpressionist 1 img layer-temp1 "ev_paletknife2.txt") 
-    (plug-in-gimpressionist 1 img layer-temp1 "ev_paletknife2")
+    
+    
+    
+    (cond
+        (( = gimpressOption 0)
+            (plug-in-gimpressionist 1 img layer-temp1 "Wormcan")
+        )
+        (( = gimpressOption 1)
+            (plug-in-gimpressionist 1 img layer-temp1 "Felt-marker")
+        )
+        (( = gimpressOption 2)
+            (plug-in-gimpressionist 1 img layer-temp1 "Line-art-2")
+        )
+        (( = gimpressOption 3)
+            (plug-in-gimpressionist 1 img layer-temp1 "ev_paletknife2")
+        )
+        (( = gimpressOption 4)
+            (plug-in-gimpressionist 1 img layer-temp1 gimpressName)
+        )
+    )
     ;(gimp-levels layer-temp1 0 0 255 0.5 0 255) 
     (gimp-drawable-levels layer-temp1 HISTOGRAM-VALUE 0.0 1.0 TRUE 0.5 0.0 1.0 TRUE)
     
@@ -111,6 +130,8 @@
     (gimp-image-select-item img CHANNEL-OP-REPLACE old-selection)
     (gimp-image-remove-channel img old-selection)
     
+    (gimp-drawable-levels-stretch layer-temp1)
+    
     (if (= inMerge TRUE)(gimp-image-merge-visible-layers img EXPAND-AS-NECESSARY))
     (gimp-image-undo-group-end img)
     (gimp-displays-flush)
@@ -119,13 +140,15 @@
 
 (script-fu-register "FU-paletteknife"
     "<Toolbox>/Script-Fu/Artist/Palette Knife"
-    "Creates a drawing effect like made with a palette knife, based on the Gimpressionist. \n file:FU_artist_palette-knife"
+    "Creates a drawing effect like made with a palette knife, based on the Gimpressionist. Gimpressionist option can now be selected. The ev_paletknife2 option needs to be fetched or created. \n file:FU_artist_palette-knife"
     "Eddy Verlinden <eddy_verlinden@hotmail.com>"
     "Eddy Verlinden"
     "2007, juli"
     "*"
     SF-IMAGE      "Image"                           0
     SF-DRAWABLE   "Drawable"                        0
+    SF-OPTION     "Gimpressionist option"           '("Wormcan" "Felt-marker" "Line-art-2" "ev_paletknife2" "Setting below")
+    SF-STRING     "Gimpressionist setting name (use with option)"      "Dotify"
     SF-TOGGLE     "Merge layers when complete?"     FALSE
 )
 
