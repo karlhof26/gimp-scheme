@@ -9,15 +9,11 @@
 ; Installation:
 ; This script should be placed in the user or system-wide script folder. 
 ;
-;   Windows Vista/7/8)
+;   Windows 10
 ;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
 ;   or
-;   C:\Users\YOUR-NAME\.gimp-2.8\scripts
+;   C:\Users\YOUR-NAME\.gimp-2.10\scripts
 ;   
-;   Windows XP
-;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;   or
-;   C:\Documents and Settings\yourname\.gimp-2.8\scripts   
 ;    
 ;	Linux
 ;	/home/yourname/.gimp-2.8/scripts  
@@ -61,7 +57,7 @@
     drawable        
     Dbord           
     detail          
-    length
+    lengthIn
     amount
     angle
     canvas?
@@ -77,9 +73,9 @@
             (old-selection (car (gimp-selection-save img)))
             (layer-copy0 (car (gimp-layer-copy drawable TRUE)))
             (dummy (if (< 0 (car (gimp-layer-get-mask layer-copy0)))
-                (gimp-layer-remove-mask layer-copy0 DISCARD)))
+                (gimp-layer-remove-mask layer-copy0 MASK-DISCARD)))
             (layer-copy1 (car (gimp-layer-copy layer-copy0 TRUE)))
-            (length (if (= length 1) 0 length))
+            (lengthUse (if (= lengthIn 1) 0 lengthIn))
             (layer-copy2 (car (gimp-layer-copy layer-copy0 TRUE)))
             (merged-layer (car (gimp-layer-copy drawable TRUE)))
             (final-layer  (car (gimp-layer-copy drawable TRUE)))
@@ -89,8 +85,8 @@
     (gimp-image-insert-layer img layer-copy2 0 -1)
     (gimp-image-insert-layer img layer-copy1 0 -1)
     
-    (plug-in-mblur TRUE img layer-copy0 0 length angle TRUE TRUE);
-    (plug-in-mblur TRUE img layer-copy0 0 length (+ angle 180) TRUE TRUE)
+    (plug-in-mblur TRUE img layer-copy0 0 lengthUse angle TRUE TRUE);
+    (plug-in-mblur TRUE img layer-copy0 0 lengthUse (+ angle 180) TRUE TRUE)
     
     (plug-in-gauss-iir TRUE img layer-copy1 (- 16 detail) TRUE TRUE)
     (plug-in-edge TRUE img layer-copy1 6.0 0 Dbord)  
@@ -101,7 +97,7 @@
     (if (equal? canvas? TRUE)
         (plug-in-apply-canvas TRUE img merged-layer 0 5)
     )
-    (plug-in-unsharp-mask TRUE img layer-copy0 (+ 1 (/ length 5)) amount 0)
+    (plug-in-unsharp-mask TRUE img layer-copy0 (+ 1 (/ lengthUse 5)) amount 0)
     (set! final-layer (car (gimp-image-merge-down img merged-layer EXPAND-AS-NECESSARY)))
     
     (gimp-image-select-item img CHANNEL-OP-REPLACE old-selection)

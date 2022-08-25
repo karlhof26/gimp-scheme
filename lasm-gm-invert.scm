@@ -114,7 +114,7 @@
 
 (script-fu-register
     "script-fu-gm-color-invert 0"
-    "<Toolbox>/Script-Fu/Toolbox/Color/Lasm's Light Invert"
+    "<Toolbox>/Script-Fu/Colors/Lasm/Lasm's Light Invert"
     "Version 2.0\nLasms color invert effect. This turns the photo into a photo negative without changing the colors and the effect is reversible.
     Cycle through all 3 effects in random order and you will arrive back to the original image \n file:lasm-gm-invert.scm"
     "lasm"
@@ -127,7 +127,7 @@
 
 (script-fu-register
     "script-fu-gm-color-invert 1"
-    "<Toolbox>/Script-Fu/Toolbox/Color/Lasm's Color Only Invert"
+    "<Toolbox>/Script-Fu/Colors/Lasm/Lasm's Color Only Invert"
     "Version 2.0\nLasm's color invert effect. This inverts color only, leaving brightness alone on any RGB image and the effect is reversible.
     Cycle through all 3 effects in random order and you will arrive back to the original image \n file:lasm-gm-invert.scm"
     "lasm"
@@ -140,7 +140,7 @@
 
 (script-fu-register
     "script-fu-gm-color-invert 2"
-    "<Toolbox>/Script-Fu/Toolbox/Color/Lasm's Simple Color Invert"
+    "<Toolbox>/Script-Fu/Colors/Lasm/Lasm's Simple Color Invert"
     "Version 2.0\nLasm's color invert effect. This is vanilla color invert and the effect is reversible.
     Cycle through all 3 effects in random order and you will arrive back to the original image \n file:lasm-gm-invert.scm"
     "lasm"
@@ -153,7 +153,7 @@
 
 (script-fu-register
     "script-fu-gm-color-invert 3"
-    "<Toolbox>/Script-Fu/Toolbox/Color/Lasm's Asymmetric Solarize"
+    "<Toolbox>/Script-Fu/Colors/Lasm/Lasm's Asymmetric Solarize"
     "Version 2.0\nThe solarize effect is irreversible. \n file:lasm-gm-invert.scm"
     "lasm"
     "Copyright 2002-2005, lasm"
@@ -165,7 +165,7 @@
 
 (script-fu-register
     "script-fu-gm-color-invert 4"
-    "<Toolbox>/Script-Fu/Toolbox/Color/Lasm's Vivid V-Invert"
+    "<Toolbox>/Script-Fu/Colors/Lasm/Lasm's Vivid V-Invert"
     "Version 2.0\nProduces a highly saturated version of v-invert. Compare this image with the regular plug-in-vinvert ! Toggle it twice and it will stay in the V-invert mode, but the effect is not reversible to the original image. \nfile:lasm-gm-invert.scm"
     "lasm"
     "Copyright 2002-2005, lasm"
