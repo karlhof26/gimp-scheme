@@ -21,7 +21,8 @@
 
 
 (define (elsamuko-color-tint aimg adraw color opacity saturation blackwhite)
-  (let* ((img (car (gimp-item-get-image adraw)))
+  (let* (
+         (img (car (gimp-item-get-image adraw)))
          (owidth (car (gimp-image-width img)))
          (oheight (car (gimp-image-height img)))
          (tint-layer 0)
@@ -103,7 +104,10 @@
         )
     )
     
+    (gimp-drawable-invert tint-layer-mask FALSE)
     ; tidy up
+    ;(gimp-display-new imgTMP)
+    ;(gimp-display-new imgHSV)
     (gimp-image-delete imgTMP)
     (gimp-image-delete imgHSV)
     (gimp-image-undo-group-end img)
