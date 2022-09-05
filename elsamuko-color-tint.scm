@@ -18,9 +18,9 @@
 ; 
 ; Copyright (C) 2008 elsamuko <elsamuko@web.de>
 ;
+; Strong and inverted option added by karlhof26 2022/08/28
 
-
-(define (elsamuko-color-tint aimg adraw color opacity saturation blackwhite)
+(define (elsamuko-color-tint aimg adraw color opacity saturation blackwhite invertcolorarea strong)
   (let* (
          (img (car (gimp-item-get-image adraw)))
          (owidth (car (gimp-image-width img)))
@@ -55,7 +55,7 @@
     
     ;rise saturation
     (set! copy-layer (car (gimp-image-get-active-layer imgTMP)))
-    (gimp-drawable-hue-saturation copy-layer HUE-RANGE-ALL 0.0 0.0 saturation 0.0)
+    (gimp-drawable-hue-saturation copy-layer HUE-RANGE-ALL 0.0 2.0 saturation 1.0)
     
     ;add tint layer and filter color
     (set! tmp-layer (car (gimp-layer-copy copy-layer FALSE)))
@@ -83,7 +83,25 @@
     (gimp-image-insert-layer img tint-layer 0 0)
     
     ;set modes
-    (gimp-layer-set-mode tint-layer LAYER-MODE-SCREEN)
+    (cond ((= strong 0)
+            (gimp-layer-set-mode tint-layer LAYER-MODE-SCREEN)
+        )
+        ((= strong 1)
+            (gimp-layer-set-mode tint-layer LAYER-MODE-DODGE)
+        )
+        ((= strong 2)
+            (gimp-layer-set-mode tint-layer LAYER-MODE-LUMA-DARKEN-ONLY)
+        )
+        ((= strong 3)
+            (gimp-layer-set-mode tint-layer LAYER-MODE-DARKEN-ONLY)
+        )
+        ((= strong 4)
+            (gimp-layer-set-mode tint-layer LAYER-MODE-LINEAR-BURN)
+        )
+        (else
+            (gimp-layer-set-mode tint-layer LAYER-MODE-BURN)
+        )
+    )
     (gimp-layer-set-opacity tint-layer opacity)
     
     ;get saturation layer 
@@ -103,8 +121,41 @@
            (gimp-drawable-desaturate adraw DESATURATE-LUMINANCE)
         )
     )
-    
     (gimp-drawable-invert tint-layer-mask FALSE)
+    (if (= invertcolorarea TRUE)
+        (begin
+            ; remove mask
+            ;(gimp-message "swapping")
+            (gimp-image-remove-layer-mask img tint-layer MASK-DISCARD)
+            (plug-in-threshold-alpha 1 img tint-layer 15)
+            (gimp-context-set-foreground '(128 129 130))
+            (gimp-context-set-background '(0 0 0))
+            (gimp-context-set-sample-threshold-int 16)
+            (gimp-context-set-sample-transparent TRUE)
+            ; set what is not the color to a swap color - gray
+            (gimp-image-select-color img CHANNEL-OP-REPLACE tint-layer color)
+            (gimp-selection-invert img)
+            (gimp-drawable-edit-fill tint-layer FILL-FOREGROUND)
+            ; invert back and delete all existing color
+            (gimp-selection-invert img)
+            (gimp-edit-clear tint-layer)
+            ;now fill selection with the color - swap color switches to color
+            (gimp-selection-invert img)
+            (gimp-context-set-foreground color)
+            (gimp-drawable-edit-fill tint-layer FILL-FOREGROUND)
+            (gimp-displays-flush)
+            (gimp-selection-none img)
+            
+            (if (or (= strong 3) (= strong 4))
+                (begin
+                    (gimp-layer-set-mode tint-layer LAYER-MODE-SCREEN)
+                )
+            )
+        )
+    )
+    
+    (gimp-drawable-hue-saturation adraw HUE-RANGE-ALL 0.0 10.0 saturation 1.0)
+    
     ; tidy up
     ;(gimp-display-new imgTMP)
     ;(gimp-display-new imgHSV)
@@ -118,7 +169,7 @@
 
 (script-fu-register "elsamuko-color-tint"
                     "Elsamuko Color Tint"
-                    "Add color tint layer.\nfile: elsamuko-color-tint.scm"
+                    "Add color tint layer. Strong sets Dodge mode. Try deactivating mask for effect.\nfile: elsamuko-color-tint.scm"
                     "elsamuko <elsamuko@web.de>"
                     "elsamuko"
                     "16/04/10"
@@ -129,6 +180,8 @@
                     SF-ADJUSTMENT  "Opacity"            '(100 0 100 5 10 0 0)
                     SF-ADJUSTMENT  "Saturation"         '(100 0 100 5 10 0 0)
                     SF-TOGGLE      "Desaturate Image"    FALSE
+                    SF-TOGGLE      "Invert color area"         FALSE
+                    SF-OPTION      "Output mode"              '("Basic - Screen" "Strong - Dodge" "Dramatic - Luma darken only" "Dark - Darken only" "Burn - Linear Burn")
                     )
 
 (script-fu-menu-register "elsamuko-color-tint"  "<Toolbox>/Script-Fu/Colors")
