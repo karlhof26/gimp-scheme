@@ -178,10 +178,8 @@
 )
 
 (script-fu-register "FU-RoyLichtenstein" 
-    "<Image>/Script-Fu/Sketch/Roy Lichtenstein"
-    "Add Roy Lichtenstein effect to an image. 
-    \nOversaturate image before running if needed.
-    \nfile: FU_sketch_Roy-Lichtenstein.scm"
+    "<Image>/Script-Fu/Artist/Sketch Roy Lichtenstein"
+    "Add Roy Lichtenstein effect to an image. Oversaturate image before running if needed.\nfile: FU_sketch_Roy-Lichtenstein.scm"
     "Author: Cprogrammer "
     "Author: Cprogrammer "
     "Date: 2008-04-07 12:27"
