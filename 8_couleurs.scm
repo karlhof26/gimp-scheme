@@ -153,6 +153,7 @@
             (color_value)
             
             (checkNumColors 1)
+            (holdness 2)
             
           )
         
@@ -615,7 +616,8 @@
                                             
                                             (if (= Noise TRUE)
                                                 (begin
-                                                    (plug-in-hsv-noise 1 nouvelle_image calque_8_couleurs (- 9 Nb_couleurs_trouvees) 5 170 (* Nb_couleurs_trouvees 2))
+                                                    ;;(plug-in-hsv-noise 1 nouvelle_image calque_8_couleurs (- 9 Nb_couleurs_trouvees) 5 170 (* Nb_couleurs_trouvees 2))
+                                                    (plug-in-hsv-noise 1 image calque_8_couleurs 4 7 170 12)
                                                 )
                                             )
                                         )
@@ -806,7 +808,12 @@
                                             (gimp-edit-bucket-fill calque_8_couleurs 0 0 100 0 FALSE 0 0)
                                             (if (= Noise TRUE)
                                                 (begin
-                                                    (plug-in-hsv-noise 1 image calque_8_couleurs (- 9 Nb_couleurs_trouvees) 5 170 (* Nb_couleurs_trouvees 2.2))
+                                                    (set! holdness (- 9 Nb_couleurs_trouvees))
+                                                    (if (or (< holdness 1) (> holdness 8))
+                                                        (set! holdness 4) 
+                                                    )
+                                                    ;;(plug-in-hsv-noise 1 image calque_8_couleurs (- 9 Nb_couleurs_trouvees) 7 170 (* Nb_couleurs_trouvees 2))
+                                                    (plug-in-hsv-noise 1 image calque_8_couleurs 4 7 170 12)
                                                 )
                                             )
                                         )
