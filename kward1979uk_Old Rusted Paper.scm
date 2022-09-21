@@ -143,7 +143,7 @@
             (gc)
         )
     )
-    (gimp-image-undo-group-end inImage)
+    (gimp-image-undo-group-end inImage) 
 )
 
 (script-fu-register "rusted-paper"
@@ -161,7 +161,7 @@
         SF-TOGGLE     "Apply drop-shadow" TRUE
         SF-TOGGLE     "Text Required" FALSE
         SF-STRING     "Text (IF NO TEXT LEAVE BLANK)" ""
-        SF-FONT       "Font" ""
+        SF-FONT       "Font" "Sans-serif"
         SF-ADJUSTMENT "Font-size" '(15 10 300 1 10 0 1)
         SF-COLOR      "TEXT Colour" '(0 0 0)
 )
