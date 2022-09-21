@@ -1,6 +1,27 @@
 ;; RGB-TO-HSV taken from http://pages.interlog.com/~kcozens/software/gimp/2.0/neon-sign.scm
 ;; Convert RGB ([0-1],[0-1],[0-1]) to HSV ([0-360],[0-1],[0-1])
 
+; License: GPLv3
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+;    GNU General Public License for more details.
+;
+;    To view a copy of the GNU General Public License
+;    visit: http://www.gnu.org/licenses/gpl.html
+;
+;
+; ------------
+;| Change Log |
+; ------------ 
+;
+; Rel 0.02 - Updated to Gimp 2.10.24
+
 (define (rgb-to-hsv color)
   (let* ((r (car color))
          (g (cadr color))
@@ -21,14 +42,15 @@
            6.0))
         )
         (list (if (= cmin cmax)
-			  0
-			  (* 360 (if (< h 0.0)
-					 (+ h 1.0)
-					 h)))
-		  (if (= cmin cmax)
-			  0
-			  (/ (- cmax cmin) cmax))
-		  cmax)
+                0
+                (* 360 (if (< h 0.0)
+                      (+ h 1.0)
+                      h))
+              )
+            (if (= cmin cmax)
+              0
+              (/ (- cmax cmin) cmax))
+            cmax)
   )
 )
 
@@ -36,7 +58,8 @@
 ;; Do RGB to HSV in gimp ranges
 
 (define (gimp-rgb-to-hsv color)
-  (let* ((r (car color))
+  (let* (
+         (r (car color))
          (g (cadr color))
          (b (caddr color))
          (hsv (rgb-to-hsv (list (/ r 255.0) (/ g 255.0) (/ b 255.0))))
@@ -84,11 +107,11 @@
     (set! h(car hsv))
     (set! s(cadr hsv))
     (set! v (caddr hsv))
-    (gimp-colorize (car copy-layer) h s v)
+    (gimp-drawable-colorize-hsl (car copy-layer) h s v)
     
     (gimp-edit-copy-visible theImage )
-    (set! screen-layer (gimp-layer-new theImage theWidth theHeight 1 "screen" 100 4) )
-    (gimp-drawable-fill (car screen-layer) 3)
+    (set! screen-layer (gimp-layer-new theImage theWidth theHeight 1 "screen" 100 LAYER-MODE-SCREEN) )
+    (gimp-drawable-fill (car screen-layer) FILL-TRANSPARENT)
     (gimp-image-add-layer theImage (car screen-layer) -1)
     (set! copy-float (car (gimp-edit-paste (car screen-layer) 0)))
     (gimp-floating-sel-anchor copy-float)
@@ -99,16 +122,16 @@
   )
 )
 (script-fu-register "midnight-sepia-kw"
-    "<Image>/Script-Fu/Kward1979uk/midnight-sepia..."
+    "<Toolbox>/Script-Fu/Effects/Midnight-sepia..."
     "Midnight Sepia applies a soft-focus effect, as well as a slight sepia toning (or any other hue, you can choose) to create a 'dreamy' effect. \nfile: kward1979uk_midnight_sepia.scm"
     "Karl Ward"
     "Karl Ward"
     "Feb 2006"
     ""
-    SF-IMAGE      "SF-IMAGE" 0
-    SF-DRAWABLE   "SF-DRAWABLE" 0
-    SF-ADJUSTMENT "Blur:" '(25 1 100 1 10 0 0)
-    SF-COLOR      "Colour:"      '(32 64 54)
+    SF-IMAGE      "SF-IMAGE"        0
+    SF-DRAWABLE   "SF-DRAWABLE"     0
+    SF-ADJUSTMENT "Blur:"           '(25 1 100 1 10 0 0)
+    SF-COLOR      "Colour:"         '(32 64 54)
 
 )
 
