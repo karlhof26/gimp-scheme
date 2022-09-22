@@ -352,28 +352,32 @@
   )
 )
 
+; "<Toolbox>/Script-Fu/Artistic/CarTOONize"
 (script-fu-register
     "script-fu-CarTOONize"
-    "<Image>/Script-Fu/Artistic/CarTOONize"
-    "Toon a Picture.  Take a standard RGB or Grayscale picture, and cartoonize it.  You can adjust the thickness of the lines, as well as adjust the 'black' shadow intensity.  Now you can adjust the color depth, 1 is the flattest, 10 has the most levels.  Prefilter option requires and uses the G'MIC Filter, Despeckle or the Selective Gaussian Blur.  Set it to FALSE if you don't want noise reduction.  Now have the option to keep it on existing layer (non haltone).\n file:CarTOONize_02.scm"
-    "Joe1GK <kgioj@yahoo.com>"
+    "CarTOONize"
+    "Toon a Picture. Take a standard RGB or Grayscale picture, and cartoonize it.  You can adjust the thickness of the lines, as well as adjust the 'black' shadow intensity.  Now you can adjust the color depth, 1 is the flattest, 10 has the most levels.  Prefilter option requires and uses the G'MIC Filter, Despeckle or the Selective Gaussian Blur.  Set it to FALSE if you don't want noise reduction.  Now have the option to keep it on existing layer (non haltone).\n file:CarTOONize_02.scm"
+    "Joe1GK <kgioj@yahoo.com> KarlH <karlhofmeyr@gmail.com>"
     "Joe1GK"
     "2010, December"
     "RGB* GRAY*"
-    SF-IMAGE        "Image"	                     0
-    SF-DRAWABLE     "Drawable"                   0
-    SF-TOGGLE       "Prefilter (Noise reduction)" TRUE
+    SF-IMAGE        "Image"	                        0
+    SF-DRAWABLE     "Drawable"                      0
+    SF-TOGGLE       "Prefilter (Noise reduction)"   TRUE
     SF-OPTION       "Filter type - Noise Reduction"   '("Selective Gaussian Blur Smoothing" "Despeckle Smoothing" "GMIC Smoothing" "G'MIC Anistropic Smoothing")
     SF-ADJUSTMENT   "Line Thickness (threshold black areas)"   '(10 2 30 1 10 0 1)
-    SF-TOGGLE       "Black Shadows"             TRUE
-    SF-ADJUSTMENT   "Shadow Intensity"          '(35 0 50 1 10 0 1)
-    SF-ADJUSTMENT   "Color Levels"              '(4 1 10 1 10 0 1)
-    SF-TOGGLE       "Generate as new layer"     TRUE
-    SF-TOGGLE       "Halftone"                  TRUE
-    SF-TOGGLE       "Broaden lines?"             FALSE
-    SF-ADJUSTMENT   "Broaden line iterations"   '(2 1 10 1 2 0 0)
+    SF-TOGGLE       "Black Shadows"                 TRUE
+    SF-ADJUSTMENT   "Shadow Intensity"              '(35 0 50 1 10 0 1)
+    SF-ADJUSTMENT   "Color Levels"                  '(4 1 10 1 10 0 1)
+    SF-TOGGLE       "Generate as new layer"         TRUE
+    SF-TOGGLE       "Halftone"                      TRUE
+    SF-TOGGLE       "Broaden lines?"                FALSE
+    SF-ADJUSTMENT   "Broaden line iterations"       '(2 1 10 1 2 0 0)
     SF-TOGGLE       "Keep working image (show 2nd image)"           FALSE
-    SF-TOGGLE       "Flatten working image"      TRUE
+    SF-TOGGLE       "Flatten working image"         TRUE
 )
 
-; end of file
+(script-fu-menu-register "script-fu-CarTOONize" "<Toolbox>/Script-Fu/Artistic")
+
+(script-fu-menu-register "script-fu-CarTOONize" "<Toolbox>/Script-Fu3/Comics-o-matic")
+;end of script
