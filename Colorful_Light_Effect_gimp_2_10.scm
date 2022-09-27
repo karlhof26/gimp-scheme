@@ -13,7 +13,7 @@
 ;
 ;
 ;
-;
+; 
 ; Licence GNU/GPL
 ;
 ; --------------------------------------------------------------------
@@ -351,10 +351,10 @@
         (plug-in-gauss 1 img Line_Layer 70 70 1)
         
         ; appliquer flou gaussien de rayon 30 sur le calque Line_Layer_1
-        (plug-in-gauss 1 img Line_Layer_1 30 30 1)	
+        (plug-in-gauss 1 img Line_Layer_1 30 30 1)
         
         ; appliquer flou gaussien de rayon 10 sur le calque Line_Layer_2
-        (plug-in-gauss 1 img Line_Layer_2 10 10 1)	
+        (plug-in-gauss 1 img Line_Layer_2 10 10 1)
         
         ; calque Texte *******************************************************************************		
         
@@ -390,10 +390,10 @@
         ;Colorful************************************************************************************	
         
         ; créer Colorful
-        (set! Colorful (car (gimp-layer-new img Largeur_fond Hauteur_fond 1 "Colorful" 100 0)))	
+        (set! Colorful (car (gimp-layer-new img Largeur_fond Hauteur_fond 1 "Colorful" 100 0)))
         
         ; ajouter le calque ScanLines
-        (gimp-image-insert-layer img Colorful -1 0)		
+        (gimp-image-insert-layer img Colorful 0 -1) ; was -1 0?
         
         ; sélectionner dégradé Full saturation spectrum CW
         (gimp-context-set-gradient degrade)	
@@ -445,14 +445,14 @@
         (gimp-display-new img)
         
         ;; End undo group.
-        (gimp-image-undo-group-end img)	
+        (gimp-image-undo-group-end img)
         
     )
     
 )
 
 (script-fu-register "Colorful_Light_Effect"
-    "<Image>/File/Create/Logos/Colorful Light Effect..."
+    "<Toolbox>/Script-Fu/Logos/Colorful Light Effect..."
     "Texte et effet lumineux colore (priorite aux dimensions image) / Text and colorful Light Effect (Prioritising image dimensions)...\nfile:Colorful_Light_Effect_gimp_2_10.scm "
     "samj"
     "samj"
@@ -461,7 +461,7 @@
     SF-ADJUSTMENT "Largeur fond / Background width [pixels] "  '(1600 100 4000 1 10 0 0)
     SF-ADJUSTMENT "Hauteur fond / Background height [pixels] "  '(1200 100 4000 1 10 0 0)
     SF-ADJUSTMENT "Positionnement ligne lumineuse / Positioning light line [%] "  '(50 10 90 1 10 0 0)
-    SF-STRING "Texte / Text " "Gimp 2.10.22"
+    SF-STRING "Texte / Text " "Gimp 2.10.32"
     SF-FONT "Police / Font " "Serif Bold" ; Serif Bold
     SF-ADJUSTMENT "Taille Police / Font Size [pixels] " '(64 12 480 1 10 0 1)
     SF-ADJUSTMENT "Espacement texte / Spacing text [% Pos. line] " '(40 10 90 1 10 0 0)
