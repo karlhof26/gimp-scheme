@@ -3,7 +3,7 @@
 ; Adds a dark and light stripe border to the current layer
 ;  described by Oregonian on GIMP Chat
 ;
-; Version 1.0		July 2011		Brian Hahn 
+; Version 1.0       July 2011       Brian Hahn 
 ; Version 1.1       July 2020       karlhof26
 ;
 ; License:  GNU Public License, version 2 or later
@@ -57,23 +57,24 @@
         (gimp-context-push)
         (gimp-image-undo-group-start img)
         
-        (gimp-drawable-set-visible drw TRUE)				;make sure calling layer is visible
-        (set! border-layer (car (gimp-layer-copy drw TRUE))) ;copy layer, adding alpha if necessary
+        (gimp-drawable-set-visible drw TRUE)                    ;make sure calling layer is visible
+        (set! border-layer (car (gimp-layer-copy drw TRUE)))    ;copy layer, adding alpha if necessary
         
-        (gimp-drawable-fill border-layer FILL-TRANSPARENT)	;clear the border layer
-        (gimp-image-add-layer img border-layer -1)			;add to image
+        (gimp-drawable-fill border-layer FILL-TRANSPARENT)      ;clear the border layer
+        (gimp-image-add-layer img border-layer -1)              ;add to image
         (gimp-drawable-set-name border-layer "Border")
         (gimp-layer-set-mode border-layer LAYER-MODE-OVERLAY)
         
         
         
-        (gimp-context-set-paint-mode  LAYER-MODE-NORMAL)		;set paint modes just to be safe
+        (gimp-context-set-paint-mode  LAYER-MODE-NORMAL)        ;set paint modes just to be safe
         (gimp-context-set-opacity 100)
         (gimp-context-set-paint-method "gimp-paintbrush")
         
         ;use rectangle select because the brush stroke 
         ; is offset by one half pixel to the right and bottom.
         ; the brush width is compensated to give sharp edges
+        
         (gimp-rect-select img layer-x-offset layer-y-offset (- width 1) (- height 1) CHANNEL-OP-REPLACE FALSE 0)
         
         ;first stroke at full width
@@ -93,7 +94,8 @@
         
         (gimp-selection-none img)
         (if (= merge-down TRUE)
-            (gimp-image-merge-down img border-layer 1))			;merge border down
+            (gimp-image-merge-down img border-layer 1)
+        )                   ;merge border down
         
         ;done, final clean-up
         (gimp-image-undo-group-end img)
