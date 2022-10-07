@@ -25,6 +25,7 @@
 ; Rel 0.01 - Initial Release
 ; Rel 0.02 - Added more text adjustments and did some bugfixes now Script has no dependancies except Gmic
 ; Rel 0.03 - Added 'Bkg Animation Direction' choice
+; Rel 0.04 - Updated to work with latest GMIC - extra Main text color option added.
 
 (define (script-fu-3d-fun image drawable 
                                     bkg-type 
@@ -34,12 +35,14 @@
                                     s-density
                                     s-size
                                     3d-fgd-height
+                                    3d-smoothness
                                     frames
                                     direction
                                     texture
                                     txt-color
                                     txt-pattern
                                     txt-gradient
+                                    main-text-color
     )
     
     ;; Start undo group.
@@ -95,13 +98,14 @@
         
         (if (= bkg-type 2);Pattern
             (begin
-                (gimp-message "pattern fill")
+                ;(gimp-message "pattern fill")
                 (gimp-context-set-pattern pattern);;test
                 (gimp-drawable-fill bkg-layer FILL-PATTERN)
             )
         )
         (if (= bkg-type 1);;White
             (begin
+                ;(gimp-message "white fill")
                 (gimp-context-set-background '(255 255 255))
                 (gimp-drawable-fill bkg-layer FILL-BACKGROUND)
             )
@@ -117,7 +121,9 @@
         )
         
         ; *******************************************start 3D_bkg
-        
+        ;(gimp-display-new image)
+        ;(gimp-displays-flush)
+        ;(quit)
         
         
         
@@ -165,7 +171,7 @@
                         "-v - " ; To have a silent output. Remove it to display errors from the G'MIC interpreter on stderr.
                         "-fx_random3d "
                         ;"0,80,3,100,45,0,0,-100,0.5,0.7,3,1"
-                        ;"0,86.0,5.0,100.5,45.2,0.01,0.01,-93.8,0.5,0.7,3,0.98"
+                        ;"0,86.0,5.0,100.5,45.2,0.01,0.01,-93.8,0.5,0.7,3,0.98,"
                                  (number->string shape) ","
                     ;             (number->string density) ","
                                  "80,"
@@ -175,8 +181,8 @@
             
                 ;(gimp-displays-flush)
                 ;(gimp-display-new image)
-                ;(gimp-message "back from shapes")
-                
+                ;(gimp-message "back from GMIC random3d")
+                ;(quit)
                 
                 
                 ;; Render smoothing using G'MIC.
@@ -195,6 +201,8 @@
                 (plug-in-make-seamless RUN-NONINTERACTIVE image 3d_bkg)
                 ;(gimp-message "seamless done - off to move the layers")
                 
+                ;(gimp-displays-flush)
+                ;(gimp-display-new image)
                 
                 
                 (3d-fun-move-layer-anim image 3d_bkg frames direction FALSE TRUE 0 0 0 0 0 FALSE 0 100 0)
@@ -203,6 +211,7 @@
                 
                 ;(gimp-display-new image)
                 ;(gimp-displays-flush)
+                ;(quit)
                 
                 (gimp-image-remove-layer image bkg-layer)
                 
@@ -218,7 +227,7 @@
             (set! 3D_fgd (car (gimp-layer-copy text-layer TRUE)))
             (set! txt-width (car (gimp-drawable-width text-layer)))
             (set! txt-height (car (gimp-drawable-height text-layer)))
-            (set! 3d-height 12)
+            (set! 3d-height 40) ; was 12
             
             
                 
@@ -241,19 +250,25 @@
             ;(gimp-display-new image)
             ;(gimp-message "extrude start")
             ;(gimp-message (number->string 3d-height))
+            ;(gimp-message (number->string 3d-fgd-height))
+            ;(gimp-message (number->string 3d-smoothness))
             ;(gimp-message (number->string txt-width))
             ;(gimp-message (number->string txt-height))
+            ;(quit)
             
             ;; Render extrude3d using G'MIC. 
             (plug-in-gmic-qt 1 image 3D_fgd 1 0 ; was 1 0
                 (string-append
                     "-v - " ; To have a silent output. Remove it to display errors from the G'MIC interpreter on stderr.
                     "-fx_extrude3d "
-                        (number->string 3d-height) ",512,0.8,"
+                        (number->string 3d-fgd-height) ",512,"
+                        (number->string 3d-smoothness) ","                              ;0.8,"
                         (number->string txt-width) ","
-                        (number->string txt-height) ",0.78,53.0,0.11,0.15,45,95,0,-80,0.5,0.7,4,1"
+                        (number->string txt-height) ",0.78,38.0,0.11,0.11,45,36.1,0.0,-50.0,0.5,0.7,4,1,0,0" ; was 0.78,53.0,0.11,0.15,45,95,0,-80,0.5,0.7,4,1
                 )
             )
+            ;(gimp-drawable-colorize-hsl 3D_fgd 90 70 0 )
+            (plug-in-colorify 1 image 3D_fgd main-text-color)
             ;(gimp-message "extrude done")
             ;(gimp-displays-flush)
             ;(gimp-display-new image)
@@ -287,20 +302,30 @@
             (if (= texture 0)
                 (begin
                     ;(gimp-message "texture is 0")
-                    (gimp-context-set-background txt-color)    ;;test
-                    (gimp-drawable-fill texture-layer FILL-BACKGROUND)
+                    ; NONE - No action
+                    
+                    ;;;;(gimp-context-set-background main-text-color)    ;;test
+                    ;;;;(gimp-drawable-fill texture-layer FILL-BACKGROUND)
                 )
             )
+            
             (if (= texture 1)
                 (begin
                     ;(gimp-message "texture is 1")
-                    (gimp-context-set-pattern txt-pattern)   ;;test
-                    (gimp-drawable-fill texture-layer FILL-PATTERN)                   
+                    (gimp-context-set-background txt-color)    ;;test
+                    (gimp-drawable-fill texture-layer FILL-BACKGROUND)
                 )
             )
             (if (= texture 2)
                 (begin
                     ;(gimp-message "texture is 2")
+                    (gimp-context-set-pattern txt-pattern)   ;;test
+                    (gimp-drawable-fill texture-layer FILL-PATTERN)                   
+                )
+            )
+            (if (= texture 3)
+                (begin
+                    ;(gimp-message "texture is 3")
                     (gimp-context-set-gradient txt-gradient)
                     (plug-in-gradmap RUN-NONINTERACTIVE image 3D_fgd)  ;; apply the gradient
                 )
@@ -324,8 +349,10 @@
             (gimp-image-lower-layer-to-bottom image temp-layer)
             (gimp-image-raise-layer image temp-layer)
             
+            ;(gimp-displays-flush)
+            ;(gimp-display-new image)
             ;(gimp-message "temp-layer up down middle")
-            
+            ;(quit)
                 
                 
             (gimp-image-merge-down image temp-layer CLIP-TO-IMAGE)
@@ -343,13 +370,13 @@
         (gimp-displays-flush)
         ;; End undo group.
         (gimp-image-undo-group-end image)
-        (gimp-message "Good finish OK alpha to logo")
+        ;(gimp-message "Good finish OK alpha to logo")
     )
 )
 
 (script-fu-register "script-fu-3d-fun"
     "3D FUN..."
-    "Uses GMIC,  to create a 3D animation. \nfile:3D-FUN_02.scm"
+    "Uses GMIC,  to create a 3D animation. Set main text color to white to fully use texturing. Requires a layer with transparency. \nfile:3D-FUN_02.scm"
     "Graechan"
     "Graechan - http://gimpchat.com"
     "May 2014"
@@ -362,7 +389,8 @@
     SF-OPTION       "Background Shapes"         '("Cube" "Cone" "Cylinder" "Sphere" "Torus")
     SF-ADJUSTMENT   "Density of Shapes"         '(80 1 200 1 10 0 1)
     SF-ADJUSTMENT   "Size of Shapes"            '(3 1 20 1 5 0 1)
-    SF-ADJUSTMENT   "3D-fgd-height"             '(30 1 50 1 5 0 1)
+    SF-ADJUSTMENT   "3D-fgd-height"             '(130 1 400 1 5 0 1)
+    SF-ADJUSTMENT   "3D-smoothness"             '(0.2 0.05 1.5 .01 0.05 2 1)
     SF-ADJUSTMENT   "Frames for Animation"      '(10 2 200 2 10 0 1)
     SF-OPTION       "Bkg Direction Options"     '("Up" "Down" "Left" 
                                                     "Right"
@@ -370,20 +398,22 @@
                                                     "Up and Right"
                                                     "Down and Left"
                                                     "Down and Right")
-    SF-OPTION       "Texture Type" '("Color" "Pattern" "Gradient")
+    SF-OPTION       "Texture Type" '("None" "Extra Texture Color" "Pattern" "Gradient")
     SF-COLOR        "Texture Color"    '(153 153 153)
     SF-PATTERN      "Texture Pattern"  "Blue Web"
     SF-GRADIENT     "Texture Gradient" "Incandescent"
+    SF-COLOR        "Main Text Color"    '(240 240 0)
 )
 
-(script-fu-menu-register "script-fu-3d-fun" "<Image>/Script-Fu/Alpha-to-Logo")
+(script-fu-menu-register "script-fu-3d-fun" "<Toolbox>/Script-Fu/Alpha-to-Logo")
 
 (define (script-fu-3d-fun-logo 
                                 text
                                 justify
                                 letter-spacing
                                 line-spacing
-                                font-in 
+                                font-in
+                                main-text-color
                                 size
                                 bkg-type 
                                 pattern
@@ -392,6 +422,7 @@
                                 s-density
                                 s-size
                                 3d-fgd-height
+                                3d-smoothness
                                 frames
                                 direction
                                 texture
@@ -408,9 +439,9 @@
             (image (car (gimp-image-new image-width image-height RGB)))
             (border (/ size 4))
             (font (if (> (string-length font-in) 0) font-in (car (gimp-context-get-font))))
-            (text-layer (car (gimp-text-fontname image -1 0 0 text border TRUE size PIXELS font)))
-            (text-width (car (gimp-drawable-width text-layer)))
-            (text-height (car (gimp-drawable-height text-layer)))
+            (text-layer)
+            (text-width 1)
+            (text-height 1)
             (justify (cond  ((= justify 0) 2)
                             ((= justify 1) 0)
                             ((= justify 2) 1)))
@@ -418,6 +449,11 @@
           )
         (gimp-context-push)
         ;;;;adjust the text-layer
+        (gimp-context-set-foreground main-text-color)
+        (set! text-layer (car (gimp-text-fontname image -1 0 0 text border TRUE size PIXELS font)))
+        (set! text-width (car (gimp-drawable-width text-layer)))
+        (set! text-height (car (gimp-drawable-height text-layer)))
+            
         (gimp-text-layer-set-justification text-layer justify)
         (gimp-text-layer-set-letter-spacing text-layer letter-spacing)
         (gimp-text-layer-set-line-spacing text-layer line-spacing)
@@ -459,25 +495,27 @@
                             s-density
                             s-size
                             3d-fgd-height
+                            3d-smoothness
                             frames
                             direction
                             texture
                             txt-color
                             txt-pattern
-                            txt-gradient)
+                            txt-gradient
+                            main-text-color)
         
         
         (gimp-context-pop)
         
         (gimp-display-new image)
         (gimp-displays-flush)
-        (gimp-message "Good finish OK")
+        ;(gimp-message "Good finish OK")
     )
 )
 
 (script-fu-register "script-fu-3d-fun-logo"
     "3D-FUN Logo"
-    "Uses GMIC, to create a 3D animation. \nfile:3D-FUN_02.scm"
+    "Uses GMIC, to create a 3D animation. Set main text color to white to fully use texturing.  \nfile:3D-FUN_02.scm"
     "Graechan"
     "Graechan - http://gimpchat.com"
     "May 2014"
@@ -487,6 +525,7 @@
     SF-ADJUSTMENT   "Letter Spacing"    '(50 -100 100 1 5 0 0)
     SF-ADJUSTMENT   "Line Spacing"      '(0 -100 100 1 5 0 0)
     SF-FONT         "Font"              "Sans-serif Bold" 
+    SF-COLOR        "Main Font color"   '(245 245 0)
     SF-ADJUSTMENT   "Font size (pixels)"    '(300 6 500 1 1 0 1)
     SF-OPTION       "Background Type"       '("Black" "White" "Pattern" "Gradient")
     SF-PATTERN      "Pattern"               "Pink Marble"
@@ -494,10 +533,11 @@
     SF-OPTION       "Background Shapes"     '("Cube" "Cone" "Cylinder" "Sphere" "Torus")
     SF-ADJUSTMENT   "Density of Shapes"     '(80 1 200 1 10 0 1)
     SF-ADJUSTMENT   "Size of Shapes"        '(5 1 20 1 5 0 1)
-    SF-ADJUSTMENT   "3D-fgd-height"         '(30 1 50 1 5 0 1)
+    SF-ADJUSTMENT   "3D-fgd-height"         '(130 1 400 1 5 0 1)
+    SF-ADJUSTMENT   "3D-smoothness"         '(0.20 0.05 1.51 .01 0.10 2 0)
     SF-ADJUSTMENT   "Frames for Animation"  '(10 2 200 2 10 0 1)
     SF-OPTION       "Bkg Direction Options" '("Up" "Down" "Left" "Right" "Up and Left" "Up and Right" "Down and Left" "Down and Right")
-    SF-OPTION       "Texture Type"          '("Color" "Pattern" "Gradient")
+    SF-OPTION       "Texture Type"          '("None" "Extra Color" "Pattern" "Gradient")
     SF-COLOR        "Texture Color"         '(153 153 153)
     SF-PATTERN      "Texture Pattern"       "Blue Web"
     SF-GRADIENT     "Texture Gradient"      "Incandescent"
