@@ -39,6 +39,7 @@
             (img (car (gimp-image-new wide high 0)))                                   ; define new rgb image called "img"
             (bg-layer (car (gimp-layer-new img wide high 0 "Background" 100 0)))       ; define new rgb layer named "Background" 100% Opacity Normal mode
             (gradient-layer (car (gimp-layer-new img wide high 1 "Gradient" 100 10)))  ; define new rgba layer named "Gradient"
+            (gradient2-layer (car (gimp-layer-new img wide high 1 "Gradient2" 100 LAYER-MODE-DIFFERENCE)))  ; define new rgba layer named "Gradient2" ; was difference
             (dupe-layer (car (gimp-layer-new img wide high 1 "Gradient Map" 100 6)))   ; define new rgba layer named "Gradient Map"
             (text-layer (car (gimp-layer-new img wide high 1 "Text" 100 0)))           ; define new rgba layer named "Text"
             (shadow-layer (car (gimp-layer-new img wide high 1 "Shadow" 80 0)))        ; define new rgba layer named "Shadow" with 80% opacity
@@ -56,6 +57,7 @@
         (gimp-image-insert-layer img shadow-layer 0 -1)
         (gimp-image-insert-layer img text-layer 0 -1)
         (gimp-image-insert-layer img gradient-layer 0 -1)
+        (gimp-image-insert-layer img gradient2-layer 0 -1)
         (gimp-context-set-foreground '(0 0 0))
         (gimp-edit-clear bg-layer)
         (gimp-edit-clear shadow-layer)
@@ -70,7 +72,8 @@
         ;(gimp-edit-blend gradient-layer 3 0 style1 100 0 0 reverse1 FALSE 0 0 TRUE 0 0 wide high)
         (gimp-edit-blend gradient-layer BLEND-CUSTOM LAYER-MODE-NORMAL style1 100 0 0 reverse1 FALSE 0 0 TRUE 0 0 wide high)
         (gimp-context-set-gradient gradient2)
-        (gimp-edit-blend gradient-layer 3 6 style2 100 0 0 reverse2 FALSE 0 0 TRUE 0 0 0 high)
+        ;(gimp-edit-blend gradient-layer BLEND-CUSTOM LAYER-MODE-DIFFERENCE style2 100 0 0 reverse2 FALSE 0 0 TRUE 0 (/ high 2) (/ wide 2) (/ high 2))
+        (gimp-edit-blend gradient2-layer BLEND-CUSTOM LAYER-MODE-LINEAR-LIGHT style2 100 0 REPEAT-SAWTOOTH reverse2 FALSE 0 0 TRUE 1 (* high 0.25) (* wide 0.15) (* high 0.25))
         
         ; Create Gradient Map 
         
@@ -84,6 +87,8 @@
         (gimp-floating-sel-anchor (car (gimp-image-get-floating-sel img)))
         (plug-in-gradmap 1 img dupe-layer)
         
+        (gimp-layer-set-mode gradient2-layer LAYER-MODE-ADDITION)
+        (gimp-layer-set-opacity gradient2-layer 62.0)
         ; Clean up jagged edges
         
         (gimp-selection-layer-alpha text-layer)
@@ -118,13 +123,13 @@
 
 (script-fu-register "script-fu-60's-text"
                 "60's Text"
-                "Give text a psychadelic 60's effect"
+                "Gives text a psychadelic 60's effect. \nfile: 60's Text.scm"
                 "Gregory M. Ross"
                 "Gregory M. Ross"
                 "March 23, 2009"
                 ""
                 SF-STRING     "Text" "Gimp Rocks!"
-                SF-FONT       "Font" "Californian FB"
+                SF-FONT       "Font" "Arial Bold"
                 SF-ADJUSTMENT "Font Size (pixels)" '(100 2 1000 1 10 0 1)
                 SF-COLOR      "Background Color" '(255 255 255)
                 SF-GRADIENT   "Gradient 1"   "Full saturation spectrum CCW"
@@ -143,6 +148,6 @@
                                         "Spiral (ccw)")
 )
 (script-fu-menu-register "script-fu-60's-text"
-            "<Image>/File/Create/Logos")
+            "<Toolbox>/Script-Fu/Logos")
 
 ; end of script
