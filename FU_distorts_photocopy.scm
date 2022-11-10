@@ -5,25 +5,22 @@
 ; 01/09/2020 on GIMP-2.10.20
 ;
 ;==============================================================
-;
+; 
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
-;	Windows Vista/7/8)
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
-;	
-;	Windows XP
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;   Windows 10
+;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;   or
+;   C:\Users\YOUR-NAME\.gimp-2.10\scripts
+;   or
+;   C:\Documents and Settings\yourname\.gimp-2.8\scripts   
 ;    
-;	Linux
-;	/home/yourname/.gimp-2.8/scripts  
-;	or
-;	Linux system-wide
-;	/usr/share/gimp/2.0/scripts
+;   Linux
+;   /home/yourname/.gimp-2.10/scripts  
+;   or
+;   Linux system-wide
+;   /usr/share/gimp/2.0/scripts
 ;
 ;==============================================================
 ;
@@ -120,12 +117,21 @@
         (gimp-drawable-fill layer-color2 FILL-FOREGROUND)
        
         (gimp-image-select-item img CHANNEL-OP-REPLACE channel)
-        (if (> balance 0)
-            (gimp-selection-grow img balance)
+        (if (not (= balance 0))
             (begin
-                (gimp-selection-invert img)
-                (gimp-selection-grow img (abs balance))
-                (gimp-selection-invert img)
+                (if (> balance 0)
+                    (begin
+                        (gimp-selection-grow img balance)
+                    )
+                    (begin
+                        (gimp-selection-invert img)
+                            (gimp-selection-grow img (abs balance))
+                        (gimp-selection-invert img)
+                    )
+                )
+            )
+            (begin
+                (gimp-message "no balance")
             )
         )
         (gimp-selection-feather img smooth)
@@ -146,7 +152,7 @@
         
         (gimp-image-undo-group-end img)
         (gimp-displays-flush)
-        (gc) ; garbage collect 
+        (gc) ; garbage collect  
   )
 )
 
