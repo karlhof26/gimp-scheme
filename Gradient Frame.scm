@@ -219,6 +219,7 @@
         (gimp-displays-flush)
         (gimp-image-undo-group-end image)
         (gimp-context-pop)
+        (gc) ; Garbage cleanup; memory cleanup
         
     )
 )
@@ -295,13 +296,18 @@
         )
         
         ;;;;apply the vignette
-        (if (> width 640) (set! vig-x 640))
+        (if (< width 640) (set! vig-x 640))
         (if (> height 520) (set! vig-y 520))
         (if (< width 640) (set! feather (/ width 5.33)))
         (if (< height 520) (set! feather (/ height 4.33)))
         (set! vignette-layer (car (gimp-layer-new image vig-x vig-y  RGBA-IMAGE "Vignette" 100 LAYER-MODE-HARDLIGHT )))
         (gimp-image-insert-layer image vignette-layer 0 -1)
-        (gimp-ellipse-select image 0 0 vig-x vig-y 0 TRUE FALSE 10)
+        
+        (gimp-context-set-antialias TRUE)
+        (gimp-context-set-feather FALSE)
+        ;(gimp-ellipse-select image 0 0 vig-x vig-y 0 TRUE FALSE 10)
+        (gimp-image-select-ellipse image CHANNEL-OP-ADD 0 0 vig-x vig-y)
+        
         (gimp-selection-shrink image size)
         (gimp-selection-feather image feather)
         (gimp-selection-invert image)	

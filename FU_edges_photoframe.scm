@@ -136,7 +136,9 @@
                            inImage)
             )
         
-        (if (< 0 (car (gimp-image-base-type theImage))) (gimp-image-convert-rgb theImage))
+        (if (< 0 (car (gimp-image-base-type theImage)))
+            (gimp-image-convert-rgb theImage)
+        )
             
             (set! mode 'RGBA-IMAGE)
             (set! theWidth (car (gimp-image-width theImage)))
@@ -180,7 +182,7 @@
 ; Register the function with the GIMP:
 
 (script-fu-register "FU-photo-frame"
-    "<Image>/Script-Fu/Edges/Photo Frame"
+    "<Toolbox>/Script-Fu/Edges/Photo Frame"
     "Frame a photograph. \nfile:FU_edges_photoframe.scm"
     "Alexios Chouchoulas"
     "2003, Alexios Chouchoulas"

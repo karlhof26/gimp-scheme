@@ -4,9 +4,9 @@
 ; 02/14/2014 on GIMP-2.8.10
 ; 03/09/2020 on GIMP-2.10.20
 ;
-; 02/14/2014 - convert to RGB if needed
+; 02/14/2014 - convert to RGB if needed 
 ; =======================================================================
-;
+; 
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
@@ -91,7 +91,8 @@
         keep-selection-in
         conserve
     )
-                            
+                        
+    (gimp-message "line95")
     (gimp-context-push)
     (gimp-image-undo-group-start image)
     (if (not (= RGB (car (gimp-image-base-type image))))
@@ -120,7 +121,7 @@
             (*newpoint-left* (cons-array 10 'double))
             (*newpoint-right* (cons-array 10 'double))
         )   
-        
+        ;(gimp-message "line124")
         (gimp-context-set-default-colors)
         
         ;;;;create original-selection-channel if a selection exists (gimp-selection-load original-selection-channel)
@@ -136,18 +137,29 @@
         )
         
         (if (= alpha FALSE)
-            (gimp-layer-add-alpha image-layer)
+            (begin
+                (gimp-layer-add-alpha image-layer)
+            )
         )
-        
+        ;(gimp-message "line144")
         ;;;;create the Image selection  
-        (gimp-rect-select image
+        (gimp-context-set-feather FALSE)
+        (gimp-context-set-feather-radius 10 10)
+        
+        ;(gimp-rect-select image
+        ;                (car (gimp-drawable-offsets image-layer))
+        ;                (cadr (gimp-drawable-offsets image-layer))
+        ;                old-width
+        ;                old-height
+        ;                CHANNEL-OP-REPLACE
+        ;                FALSE
+        ;                10)    
+        (gimp-image-select-rectangle image
+                        CHANNEL-OP-REPLACE
                         (car (gimp-drawable-offsets image-layer))
                         (cadr (gimp-drawable-offsets image-layer))
                         old-width
-                        old-height
-                        CHANNEL-OP-REPLACE
-                        FALSE
-                        10)    
+                        old-height)
         
         ;;;;create selection-channel (gimp-selection-load selection-channel)
         (gimp-selection-save image)
@@ -158,12 +170,18 @@
         (gimp-selection-none image)
         
         ;;;;begin the script
-        
+        ;(gimp-message "line173")
         ;;;;prepare for the border
         (if (= lomo TRUE)
-            (the-gradient-frame-vignette image image-layer lomo-size lomo-opacity FALSE FALSE)
+            (begin
+                ;(gimp-message "Lomo True")
+                (the-picture-frame-K-vignette image image-layer lomo-size lomo-opacity FALSE FALSE)
+            )
+            (begin
+                ;(gimp-message "Lomo False")
+            )
         )
-        
+        ;(gimp-message "line184")
         (gimp-image-resize image width height xsize ysize)
         
         (set! border-layer (car (gimp-layer-new image width height typeA "Border" 100 LAYER-MODE-NORMAL)))
@@ -181,7 +199,7 @@
             )
         )
         (gimp-image-set-active-layer image border-layer)
-        
+        ;(gimp-message "line202")
         (set! bump-layer (car (gimp-layer-new image width height typeA "Grain" 100 LAYER-MODE-NORMAL)))
         (gimp-image-insert-layer image bump-layer 0 -1)
         (gimp-drawable-set-visible bump-layer FALSE)
@@ -189,7 +207,7 @@
             (begin
                 (gimp-context-set-pattern pattern)
                 (gimp-edit-fill bump-layer FILL-PATTERN)
-                (gimp-desaturate bump-layer)
+                (gimp-drawable-desaturate bump-layer DESATURATE-LUMINANCE)
             )
         )
         (gimp-selection-none image)
@@ -241,6 +259,8 @@
         (gimp-context-set-gradient gradient)
         ;;;;create the top of border
         (gimp-free-select image 10 *newpoint-top* 2 TRUE FALSE 15)
+        ;(gimp-message "line262")
+        
         (gimp-edit-blend border-layer BLEND-CUSTOM LAYER-MODE-NORMAL  GRADIENT-LINEAR 100 0 REPEAT-NONE reverse FALSE 3 0.2 TRUE (/ width 2) 0 (/ width 2) ysize)
         
         ;;;;create the bottom of border
@@ -256,12 +276,18 @@
         (gimp-edit-blend border-layer BLEND-CUSTOM LAYER-MODE-NORMAL  GRADIENT-LINEAR 100 0 REPEAT-NONE reverse FALSE 3 0.2 TRUE width (/ height 2) (+ old-width xsize) (/ height 2))
         (gimp-selection-none image)
         
+        ;(gimp-message "line279")
+        
         (gimp-image-set-active-layer image border-layer)
         (if (= tint TRUE)
-            (plug-in-sample-colorize 1 image border-layer tint-layer TRUE FALSE FALSE TRUE 0 255 1.00 0 255)
+            (begin
+                (plug-in-sample-colorize 1 image border-layer tint-layer TRUE FALSE FALSE TRUE 0 255 1.00 0 255)
+            )
         )
         (if (= use-pattern TRUE)
-            (plug-in-bump-map 1 image border-layer bump-layer 135 45 3 0 0 0 0 TRUE FALSE LINEAR)
+            (begin
+                (plug-in-bump-map 1 image border-layer bump-layer 135 45 3 0 0 0 0 TRUE FALSE 1) ; was LINEAR
+            )
         )
         
         ;;;;finish the script
@@ -270,14 +296,18 @@
                 (set! border-layer (car (gimp-image-merge-down image border-layer EXPAND-AS-NECESSARY)))
                 (set! image-layer (car (gimp-image-merge-down image border-layer EXPAND-AS-NECESSARY)))
                 (gimp-image-remove-layer image bump-layer)
-                (gimp-drawable-set-name image-layer layer-name)
+                (gimp-drawable-set-name image-layer layer-name) 
             )
         )
         (if (and (= sel TRUE)(= keep-selection TRUE))
-            (gimp-selection-load selection-channel)
+            (begin
+                (gimp-selection-load selection-channel)
+            )
         )
         (if (and (= sel FALSE) (= keep-selection TRUE))
-            (gimp-selection-load original-selection-channel)
+            (begin
+                (gimp-selection-load original-selection-channel)
+            )
         )
         (gimp-image-remove-channel image selection-channel)
         (if (= sel FALSE) (gimp-image-remove-channel image original-selection-channel))
@@ -288,7 +318,7 @@
         (gimp-displays-flush)
         (gimp-image-undo-group-end image)
         (gimp-context-pop)
-        
+        (gc) ; memory clenup; an array as used;
     )
 )
 
@@ -301,28 +331,28 @@
     "*"
     SF-IMAGE      "image"      0
     SF-DRAWABLE   "drawable"   0
-    SF-ADJUSTMENT  "Border Width"        '(50 1 250 1 10 0 1)
-    SF-ADJUSTMENT  "Border Height"        '(50 1 250 1 10 0 1)
-    SF-GRADIENT   "Border Gradient" "Crown molding"
-    SF-TOGGLE     "Reverse Gradient" FALSE
-    SF-TOGGLE     "Use Color Tint"   TRUE
-    SF-COLOR      "Tint Color"         '(169 134 41)
-    SF-TOGGLE     _"Use Grain Pattern" FALSE
-    SF-PATTERN    _"Grain Pattern"  "Crack"
-    SF-TOGGLE     "Apply Vignette"    FALSE
-    SF-ADJUSTMENT "Vignette Size" '(100 0 200 1 10 0 0)
-    SF-ADJUSTMENT "Vignette Opacity" '(80 0 100 1 10 0 0)
-    SF-TOGGLE     "Keep selection"    FALSE
-    SF-TOGGLE     "Keep the Layers"   FALSE
+    SF-ADJUSTMENT  "Border Width"           '(50 1 250 1 10 0 1)
+    SF-ADJUSTMENT  "Border Height"          '(50 1 250 1 10 0 1)
+    SF-GRADIENT     "Border Gradient"       "Crown molding"
+    SF-TOGGLE       "Reverse Gradient"      FALSE
+    SF-TOGGLE       "Use Color Tint"        TRUE
+    SF-COLOR        "Tint Color"            '(169 134 41)
+    SF-TOGGLE       "Use Grain Pattern"     FALSE
+    SF-PATTERN      "Grain Pattern"         "Crack"
+    SF-TOGGLE       "Apply Vignette"        TRUE
+    SF-ADJUSTMENT   "Vignette Size"         '(100 0 200 1 10 0 0)
+    SF-ADJUSTMENT   "Vignette Opacity"      '(80 0 100 1 10 0 0)
+    SF-TOGGLE       "Keep selection"        FALSE
+    SF-TOGGLE       "Keep the Layers"       FALSE
 )
 
 (script-fu-menu-register "script-fu-picture-frame" "<Image>/Script-Fu/Edges/")
 
-(define (the-gradient-frame-vignette image drawable
+(define (the-picture-frame-K-vignette image drawable
         size
         opacity
         keep-selection
-        conserve)                     
+        conserve)       
         
     (let* (
             (image-layer (car (gimp-image-get-active-layer image)))
@@ -340,13 +370,16 @@
             (feather 120)
         )
         
+        ;(gimp-message "line373 vignette")
         (gimp-context-push)
         (gimp-image-undo-group-start image)
         (gimp-context-set-foreground '(0 0 0))
         (gimp-context-set-background '(255 255 255))
         
         (if (= alpha FALSE)
-            (gimp-layer-add-alpha image-layer)
+            (begin
+                (gimp-layer-add-alpha image-layer)
+            )
         )
         
         
@@ -354,7 +387,7 @@
         (if (= sel FALSE)
             (begin    
                 (gimp-selection-save image)
-                (set! original-selection-channel (car (gimp-image-get-active-drawable image)))	
+                (set! original-selection-channel (car (gimp-image-get-active-drawable image)))
                 (gimp-channel-set-opacity original-selection-channel 100)
                 (gimp-drawable-set-name original-selection-channel "Original selection")
                 (gimp-selection-none image)
@@ -362,14 +395,34 @@
             )
         )
         
+        ;(gimp-message "line395 vignette")
+        
         ;;;;apply the vignette
-        (if (> width 640) (set! vig-x 640))
-        (if (> height 520) (set! vig-y 520))
+        ;(gimp-message (number->string vig-x))
+        
+        (if (< width 640)
+            (begin
+                ;(gimp-message "small-ish so make bigger")
+                (set! vig-x 640)
+            )
+        )
+        (if (< height 520)
+            (begin
+                (set! vig-y 520)
+            )
+        )
         (if (< width 640) (set! feather (/ width 5.33)))
         (if (< height 520) (set! feather (/ height 4.33)))
+        
         (set! vignette-layer (car (gimp-layer-new image vig-x vig-y  RGBA-IMAGE "Vignette" 100 LAYER-MODE-HARDLIGHT )))
-        (gimp-image-add-layer image vignette-layer -1)
-        (gimp-ellipse-select image 0 0 vig-x vig-y 0 TRUE FALSE 10)
+        (gimp-image-insert-layer image vignette-layer 0 -1)
+        
+        ;(gimp-message "line400 ellipse select")
+        (gimp-context-set-antialias TRUE)
+        (gimp-context-set-feather FALSE)
+        ;(gimp-ellipse-select image 0 0 vig-x vig-y 0 TRUE FALSE 10)
+        (gimp-image-select-ellipse image CHANNEL-OP-ADD 0 0 vig-x vig-y)
+        
         (gimp-selection-shrink image size)
         (gimp-selection-feather image feather)
         (gimp-selection-invert image)
@@ -388,10 +441,12 @@
         (gimp-drawable-set-name vignette-layer "Vignette")
         (gimp-layer-set-opacity vignette-layer opacity)
         
+        ;(gimp-message "line431")
+        
         (if (= conserve FALSE)
             (begin
                 (set! vignette-layer (car (gimp-image-merge-down image vignette-layer EXPAND-AS-NECESSARY)))
-                (gimp-drawable-set-name vignette-layer name-string)
+                (gimp-item-set-name vignette-layer name-string)
             )
         )
         ;(gimp-drawable-set-name image-layer layer-name)
@@ -405,10 +460,12 @@
             (gimp-image-remove-channel image original-selection-channel)
         )
         
+        ;(gimp-message "line462 vignette return")
         (gimp-displays-flush)
         (gimp-image-undo-group-end image)
         (gimp-context-pop)
     )
 ) 
-
+ 
+; end of script
 ; end of script

@@ -13,21 +13,18 @@
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
 ;
-;	Windows Vista/7/8)
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Users\YOUR-NAME\.gimp-2.8\scripts
-;	
-;	Windows XP
-;	C:\Program Files\GIMP 2\share\gimp\2.0\scripts
-;	or
-;	C:\Documents and Settings\yourname\.gimp-2.8\scripts   
+;   Windows 10
+;   C:\Program Files\GIMP 2\share\gimp\2.0\scripts
+;   or
+;   C:\Users\YOUR-NAME\.gimp-2.10\scripts
+;   or
+;   C:\Documents and Settings\yourname\.gimp-2.8\scripts   
 ;    
-;	Linux
-;	/home/yourname/.gimp-2.8/scripts  
-;	or
-;	Linux system-wide
-;	/usr/share/gimp/2.0/scripts
+;   Linux
+;   /home/yourname/.gimp-2.8/scripts  
+;   or
+;   Linux system-wide
+;   /usr/share/gimp/2.0/scripts
 ;
 ;==============================================================
 ;
@@ -78,7 +75,8 @@
             inFadeTo
             inLeaveTransparent
     )
-    (let* ( (l-idx 0)
+    (let* ( 
+            (l-idx 0)
             (l-old-bg-color (car (gimp-context-get-background)))
             (l-has-selection TRUE)
             (width (car (gimp-image-width inImage)))
@@ -87,11 +85,28 @@
             (backgroundlayer (car (gimp-layer-new inImage width height RGBA-IMAGE "Background Layer" 100 LAYER-MODE-NORMAL)))
         )
         ; check Fade from and To Values (and force values from 0% to 100%)
-        (if (> inFadeFrom 100) (begin (set! inFadeFrom 100 )) )
-        (if (< inFadeFrom 0)   (begin (set! inFadeFrom 0 )) )
-        (if (> inFadeTo 100) (begin (set! inFadeTo 100 )) )
-        (if (< inFadeTo 0)   (begin (set! inFadeTo 0 )) )
-         
+        (if (> inFadeFrom 100)
+            (begin
+                (set! inFadeFrom 100 )
+            )
+        )
+        (if (< inFadeFrom 0) 
+            (begin
+                (set! inFadeFrom 0 )
+            )
+        )
+        
+        (if (> inFadeTo 100)
+            (begin
+                (set! inFadeTo 100 )
+            )
+        )
+        (if (< inFadeTo 0) 
+            (begin
+                (set! inFadeTo 0 )
+            )
+        )
+        
         (define l-from-gray (* inFadeFrom 255))
         (define l-to-gray (* inFadeTo 255))
         (define l-step (/  (- l-from-gray l-to-gray) (+ inBorderSize 1)))
@@ -104,7 +119,7 @@
                 
                 (if (not (= RGB (car (gimp-image-base-type inImage))))
                     (gimp-image-convert-rgb inImage)
-                )			
+                )
                 ; if the layer has no alpha add alpha channel
                 (if (= (car (gimp-drawable-has-alpha inLayer)) FALSE)
                     (begin
@@ -149,7 +164,9 @@
                     )
                 )
                 (if (= l-has-selection FALSE)
-                    (gimp-selection-none inImage)
+                    (begin
+                        (gimp-selection-none inImage)
+                    )
                 )
                 (gimp-context-set-background l-old-bg-color)
                 (gimp-selection-none inImage)
@@ -182,12 +199,12 @@
     "Wolfgang Hofer"
     "10 Nov 1999"
     "*"
-    SF-IMAGE        "The Image"                     0
-    SF-DRAWABLE     "The Layer"                     0
-    SF-ADJUSTMENT   "Border Size"                   '(10 1 300 1 10 0 1)
-    SF-ADJUSTMENT   "Fade From %"                   '(100 0 100 1 10 0 0)
-    SF-ADJUSTMENT   "Fade To   %"                   '(0 0 100 1 10 0 0)
-    SF-TOGGLE       "Leave faded area transparent"  FALSE
+    SF-IMAGE        "The Image"                         0
+    SF-DRAWABLE     "The Layer"                         0
+    SF-ADJUSTMENT   "Border Size"                       '(10 1 300 1 10 0 1)
+    SF-ADJUSTMENT   "Fade From %"                       '(100 0 100 1 10 0 0)
+    SF-ADJUSTMENT   "Fade To   %"                       '(0 0 100 1 10 0 0)
+    SF-TOGGLE       "Leave faded area transparent / Flatten"  FALSE
 )
 
 (script-fu-menu-register "FU-fade-outline" "<Toolbox>/Script-Fu/Edges/")

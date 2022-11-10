@@ -2,7 +2,7 @@
 ; version 2.8 [gimphelp.org]
 ; last modified/tested by Paul Sherman
 ; 02/03/2014 on GIMP-2.8.10
-; 03/09/2020 on GIMP-2.10.20
+; 03/09/2020 on GIMP-2.10.20 
 ;
 ;==============================================================
 ;
@@ -66,8 +66,7 @@
             borderBrightness
     )
     
-    (let* 
-        (
+    (let* (
             ;Read the current colours
             (myForeground (car (gimp-context-get-foreground)))
             (myBackground (car (gimp-context-get-background)))
@@ -103,19 +102,25 @@
         
         ;Check the width
         (if (< imageWidth (+ innerSize (+ outerSize (* 2 borderSize))))
-            (set! sizeBAD TRUE)
+            (begin
+                (set! sizeBAD TRUE)
+            )
             ()
         )
         
         ;Check the height
         (if (< imageHeight (+ innerSize (+ outerSize (* 2 borderSize))))
-            (set! sizeBAD TRUE)
+            (begin
+                (set! sizeBAD TRUE)
+            )
             ()
         )
         
         ;Give an error message if the size is not ok
         (if (= sizeBAD TRUE)
-            (gimp-message "The image is not large enough for that border size")
+            (begin
+                (gimp-message "The image is not large enough for that border size")
+            )
             (begin
                 
                 ;Start an undo group so the process can be undone with one undo
@@ -218,6 +223,6 @@
     SF-ADJUSTMENT   "Border brightness"     '(-80 -127 0 1 1 0 1)
 ) 
            
-(script-fu-menu-register "FU-trans-border" "<Image>/Script-Fu/Edges/")
+(script-fu-menu-register "FU-trans-border" "<Toolbox>/Script-Fu/Edges/")
 
 ; end of script

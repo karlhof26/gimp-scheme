@@ -2,7 +2,8 @@
 ; version 2.8 [gimphelp.org]
 ; last modified/tested by Paul Sherman
 ; 02/14/2014 on GIMP-2.8.10
-
+; 10/11/2022 on Gimp-2.10.32
+;
 ; Do a cool fade to a given colour at the border of an image 
 ; (optional shadow.) Will make image RGB if it isn't already.
 ; 02/14/2014 - convert to RGB if needed
@@ -59,6 +60,7 @@
 ; later moved menu location
 ; edited again for GIMP 2.6 - 11/20/2008
 ; edited again for Gimp 2.10.18 - 05/23/2020
+; edited again for Gimp 2.10.32 - 10/11/2022
 ;==============================================================
 (define (chris-color-edge inImage inLayer inColor inSize)
     (gimp-selection-all inImage)
@@ -143,7 +145,9 @@
         ;(gimp-message "line 138")
         
         (if (= inBlur TRUE)
-            (plug-in-gauss-rle TRUE theImage theLayer inSize TRUE TRUE)
+            (begin
+                (plug-in-gauss-rle TRUE theImage theLayer inSize TRUE TRUE)
+            )
         )
         (if (= inShadow TRUE)
             (begin
@@ -185,6 +189,7 @@
         (gimp-image-undo-group-end inImage)
         (gimp-displays-flush)
         ;(gimp-message "Good finish OK")
+        (gc) ; Garbage cleanup; memory cleanup
     )
 )
 

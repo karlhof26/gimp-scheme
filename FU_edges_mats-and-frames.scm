@@ -422,17 +422,21 @@
         (if (= layersp FALSE)
             (begin
                 (if (> matwidth 0)
-                    (let (
+                    (begin
+                        (let* (
                             (layer (car (gimp-image-get-active-layer img)))
-                         )
-                        (gimp-image-merge-down img layer EXPAND-AS-NECESSARY)
+                            )
+                            (gimp-image-merge-down img layer EXPAND-AS-NECESSARY)
+                        )
                     )
                 )
                 (if (> bevelwidth 0)
-                    (let (
+                    (begin
+                        (let* (
                             (layer (car (gimp-image-get-active-layer img)))
-                         )
-                        (gimp-image-merge-down img layer EXPAND-AS-NECESSARY)
+                            )
+                            (gimp-image-merge-down img layer EXPAND-AS-NECESSARY)
+                        )
                     )
                 )
             )
@@ -447,7 +451,7 @@
 )
 
 
-; Script to add a frame around an image.
+; Script to add a frame around an image.  
 ;
 (define (FU-add-frame-kh image drawable
             framewidth

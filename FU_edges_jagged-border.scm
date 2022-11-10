@@ -3,7 +3,7 @@
 ; last modified/tested by Paul Sherman
 ; 02/14/2014 on GIMP-2.8.10
 ;
-; 02/14/2014 - convert to RGB if needed
+; 02/14/2014 - convert to RGB if needed 
 ;==============================================================
 ;
 ; Installation:
@@ -150,8 +150,9 @@
     ;; Make a black layer with a white border
     (gimp-image-insert-layer inImage tmpLayer 0 -1)
     (gimp-edit-fill tmpLayer FILL-WHITE)
-    (gimp-invert tmpLayer) ; ie, BLACK-FILL
+    (gimp-drawable-invert tmpLayer FALSE) ; ie, BLACK-FILL
     
+    (gimp-context-set-antialias FALSE)
     ;; Make a selection, equivalent to shrinking in by inBorderSize
     (if (= inBorderShape 0) ;; Rectangular
         (gimp-image-select-rectangle inImage CHANNEL-OP-ADD inBorderSize inBorderSize
@@ -179,8 +180,12 @@
     ;; blur the border
     
     (if (>= inBorderSize 250)
-        (set! blursize 499)
-        (set! blursize (* inBorderSize 2))
+        (begin
+            (set! blursize 499)
+        )
+        (begin
+            (set! blursize (* inBorderSize 2))
+        )
     )
     (plug-in-gauss-iir RUN-NONINTERACTIVE inImage tmpLayer 
                 blursize TRUE TRUE) ; was in BorderSize * 2 but crash if gr 250
@@ -189,7 +194,7 @@
     (gimp-image-insert-layer inImage cpyLayer 0 -1)
     (gimp-drawable-desaturate cpyLayer DESATURATE-LIGHTNESS) ;; make it a desaturated image (does this help?)
     (if (= inBlackBorder 1) 
-        (gimp-invert cpyLayer)
+        (gimp-drawable-invert cpyLayer FALSE)
     )
     (if (= inOnePixelBorder 1) 
         ;; add a single layer of white pixels around the image (good idea?)
@@ -243,7 +248,7 @@
     
     (gimp-image-undo-group-end inImage)
     (gimp-displays-flush)
-    (gc); garbage cleanup
+    (gc); garbage cleanup 
     
   )
 )

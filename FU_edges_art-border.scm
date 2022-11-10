@@ -2,7 +2,7 @@
 ; version 2.8 [gimphelp.org]
 ; last modified/tested by Paul Sherman
 ; 02/14/2014 on GIMP-2.8.10
-; 02/09/2020 on GIMP-2.10.22
+; 02/09/2020 on GIMP-2.10.22 
 ; 
 ; Last update reintroduced a modified drop-shadow effect 
 ; to give slight "dark glow" to inner border. This is optional. 
@@ -69,6 +69,7 @@
                 inImage
                 inLayer
                 inSize
+                inMiniSize
                 inCopy
                 inDesaturate
                 inShadow
@@ -81,7 +82,7 @@
                 (car (gimp-image-duplicate inImage))
                         inImage))
             (dropamount 2)
-            )
+          )
         (gimp-image-undo-group-start inImage)
         (if (= inCopy FALSE) 
             (begin
@@ -100,37 +101,67 @@
         
         ;(gimp-message "start ok")
         (if (not (= RGB (car (gimp-image-base-type theImage))))
-            (gimp-image-convert-rgb theImage))
+            (gimp-image-convert-rgb theImage)
+        )
         (gimp-selection-all theImage)
         (gimp-selection-shrink theImage inSize)
         (gimp-selection-invert theImage)
         
         (if  (= inDesaturate TRUE)
-            (gimp-drawable-desaturate theLayer DESATURATE-LIGHTNESS)
+            (begin
+                (gimp-drawable-desaturate theLayer DESATURATE-LIGHTNESS)
+            )
         )
         
         (if  (= inInvert TRUE)
-            (gimp-drawable-invert theLayer FALSE)
+            (begin
+                (gimp-drawable-invert theLayer FALSE)
+            )
         )
         
         (if  (= inBlur TRUE)
-            (plug-in-blur 1 theImage theLayer)
+            (begin
+                (plug-in-blur 1 theImage theLayer)
+            )
         )
         ;(gimp-message "middle ok")
         (gimp-selection-invert theImage)
-        (gimp-selection-border theImage 1)
-        (gimp-edit-fill theLayer 0)
-        
+        (if (> inMiniSize 0)
+            (begin
+                (gimp-selection-border theImage inMiniSize) ; was 1
+                
+                (gimp-edit-fill theLayer 0)
+            )
+        )
         (if  (= inShadow TRUE)
             (begin
                 ;(gimp-message "inshadow True")
                 (set! dropamount (round (* inSize 0.5)))
-                (if (> dropamount 12)
-                    (set! dropamount 12)
+                (if (> dropamount 15)
+                    (begin
+                        ;(gimp-message "dropamount 15")
+                        (set! dropamount 15)
+                    )
                 )
-                ;(gimp-message "start drop-shad")
-                (script-fu-drop-shadow theImage theLayer 0 0 dropamount '(0 0 0) 70 TRUE)
-                ;(script-fu-drop-shadow theImage theLayer 0 0 8 '(0 0 0) 70 TRUE)
+                ;(gimp-message (number->string dropamount))
+                ;(gimp-selection-invert theImage)
+                
+                
+                (if (> inMiniSize 0)
+                    (begin
+                        (gimp-selection-border theImage inMiniSize) ; was 1
+                        ;(gimp-message "start drop-shad")
+                        (script-fu-drop-shadow theImage theLayer 6 6 dropamount '(0 0 0) 70 TRUE)
+                        ;(script-fu-drop-shadow theImage theLayer 0 0 8 '(0 0 0) 70 TRUE)
+                        ;(gimp-message "end drop-shad")
+                    )
+                    (begin
+                        (gimp-selection-border theImage 2)
+                        (script-fu-drop-shadow theImage theLayer 6 6 dropamount '(0 0 0) 70 TRUE)
+                    )
+                )
+                
+                
             )
         )
         
@@ -157,18 +188,19 @@
 )
 
 (script-fu-register "FU-art-border"
-    "<Image>/Script-Fu/Edges/Art Border"
-    "Add art border to the image. Uses the foreground color for the thin border. \nfile:FU_edges_art-border.scm"
+    "<Toolbox>/Script-Fu/Edges/Art Border"
+    "Add art border to the image. Uses the foreground color for the thin mini border. \nfile:FU_edges_art-border.scm"
     "Antony Dovgal"
     "2006, Antony Dovgal. This script is based on 'fuzzy border' by Chris Gutteridge"
     "21 April 2006"
     "*"
     SF-IMAGE       "The image"                      0
     SF-DRAWABLE    "The layer"                      0
-    SF-ADJUSTMENT  "Border size"                    '(12 1 300 1 10 0 1)
-    SF-TOGGLE      "Work on copy"                   TRUE
+    SF-ADJUSTMENT  "Border size"                    '(30 1 300 1 10 0 1)
+    SF-ADJUSTMENT  "Mini Border size"               '(3 0 30 1 10 0 1)
+    SF-TOGGLE      "Work on copy"                   FALSE
     SF-TOGGLE      "Desaturate border"              TRUE
-    SF-TOGGLE      "Lightly Shadow Inner Border"    TRUE
+    SF-TOGGLE      "Lightly Shadow Inner Border"    FALSE
     SF-TOGGLE      "Invert border colors"           FALSE
     SF-TOGGLE      "Blur border"                    FALSE
 )

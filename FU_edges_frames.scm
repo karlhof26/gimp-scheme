@@ -71,25 +71,61 @@
 
 
 (define (FU-frame-hover image drawable width signature-text font-name)
+    
+    (if (<= width 128.0)
+            (begin
+                ;(gimp-message "Width set too small. Reset to 128")
+                (set! width 128.0)
+            )
+            (begin
+                ;(gimp-message "Width kept.")
+            )
+    )
     (gimp-display-new
         (FU-frame-hover-batch image drawable width signature-text font-name))
     (gimp-displays-flush)
 )
 
-(define (FU-frame-negative image drawable width signature-text font-name)
-    (gimp-display-new
-        (FU-frame-negative-batch image drawable width signature-text font-name))
-    (gimp-displays-flush)
+(define (FU-frame-negative image drawable targetwidth signature-text font-name)
+    (let* (
+            (revisedwidth 50.0)
+        )
+        ;(gimp-message (number->string targetwidth))
+        (if (<= targetwidth 128.0)
+            (begin
+                ;(gimp-message "Width set too small. Reset to 128")
+                (set! targetwidth 128.0)
+            )
+            (begin
+                ;(gimp-message "Width kept.")
+            )
+        )
+        (gimp-display-new
+            (FU-frame-negative-batch image drawable targetwidth signature-text font-name))
+        (gimp-displays-flush)
+    )
 )
 
 (define (FU-frame-poster image drawable width border-colour signature-text font-name)
-  (gimp-display-new
-   (FU-frame-poster-batch image drawable width border-colour signature-text font-name))
-  (gimp-displays-flush)
+    
+    (if (<= width 128.0)
+            (begin
+                ;(gimp-message "Width set too small. Reset to 128")
+                (set! width 128.0)
+            )
+            (begin
+                ;(gimp-message "Width kept.")
+            )
+    )
+    
+    
+    (gimp-display-new
+        (FU-frame-poster-batch image drawable width border-colour signature-text font-name))
+    (gimp-displays-flush)
 )
 
 (define (%top-layer image)
-  (aref (cadr (gimp-image-get-layers image)) 0)
+    (aref (cadr (gimp-image-get-layers image)) 0)
 )
 
 (define (FU-frame-hover-batch image drawable width signature-text font-name)
@@ -152,6 +188,9 @@
                     (- (car (gimp-image-height new-image)) text-height))
             )
         )
+        (begin
+            (gimp-message "Size small. No signature in border. Use 512 or higher.")
+        )
     )
     (gimp-image-merge-visible-layers new-image 0)
     (gimp-context-set-foreground foreground)
@@ -163,7 +202,8 @@
 )
 
 (define (FU-frame-negative-batch image drawable width signature-text font-name)
-  (let* (   (new-image (car (gimp-image-duplicate image)))
+  (let* (   
+            (new-image (car (gimp-image-duplicate image)))
             (drawable (car (gimp-image-get-active-drawable new-image)))
             (height (* (car (gimp-image-height new-image))
                 (/ width (car (gimp-image-width new-image)))))
@@ -171,13 +211,14 @@
             (foreground (car (gimp-context-get-foreground)))
             (background (car (gimp-context-get-background)))
             (black-layer (car (gimp-layer-new new-image
-                                            width; (car (gimp-image-width new-image))
-                                            height; (car (gimp-image-height new-image))
+                                            width     ; (car (gimp-image-width new-image))
+                                            height    ; (car (gimp-image-height new-image))
                                             RGB-IMAGE
                                             "Black layer"
                                             100
                                             LAYER-MODE-NORMAL)))
         )
+        
         (gimp-image-undo-group-start new-image)
         
         (if (not (= RGB (car (gimp-image-base-type new-image))))
@@ -195,7 +236,7 @@
         (gimp-context-set-background '(0 0 0))
         (script-fu-round-corners new-image
                 drawable
-                (trunc (* size 0.9))  ; edge radius ; was  / 3
+                (trunc (* size 0.8))  ; edge radius ; was  / 3
                 FALSE       ; no shadow
                 0           ; shadow x offset
                 0           ; shadow y offset
@@ -206,23 +247,24 @@
         (gimp-image-insert-layer new-image black-layer 0 1)
         (gimp-edit-fill black-layer FILL-BACKGROUND)
         (gimp-context-set-foreground '(200 200 200))
-        (gimp-display-new new-image)
+        ;(gimp-display-new new-image)
         ;(quit)
         
         (gimp-image-merge-visible-layers new-image 0)
         (let ((background-layer (%top-layer new-image)))
             (if (> size 20)
                 (begin
-                    (let* ((text-layer (car (gimp-text-fontname new-image
-                            -1 ; drawable, -1 = new layer
-                            0
-                            0
-                            signature-text
-                            1       ; border
-                            TRUE ; antialias
-                            (max 10 (/ size 2)) ; text size
-                            PIXELS ; size unit
-                            font-name)))
+                    (let* (
+                            (text-layer (car (gimp-text-fontname new-image
+                                -1 ; drawable, -1 = new layer
+                                0
+                                0
+                                signature-text
+                                1       ; border
+                                TRUE ; antialias
+                                (max 10 (/ size 2)) ; text size
+                                PIXELS ; size unit
+                                font-name)))
                             (text-width (car (gimp-drawable-width text-layer)))
                             (text-height (car (gimp-drawable-height text-layer)))
                           )
@@ -236,8 +278,10 @@
                     (gimp-image-merge-visible-layers new-image 0)
                 )
                 (begin
+                    (gimp-message "Size small. No Signature in border.  Use 512 or higher.")
+                    ;(gimp-message (number->string size))
                     (script-fu-addborder new-image background-layer
-                        (/ size 5) (/ size 5) '(0 0 0) 0)
+                        (round (* size 0.75)) (round (* size 0.75)) '(0 0 0) 0)
                 )
             )
         )
@@ -313,14 +357,17 @@
                     (gimp-image-raise-item-to-top new-image text-layer)
                 )
             )
-            (script-fu-addborder new-image background-layer
+            (begin
+                (gimp-message "Size small. No signature in border. Use 512 or higher.")
+                (script-fu-addborder new-image background-layer
                     size size border-colour 0)
+            )
         )
     )
     (gimp-image-merge-visible-layers new-image 0)
     (gimp-context-set-foreground foreground)
     (gimp-context-set-background background)
-    (gimp-image-undo-group-end new-image)
+    (gimp-image-undo-group-end new-image) 
     ;; return the new image so that batch scripts can do something
     ;; with it
     new-image
@@ -329,8 +376,8 @@
 
 
 (script-fu-register "FU-frame-hover"
-            "Frame with hover effect and round corners..."
-            "Resize, frame and sign a photograph for publishing on Internet (\"hover\" style) \nfile:FU_edges_frames.scm"
+            "Frame like a hover with drop shadow and round corners..."
+            "Resize, frame and sign a photograph for publishing on Internet (\"hover\" style). Creates a new image. \nfile:FU_edges_frames.scm"
             "Walter Pelissero <walter@pelissero.de>"
             "Walter Pelissero"
             "2006/07/13"
@@ -346,29 +393,29 @@
             "<Toolbox>/Script-Fu/Edges")
 
 (script-fu-register "FU-frame-negative"
-            "Frame like slide with round corners..."
-            "Resize, frame and sign a photograph for publishing on Internet (\"slide\" style)  \nfile:FU_edges_frames.scm"
+            "Frame like a negative slide with round corners..."
+            "Resize, frame and sign a photograph for publishing on Internet (\"slide\" style). Creates a new image.  \nfile:FU_edges_frames.scm"
             "Walter Pelissero <walter@pelissero.de>"
             "Walter Pelissero"
             "2006/07/13"
             "*"
             SF-IMAGE        "Image"         0
             SF-DRAWABLE     "Drawable"      0
-            SF-ADJUSTMENT   "Image width"    '(640 128 4096 128 10 0 1)
+            SF-ADJUSTMENT   "Image target width"    '(640 128 4096 128 10 0 1)
             SF-STRING       "Signature"     "Your Name"
             SF-FONT         "Font"          "sans"
 )
 
 (script-fu-register "FU-frame-poster"
             "Frame like poster with straight corners..."
-            "Resize, frame and sign a photograph for publishing on Internet (\"poster\" style) \nfile:FU_edges_frames.scm"
+            "Resize, frame and sign a photograph for publishing on Internet (\"poster\" style).  Creates a new image. \nfile:FU_edges_frames.scm"
             "Walter Pelissero <walter@pelissero.de>"
             "Walter Pelissero"
             "2006/09/06"
             "*"
             SF-IMAGE        "Image"             0
             SF-DRAWABLE     "Drawable"          0
-            SF-ADJUSTMENT   "Image width"       '(640 128 4096 128 10 0 1)
+            SF-ADJUSTMENT   "Image target width"       '(640 128 4096 128 10 0 1)
             SF-COLOR        "Border colour"     '(0 0 0)
             SF-STRING       "Signature"         "Your Name"
             SF-FONT         "Font"              "sans"

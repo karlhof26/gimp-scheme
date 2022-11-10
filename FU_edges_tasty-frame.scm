@@ -203,7 +203,7 @@
 
 
 (script-fu-register "FU-tasty-frame"
-    "<Image>/Script-Fu/Edges/Tasty Frame - optional Title"
+    "<Toolbox>/Script-Fu/Edges/Tasty Frame - optional Title"
     "Add a tasty frame to the image, including Title and name if desired. \nfile:FU_edges_tasty-frame.scm"
     "Luis A. Florit <luis@impa.br>"
     "Luis A. Florit"
@@ -211,20 +211,20 @@
     "*"
     SF-IMAGE      "Image"              0
     SF-DRAWABLE   "Drawable"           0
-    SF-ADJUSTMENT _"Round edge radius" '(5 0 300 1 5 0 1)
-    SF-ADJUSTMENT _"Light radius"      '(13 0 300 1 5 0 1)
-    SF-COLOR      _"Light color"       '(255 255 0)
-    SF-ADJUSTMENT _"Border radius"     '(3 0 300 1 1 0 1)
-    SF-COLOR      _"Border color"      '(200 200 0)
-    SF-COLOR      _"Background color"  '(0 0 0)
-    SF-TOGGLE     _"Add title"          TRUE
-    SF-COLOR      _"Letter color"      '(140 140 140)
-    SF-STRING     _"Title"             "(Picture Title here)"
-    SF-ADJUSTMENT _"Title Font"        '(32 8 48 1 1 0 0)
-    SF-TOGGLE     _"Add signature"      TRUE
-    SF-STRING     _"Signature"         "(Your Name Here)"
-    SF-ADJUSTMENT _"Signature Font"    '(16 8 32 1 1 0 0)
-    SF-FONT       _"Font"              "sans"
+    SF-ADJUSTMENT "Round edge radius" '(5 0 300 1 5 0 1)
+    SF-ADJUSTMENT "Light radius"      '(13 0 300 1 5 0 1)
+    SF-COLOR      "Light color"       '(255 255 0)
+    SF-ADJUSTMENT "Border radius"     '(3 0 300 1 1 0 1)
+    SF-COLOR      "Border color"      '(200 200 0)
+    SF-COLOR      "Background color"  '(0 0 0)
+    SF-TOGGLE     "Add title"          TRUE
+    SF-COLOR      "Letter color"      '(140 140 140)
+    SF-STRING     "Title"             "(Picture Title here)"
+    SF-ADJUSTMENT "Title Font"        '(32 8 48 1 1 0 0)
+    SF-TOGGLE     "Add signature"      TRUE
+    SF-STRING     "Signature"         "(Your Name Here)"
+    SF-ADJUSTMENT "Signature Font"    '(16 8 32 1 1 0 0)
+    SF-FONT       "Font"              "sans"
 )
 
 ; end of script

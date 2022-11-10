@@ -7,6 +7,7 @@
 ; convert to RGB if needed, option to merge layer upon script completion
 ; last modified/tested by karlhof26
 ; 05/29/2020 on GIMP-2.10.18
+; 11/07/2022 on Gimp 2.10.32 (US style date format)
 ;;==============================================================
 ;
 ; Installation:
@@ -63,6 +64,7 @@
         text-string 
         text-font 
         text-height
+        text-color
         inFlatten
         )
     (let* (    
@@ -123,11 +125,17 @@
         )
         
         (unless (= (string-length text-string) 0)
+            (gimp-context-set-foreground text-color)
             (set! text-layer 
                 (gimp-text-fontname image border-layer (* bw 1.2) (+ bw h (/ (- (+ bw lh) th) 2)) text-string 0 TRUE th PIXELS text-font) ; (/ (- (+ bw lh) th) 1.5)
             )
+            
         )
-        (if (= inFlatten TRUE)(gimp-image-flatten image))
+        (if (= inFlatten TRUE)
+            (begin
+                (gimp-image-flatten image)
+            )
+        )
         (gimp-image-undo-group-end image)
         (gimp-displays-flush)
     )
@@ -135,7 +143,7 @@
   
 (script-fu-register 
     "FU-photo-border"
-    "<Toolbox>/Script-Fu/Decor/Photo Border Fancy"
+    "<Toolbox>/Script-Fu/Edges/Photo Border Fancy"
     "Add white border to photo.\n
     The extra lower border is for a 'Polaroid' effect,  
         in which case a caption may also be added.\n
@@ -150,16 +158,18 @@
     SF-IMAGE        "Image"                                     0
     SF-DRAWABLE     "Layer"                                     0
     SF-ADJUSTMENT   "Border (%)"                                '(7.0 0 20 0.1 1.0 1 0)
-    SF-ADJUSTMENT   "Extra Lower Border (0 for none) (%)"       '(21.0 0 100 0.1 1.0 1 0)
+    SF-ADJUSTMENT   "Extra Lower Border (0 for none) (%)"       '(13.0 0 100 0.1 1.0 1 0)
     SF-ADJUSTMENT   "Drop Shadow (0 to disable) (%)"            '(3.0 0 50 0.1 1.0 1 0)
     SF-COLOR        "Border Color"                              '(250 250 240)
     SF-ADJUSTMENT   "Border Shading Feather (0 for none) (%)"   '(10.0 0 50 0.1 1.0 1 0)
     SF-ADJUSTMENT   "Border Shading Transparency (%)"           '(12.0 0 100 0.5 5.0 1 0)
     SF-COLOR        "Border Shading Color"                      '(0 0 0)
-    SF-STRING       "Caption Text (needs lower border)"         ""
-    SF-FONT         "Caption Font" (if (= 0 (car (gimp-fonts-get-list "Comic"))) "Serif Bold" (caadr (gimp-fonts-get-list "Comic")))
+    SF-STRING       "Caption Text (needs lower border)"         "(Your Caption text here)"
+    SF-FONT         "Caption Font"                              "Serif Bold"
+    ;SF-FONT         "Caption Font" (if (= 0 (car (gimp-fonts-get-list "Comic"))) "Serif Bold" (caadr (gimp-fonts-get-list "Comic")))
     SF-ADJUSTMENT   "Caption Height (%)"                        '(7.0 0 50 0.1 1.0 1 0)
-    SF-TOGGLE       "Flatten image when complete?"              FALSE
+    SF-COLOR        "Caption Text Color"                        '(220 70 70)
+    SF-TOGGLE       "Flatten image when complete?"              TRUE
 )
 
 ; end of script
