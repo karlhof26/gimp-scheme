@@ -27,7 +27,8 @@
 ; ------------ 
 ; Sparkler Animation Effect Beta [Update 1]
 ; Sparkler Animation Effect Beta [Update 2]
-
+; Updated for Gimp 2.10.32
+;
 (define (script-fu-Sparkler-anim-effect-beta
                         image
                         drawable
@@ -50,6 +51,7 @@
                         lg-sp-count         ; Large Sparkle Count
                         lg-sp-minval        ; Large Sparkle Min Pulse Value
                         rnd-lg-sp-type      ; Randomize Large Sparkle Shapes
+                        grad-x-amt          ; for option 1 white-gradient
         )
     (gimp-image-undo-group-start image)
     ;
@@ -63,7 +65,8 @@
     ; (next-pulse-val)
     ;
     (define (gen-spark-pulse-modulator start-time cycle-length minval maxval)
-        (let* (  (time (min (max start-time 0) (* 2 *pi*)))
+        (let* (
+                (time (min (max start-time 0) (* 2 *pi*)))
                 (delta (/ (* 2 *pi*) cycle-length))
              )
             (lambda ()
@@ -94,11 +97,10 @@
                 a ; Alpha Value
        )
    
-        (let* 
-            (
+        (let* (
                 (loop-cnt 0)  ; Loop Counter
-            )
-        
+              )
+            
             (while (< loop-cnt sp-numpixels)   ; Loop Through Each Pixel In The Sprite
             
                 (sp-set-pixel 
@@ -119,7 +121,9 @@
     ; Define Set Pixel Procedure
     ;
     (define (sp-set-pixel sp-inlayer sp-xpos sp-ypos r g b a)
-        (let* ((pix-array (cons-array 4 'byte)))
+        (let* (
+                (pix-array (cons-array 4 'byte))
+              )
             (aset pix-array 0 r)
             (aset pix-array 1 g)
             (aset pix-array 2 b)
@@ -174,7 +178,9 @@
         ;
         ; Sparkler Main Procedure
         ;
-        
+        (srand (car (gettimeofday)))
+        (set! *seed* (car (gettimeofday)))
+         
         (gimp-context-push) ; Save Context
         (gimp-context-set-gradient sp-gradient)
         
@@ -229,6 +235,9 @@
         (set! area (* 400 400))
         (set! iarea (* iwidth iheight))
         (set! count-factor (/ iarea area))
+        (if (< count-factor 1.0)
+            (set! count-factor 1.0)
+        )
         (set! sm-sp-count (inexact->exact (round (* sm-sp-count count-factor))))
         (set! md1-sp-count (inexact->exact (round (* md1-sp-count count-factor))))
         (set! md2-sp-count (inexact->exact (round (* md2-sp-count count-factor))))
@@ -291,17 +300,17 @@
             ;(gimp-message (number->string (vector-ref star-sparklex 1)))
             ;(gimp-message (number->string (vector-ref star-sparklex 0)))
             
-            (set! next-pulse-val(gen-spark-pulse-modulator pulse-stime sp-frames sm-sp-minval 255)) ; Create Pulse Function For The Pixel
+            (set! next-pulse-val (gen-spark-pulse-modulator pulse-stime sp-frames sm-sp-minval 255)) ; Create Pulse Function For The Pixel
             
             ;(gimp-message (number->string next-pulse-val))
             ;(gimp-message "line297")
             ;(set! next-pulse-val (round (+ (string->number next-pulse-val) 0.5)))
             ;(gimp-message (number->string (next-pulse-val)))
             
-            (gimp-message (string-append (number->string loop-cnt2) "/" (number->string sm-sp-count)))
+            (gimp-message (string-append (number->string loop-cnt2) "/" (number->string (- sm-sp-count 1))))
             
-            (set! xpos (+ (random (- iwidth 8)) 4))   ; Random Pixel X Position (Empty 4 pixel border)
-            (set! ypos (+ (random (- iheight 8)) 4))   ; Random Pixel Y Position (Empty 4 pixel border)
+            (set! xpos (+ (rand (- iwidth 8)) 4))   ; Random Pixel X Position (Empty 4 pixel border)
+            (set! ypos (+ (rand (- iheight 8)) 4))   ; Random Pixel Y Position (Empty 4 pixel border)
             
             (set! loop-cnt1 0)              ; Zero Frame Counter 
             (while (< loop-cnt1 sp-frames)  ; Activate Pixels In Each Frame
@@ -442,8 +451,8 @@
         
         (set! next-pulse-val(gen-spark-pulse-modulator pulse-stime sp-frames md1-sp-minval 255)) ; Create Pulse Function For The Pixel
         
-        (set! xpos (+ (rand (- iwidth 8)) 4))   ; Random Pixel X Position (Empty 4 pixel border)
-        (set! ypos (+ (rand (- iheight 8)) 4))   ; Random Pixel Y Position (Empty 4 pixel border)
+        (set! xpos (+ (rand (- iwidth 9)) 4))   ; Random Pixel X Position (Empty 4 pixel border)
+        (set! ypos (+ (rand (- iheight 9)) 4))   ; Random Pixel Y Position (Empty 4 pixel border)
         
         ;(gimp-message "line448")
         
@@ -619,8 +628,8 @@
          
          (set! next-pulse-val(gen-spark-pulse-modulator pulse-stime sp-frames md2-sp-minval 255)) ; Create Pulse Function For The Pixel
          
-         (set! xpos (+ (rand (- iwidth 8)) 4))   ; Random Pixel X Position (Empty 4 pixel border)
-         (set! ypos (+ (rand (- iheight 8)) 4))   ; Random Pixel Y Position (Empty 4 pixel border)
+         (set! xpos (+ (rand (- iwidth 9)) 4))   ; Random Pixel X Position (Empty 4 pixel border)
+         (set! ypos (+ (rand (- iheight 9)) 4))   ; Random Pixel Y Position (Empty 4 pixel border)
          
          (set! loop-cnt1 0)              ; Zero Frame Counter 
          (while (< loop-cnt1 sp-frames)  ; Activate Pixels In Each Frame
@@ -724,7 +733,7 @@
         
         (if (= rnd-lg-sp-type TRUE)
             (begin
-                (set! sp-type (- (random 8) 1))
+                (set! sp-type (- (rand 8) 1))
                 (cond
                     ((= sp-type 0)
                         (set! star-sparklex (vector 0 -1 1 0 -1 1  0 -1  1 -2 2  0 0))    ; Large Sparkle/Sprite X Offsets (13 Pixels)
@@ -773,8 +782,8 @@
         
         (set! next-pulse-val(gen-spark-pulse-modulator pulse-stime sp-frames lg-sp-minval 255)) ; Create Pulse Function For The Pixel
         
-        (set! xpos (+ (random (- iwidth 13)) 6))   ; Random Pixel X Position (Empty 4 pixel border) ; was 8 & 4
-        (set! ypos (+ (random (- iheight 13)) 6))   ; Random Pixel Y Position (Empty 4 pixel border)
+        (set! xpos (+ (rand (- iwidth 13)) 6))   ; Random Pixel X Position (Empty 4 pixel border) ; was 8 & 4
+        (set! ypos (+ (rand (- iheight 13)) 6))   ; Random Pixel Y Position (Empty 4 pixel border)
         
         (set! loop-cnt1 0)              ; Zero Frame Counter 
         (while (< loop-cnt1 sp-frames)  ; Activate Pixels In Each Frame
@@ -821,8 +830,12 @@
             (set! loop-cnt1 (+ loop-cnt1 1))         ; Increment Frames Counter
          ) ; loop
          
-         (if (= rnd-lg-sp-type TRUE) (set! sp-type saved-sp-type))
-         (if (= sp-color-opt 2) (set! sample-list (cddddr sample-list)))
+         (if (= rnd-lg-sp-type TRUE)
+            (set! sp-type saved-sp-type)
+         )
+         (if (= sp-color-opt 2)
+            (set! sample-list (cddddr sample-list))
+         )
          (set! loop-cnt2 (+ loop-cnt2 1))     ; Increment Sparkle Loop Counter
          
          (gimp-progress-update (/ loop-cnt2 lg-sp-count))
@@ -832,12 +845,15 @@
      
      (if (= sp-color-opt 1)
         (begin
-            (gimp-context-set-sample-criterion SELECT-CRITERION-A)
-            (gimp-context-set-sample-threshold 0.3)
-            (gimp-image-select-color img CHANNEL-OP-REPLACE (vector-ref sp-layers 0) '(252 252 252))
+            ;(gimp-message "color opt 1")
+            (gimp-context-set-antialias TRUE)
+            ;(gimp-context-set-sample-criterion SELECT-CRITERION-A)
+            (gimp-context-set-sample-criterion SELECT-CRITERION-COMPOSITE)
+            (gimp-context-set-sample-threshold 0.50)
+            (gimp-image-select-color img CHANNEL-OP-REPLACE (vector-ref sp-layers 0) '(244 244 244))
             
             ;(gimp-selection-invert img)
-            (map (lambda (x) (gimp-edit-blend x BLEND-CUSTOM LAYER-MODE-OVERLAY GRADIENT-LINEAR 100 0 REPEAT-SAWTOOTH FALSE FALSE 3 0.2 TRUE 0 0 0 iheight)) 
+            (map (lambda (x) (gimp-edit-blend x BLEND-CUSTOM LAYER-MODE-OVERLAY GRADIENT-LINEAR 100 0 REPEAT-SAWTOOTH FALSE TRUE 3 0.2 FALSE 0 0 grad-x-amt iheight)) 
              (vector->list (cadr (gimp-image-get-layers img))))
             (gimp-selection-none img)
         )
@@ -885,6 +901,7 @@
     (gimp-displays-flush)  ; Flush Display
     (gimp-image-undo-group-end image) 
     (gimp-context-pop)     ; Restore Context  
+    (gc) ; garbage cleanup; array was used; memory cleanup
     
  ); end let
 ); end define
@@ -894,7 +911,7 @@
 ;
 (script-fu-register "script-fu-Sparkler-anim-effect-beta"            
             "Sparkler Animation Effect..."
-            "Sparkle Effect. Sparkle counts are per 400x400 block adjusted for the size of the image. \nfile:Sparkler-Animation-Effect_02.scm"
+            "Sparkle Effect. Sparkle counts are per 400x400px block adjusted for the size of the image. Gradient is overlaid top to bottom. Gradient xvalue can be adjusted to adjust gradient effect. Use a black background 400x400px to start. Min pulse value determines the extent of pulsing. Raise for less pulsing.\nfile:Sparkler-Animation-Effect_02.scm"
             "Graechan GnuTux"
             "GPL"
             "2015"
@@ -903,23 +920,24 @@
             SF-DRAWABLE     "drawable"   0
             SF-ADJUSTMENT   "Frames"                    '(6 3 10 1 1 0 0)
             SF-OPTION       "Sparkle Shapes Set"        '("Default (Stars)" "Bubbles" "Squares" "Triagular" "Hearts" "Arrows" "Isosceles-Triangle" "Faces")
-            SF-OPTION       "Sparkle Coloring"          '("From Color selectors" "Using Sparkle Gradient" "Party Mix From Gradient" "Chameleon Colors")
+            SF-OPTION       "Sparkle Coloring"          '("From Color selectors" "White to Sparkle Gradient" "Mix From Gradient" "Chameleon Colors")
             SF-GRADIENT     "Sparkle Gradient"          "Full saturation spectrum CCW"
             SF-COLOR        "Small Sparkle Color"       '(255 255 255)
-            SF-ADJUSTMENT   "Small Sparkle Count"       '(100 0 400 1 10 0 0)
+            SF-ADJUSTMENT   "Small Sparkle Count"       '(60 0 400 1 10 0 0)
             SF-ADJUSTMENT   "Small Sparkle Min Pulse Value"     '(0 0 255 1 10 0 0)
             SF-COLOR        "Medium1 Sparkle Color"     '(255 255 255)
-            SF-ADJUSTMENT   "Medium1 Sparkle Count"     '(40 0 400 1 10 0 0)
+            SF-ADJUSTMENT   "Medium1 Sparkle Count"     '(20 0 400 1 10 0 0)
             SF-ADJUSTMENT   "Medium1 Sparkle Min Pulse Value"   '(0 0 255 1 10 0 0)
             SF-TOGGLE       "Randomize Medium1 Sparkle Shapes"  FALSE
             SF-COLOR        "Medium2 Sparkle Color"     '(255 255 255)
-            SF-ADJUSTMENT   "Medium2 Sparkle Count"     '(40 0 400 1 10 0 0)
+            SF-ADJUSTMENT   "Medium2 Sparkle Count"     '(20 0 400 1 10 0 0)
             SF-ADJUSTMENT   "Medium2 Sparkle Min Pulse Value"   '(3 0 255 1 10 0 0)
             SF-TOGGLE       "Randomize Medium2 Sparkle Shapes"  FALSE
             SF-COLOR        "Large Sparkle Color"       '(255 255 255)
-            SF-ADJUSTMENT   "Large Sparkle Count"       '(40 0 400 1 10 0 0)
+            SF-ADJUSTMENT   "Large Sparkle Count"       '(20 0 400 1 10 0 0)
             SF-ADJUSTMENT   "Large Sparkle Min Pulse Value"     '(0 0 255 1 10 0 0)
             SF-TOGGLE       "Randomize Large Sparkle Shapes"    FALSE
+            SF-ADJUSTMENT   "Gradient X-amount (white to sparkle option)"     '(1 0 4000 10 100 0 1)
 ) ;End register
 
 (script-fu-menu-register "script-fu-Sparkler-anim-effect-beta" "<Image>/Script-Fu2/Animation")
