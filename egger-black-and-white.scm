@@ -58,12 +58,14 @@
             ; B&W (Gimp)
             ;
             ((= InType 0)
-                (gimp-drawable-desaturate BWLayer DESATURATE-LUMINOSITY))
+                (gimp-drawable-desaturate BWLayer DESATURATE-LUMINANCE)
+            )
             ;
             ; B&W (Channel Mixer)
             ;
             ((= InType 1)
-                (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE 0.4 0.3 0.3 0 0 0 0 0 0))
+                (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE 0.4 0.3 0.3 0 0 0 0 0 0)
+            )
             ;
             ; B&W with Red filter
             ;
@@ -71,15 +73,19 @@
             ;
             ; B&W with Orange filter
             ;
-            ((= InType 3) (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE 0.78 0.22 0.0 0 0 0 0 0 0))
+            ((= InType 3)
+                (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE 0.78 0.22 0.0 -0.2 0 0 -0.2 0 0)
+            )
             ;
             ; B&W with Yellow filter
             ;
-            ((= InType 4) (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE 0.6 0.28 0.12 0 0 0 0 0 0))
+            ((= InType 4) (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE 0.6 0.28 0.12 -0.1 0 0 -0.1 0 0))
             ;
             ; B&W with Green Filter
             ;
-            ((= InType 5) (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE 0.1 0.7 0.2 0 0 0 0 0 0))
+            ((= InType 5)
+                (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE 0.1 0.7 0.2 -0.2 0 0 -0.2 0 0)
+            )
             ;
             ; B&W (Lithographic film)
             ;
@@ -94,18 +100,25 @@
             ; B&W (Orthochromatic film)
             ;
             ((= InType 7)
-                (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE -1.1 1.05 1.05 0 0 0 0 0 0))
+                (plug-in-colors-channel-mixer TRUE InImage BWLayer TRUE -1.1 1.05 1.05 0 0 0 0 0 0)
+            )
         )
         ;
         ; Add noise to the image, if we need to
         ;
         (if (and (= InNoise TRUE) (defined? 'plug-in-scatter-rgb) )
-            (plug-in-scatter-rgb TRUE InImage BWLayer FALSE FALSE 0.1 0.1 0.1 0)
+            (begin
+                (plug-in-scatter-rgb TRUE InImage BWLayer FALSE FALSE 0.1 0.1 0.1 0)
+            )
+            (begin
+                ;(gimp-message "using noise plugin")
+            )
         )
         (if (= InNoise TRUE)
             (begin
                 ; this is the noise if no scatter plugin
-                (plug-in-rgb-noise 1 InImage BWLayer TRUE TRUE 0.1 0.1 0.1 0.5)
+                (plug-in-rgb-noise 1 InImage BWLayer FALSE FALSE 0.1 0.1 0.1 0.5)
+                
             )
         )
         ;
@@ -121,13 +134,13 @@
     ;
     (gimp-image-undo-group-end InImage)
     (gimp-displays-flush)
-    
+    (gc) ; garbage cleanup; memory cleanup
 )
 
 ; Register the function with the GIMP
 ;
 (script-fu-register "script-fu-eg-blackandwhite"
-    "<Image>/Script-Fu/Colors/Black and White Conversions"
+    "<Toolbox>/Script-Fu/Colors/Black and White Conversions"
     "Black and White conversions. \nfile:egger-black-and-white.scm"
     "Martin Egger martin.egger@gmx.net"
     "2005, Martin Egger, and karlhof26"
@@ -146,8 +159,8 @@
                     "B&W (Lithographic film)"
                     "B&W (Orthochromatic film)"
             )
-    SF-TOGGLE    "Film grain simulation(RGB scatter plugin required)" FALSE
-    SF-TOGGLE    "Flatten Image"    FALSE
+    SF-TOGGLE    "Film grain simulation "       FALSE
+    SF-TOGGLE    "Flatten Image"                FALSE
 )
 
 ; end of script 
