@@ -73,6 +73,7 @@
             (selection_deets 0)
             (last_cnt 0)
         )
+    (srand (car (gettimeofday)))
     (cond ((not (defined? 'gimp-image-get-item-position)) (set! ver 2.6))) ;define the gimp version
     
     (gimp-context-push)
@@ -112,11 +113,14 @@
     (set! orig_cnt (- (round (/ isize 30)) 1))   
     
     
-    ;;;;begin the script	
+    ;;;;begin the script
     (include-layer image paint-layer drawable 0) ;stack 0=above 1=below
     (gimp-image-select-rectangle image 2 x1 y1 iwidth iheight)
     
     (if (= ver 2.8) (gimp-context-set-dynamics "Random Color"))
+    
+    (gimp-progress-pulse)
+    
     (gimp-context-set-paint-method "gimp-paintbrush")
     (gimp-context-set-brush "Sparks")
     (gimp-context-set-brush-default-size)
@@ -137,29 +141,47 @@
         
         
         (set! cnt (- cnt 1))
+        
     )
     ;one more to finish
     
+    (gimp-progress-pulse)
+    (gimp-context-set-feather FALSE)
     (gimp-image-select-rectangle image 2 x1 y1 iwidth iheight)
+    (gimp-displays-flush)
+    
+    
+    (gimp-progress-pulse)
+    
     (gimp-selection-shrink image (* (- orig_cnt last_cnt) 30))
     
     (gimp-selection-shrink image 42)
-    
+    (gimp-progress-pulse)
     ;(set! selection_deets (cadr (gimp-selection-bounds image)))
     ;(gimp-message (number->string selection_deets))
         
     (gimp-context-set-foreground '(250 0 0))
-    (if (= (car (gimp-selection-is-empty image)) FALSE) (gimp-edit-stroke paint-layer))
+    (if (= (car (gimp-selection-is-empty image)) FALSE)
+        (begin
+            (gimp-progress-pulse)
+            (gimp-edit-stroke paint-layer)
+        )
+    )
     
     (gimp-displays-flush)
     
     
     (gimp-selection-none image)
     (gimp-selection-load selection-channel)
+    
+    (gimp-progress-pulse)
+    
     (gimp-selection-shrink image 1)
     (gimp-selection-invert image)
     (gimp-edit-clear paint-layer)
     (gimp-selection-none image)
+    
+    (gimp-progress-pulse)
     
     ;(gimp-curves-spline paint-layer 0 10 #(0 0 86 50 128 129 172 207 255 255))
     (gimp-drawable-curves-spline paint-layer 0 10 #(0.0 0.0 0.33 0.196 0.5016 5058 0.674 0.811 1.0 1.0))
@@ -178,28 +200,27 @@
     (gimp-displays-flush)
     (gimp-image-undo-group-end image)
     (gimp-context-pop)
+    (gc) ; garbage cleanup ;memory cleanup
     
  )
 ) 
 
 (script-fu-register "script-fu-splatter"            
     "Splatter"
-    "Splatters Paint over layer or selection. Note that only some layer modes may work. \nfile:Splatter.scm"
+    "Splatters Paint over layer or selection. Note that only some layer modes may work. There is a long pause during the script run.\nfile:Splatter.scm"
     "Graechan"
     "Graechan - http://gimpchat.com"
     "May 2014"
     "RGB*"
-    SF-IMAGE      "image"      0
-    SF-DRAWABLE   "drawable"   0
+    SF-IMAGE      "image"           0
+    SF-DRAWABLE   "drawable"        0
     SF-COLOR      "Canvas Color"                "Black"
     SF-GRADIENT   "Paint Splatter Gradient"     "Tropical Colors"
-    SF-ENUM "Paint Splatter LayerMode" '("LayerModeEffects" "hardlight-mode")
-    SF-TOGGLE     "Keep selection"              FALSE
-    SF-TOGGLE     "Keep the Layers"             FALSE
+    SF-ENUM       "Paint Splatter LayerMode"    '("LayerModeEffects" "hardlight-mode")
+    SF-TOGGLE     "Keep selection"              TRUE
+    SF-TOGGLE     "Keep the Layers"             TRUE
 )
 
 (script-fu-menu-register "script-fu-splatter" "<Toolbox>/Script-Fu/Patterns")
 
-; end of script
-
-
+; end of script   
