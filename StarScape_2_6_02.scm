@@ -4,7 +4,7 @@
 ; This Script is meant to create a star scape pattern
 ; 
 ; This script was written by LightningIsMyName
-; Email: lightningismyname(at)gmail(dot)com 
+; Email: lightningismyname(at)gmail(dot)com  
 ; My Home Page: http://lightningismyname.deviantart.com/
 ;
 ; This Program is a free software, and you may use it for any purpose, comercial and non-commercial.
@@ -24,7 +24,7 @@
 ;              Another release, for GIMP 2.6.
 ;              Updated the menu registration of the script
 
-(define (script-fu-starscape width height seed XDensity YDensity incolor)
+(define (script-fu-starscape width height cloudopt seed XDensity YDensity incolor)
     
     (let*
         (
@@ -41,6 +41,7 @@
                50
                18)))
             (floating) ;Define new variable for later usage
+            (seed2 21)
         )
         
         (gimp-image-undo-group-start img)
@@ -56,39 +57,74 @@
         (gimp-image-select-rectangle img CHANNEL-OP-ADD 0 0 width height)
         
         ;Fill With Black - Had problms using the fill function so i used colorize instead
-        (gimp-colorize layerone 0 0 -100)
+        (gimp-drawable-colorize-hsl layerone 0 0 -100)
         
         ;In Order to create the Stars we will use the hurl function on the black layer
-        (plug-in-randomize-hurl 1 img layerone 1 1 TRUE 0)
+        (if (= seed 0)
+            (begin
+                ;(gimp-message "setting random seed")
+                (set! seed2 0)
+                (srand (car (gettimeofday)))
+                (set! seed (rand 600123))
+                (gimp-message (string-append "random seed:" (number->string seed)))
+            )
+        )
+        (plug-in-randomize-hurl 1 img layerone 1 1 FALSE seed)
         
         ;Desaturate the noise to achieve grayscale stars
         (gimp-drawable-desaturate layerone DESATURATE-LUMINANCE)
         
-        ;Add the Cloud Layers
-        (gimp-image-insert-layer img layerclouds 0 0)
-        (gimp-image-insert-layer img layercloudscopy 0 0)
-        
-        ;Erase Junk from the clouds layers
-        (gimp-edit-clear layerclouds) 
-        (gimp-edit-clear layercloudscopy) 
-        
-        ;Adding the clouds to the layer 
-        (plug-in-solid-noise 1 img layerclouds 0 0 seed 15 XDensity YDensity)
-        
-        ;copy the clouds
-        (gimp-edit-copy layerclouds)
-        
-        ;paste the clouds - define as a new layer called floating
-        (set! floating (car (gimp-edit-paste layercloudscopy 1)))
-        
-        ;Attach floating to second cloud layer
-        (gimp-floating-sel-attach floating layercloudscopy)
-        
-        ;rotate cloud layer
-        (plug-in-rotate 1 img layercloudscopy 2 FALSE)
-        
+        (if (< cloudopt 2)
+            (begin
+                ;Add the Cloud Layers
+                (gimp-image-insert-layer img layerclouds 0 0)
+                ;(gimp-image-insert-layer img layercloudscopy 0 0)
+                
+                ;Erase Junk from the clouds layers
+                (gimp-edit-clear layerclouds) 
+                ;(gimp-edit-clear layercloudscopy) 
+                
+                ;Adding the clouds to the layer    
+                (if (= seed2 0)
+                    (begin
+                        (set! seed (rand 300123))
+                    )
+                )
+                (plug-in-solid-noise 1 img layerclouds 0 0 seed 15 XDensity YDensity)
+                
+                ;copy the clouds
+                ;(gimp-edit-copy layerclouds)
+                
+                (if (< cloudopt 1)
+                    (begin
+                        (set! layercloudscopy (car (gimp-layer-copy layerclouds TRUE)))
+                        (gimp-image-insert-layer img layercloudscopy 0 -1)
+                        
+                        ;paste the clouds - define as a new layer called floating
+                        ;(set! floating (car (gimp-edit-paste layercloudscopy 1)))
+                        
+                        ;Attach floating to second cloud layer
+                        ;(gimp-floating-sel-attach floating layercloudscopy)
+                        
+                        
+                        ;rotate cloud layer
+                        (set! floating (car (gimp-item-transform-scale layercloudscopy 0 0 height width))) ; note the reversed height width
+                        
+                        (gimp-item-transform-rotate-simple floating 2 FALSE 0 0)
+                        (gimp-item-transform-flip-simple floating 1 FALSE 0)
+                        (gimp-item-transform-flip-simple floating 1 TRUE 0)
+                        
+                        (gimp-floating-sel-anchor floating)
+                        ;(gimp-layer-scale layercloudscopy 600 600 FALSE)
+                        ;(plug-in-rotate 1 img layercloudscopy 2 FALSE)
+                        ;(gimp-display-new img)
+                        ;(quit)
+                    )
+                )
+            )
+        )
         ;merge all layers
-        (set! layerone(car (gimp-image-merge-visible-layers img 1)))
+        (set! layerone (car (gimp-image-merge-visible-layers img 1)))
         
         ;Select All
         ;(gimp-rect-select img 0 0 width height ADD 0 0)
@@ -102,7 +138,7 @@
         (gimp-context-set-background '(255 255 255))   
         (gimp-displays-flush img)
         (gimp-image-undo-group-end img)
-        ;Display Final result
+        ;Display Final result 
         (gimp-display-new img)
         
      )
@@ -116,12 +152,13 @@
               "LightningIsMyName (LIMN)"
               "September 2007"
               ""
-              SF-VALUE      "Image Width (px)" "300"
-              SF-VALUE      "Image Height (px)" "300"
-              SF-ADJUSTMENT "Clouds - Random Seed"         '(0 0 1294967295 1 1 0 1)
-              SF-ADJUSTMENT "Clouds Density - X Size"         '(4 0.1 16 0.1 1 1 1)
-              SF-ADJUSTMENT "Clouds Density - Y Size"         '(4 0.1 16 0.1 1 1 1)
-              SF-COLOR      "Color"                     '(21 76 212)
+              SF-VALUE      "Image Width (px)"      "300"
+              SF-VALUE      "Image Height (px)"     "300"
+              SF-OPTION     "Cloud Option"          '("Full Clouds" "1 Cloud layer" "No Clouds")
+              SF-ADJUSTMENT "Clouds - Random Seed 0=randomise"      '(0 0 1294967295 1 10 0 1)
+              SF-ADJUSTMENT "Clouds Density - X Size"               '(4 0.1 16 0.1 1 1 1)
+              SF-ADJUSTMENT "Clouds Density - Y Size"               '(4 0.1 16 0.1 1 1 1)
+              SF-COLOR      "Color"                                 '(21 76 212)
 )
 
 ; end of script
