@@ -3,7 +3,7 @@
 ;
 ; Replicate a layer/selection as a motif in concentric (or offset) rings
 ;
-; Created by Jon Tait  (jontait2 at gimpchat.com)
+; Created by Jon Tait  (jontait2 at gimpchat.com) 
 ;
 ;----------------------------------------------------------------------------------------------------------
 ; License: GPLv3
@@ -50,7 +50,7 @@
   (define (debug-message msg)
     (let
       ((handler (car (gimp-message-get-handler))))
-      (gimp-message-set-handler ERROR-CONSOLE)		;{ MESSAGE-BOX (0), CONSOLE (1), ERROR-CONSOLE (2) }
+      (gimp-message-set-handler ERROR-CONSOLE)         ;{ MESSAGE-BOX (0), CONSOLE (1), ERROR-CONSOLE (2) }
       (gimp-message (string-append "JTRIR: " msg))
       (gimp-message-set-handler handler)
     )
@@ -136,6 +136,7 @@
         ; If new ring and outer-uppermost disabled, position immediately above baselayer, otherwise above last layer
         (gimp-image-insert-layer outImage outLayer 0 (if (and (= repIdx 0) (= inOuterUppermost FALSE))
             (car (gimp-image-get-layer-position outImage baseLayer)) -1))
+        
         ; Name layer - record param settings in ring0 layer (or, if no ring0, first motif of ring1)
         (if (or (= ring 0) (and (= inCentralMotif FALSE) (= ring 1) (= repIdx 0)))
             (name-layer-with-params outLayer)
@@ -199,7 +200,7 @@
     )
     (gimp-image-undo-group-end inImage)
     (gimp-displays-flush)
-    (gc) ; garbage cleaner
+    (gc) ; garbage cleaner; memory cleanup
     
   );end let*
 );end define
@@ -209,14 +210,14 @@
 (script-fu-register
     "script-fu-JT-replicate-in-rings"
     "JT Replicate in Rings"
-    "Replicate a layer/selection as a motif in concentric (or offset) rings. Try stroking a selection to start. \nfile:JT-replicate-in-rings-v1.1.scm"
+    "Replicate a layer or selection as a motif in concentric (or offset) rings. Radix is number in the first ring. This is expanded for outer rings. Try with a small leaf 40x30px. Try stroking a selection to start. \nfile:JT-replicate-in-rings-v1.1.scm"
     "Jon Tait"
     "Jon Tait (jontait2 at http://gimpchat.com)"
     "9th April 2015"
     "RGB* GRAY*"
     SF-IMAGE      "Image"             0
     SF-DRAWABLE   "Drawable"          0
-    SF-ADJUSTMENT "Replication radix"     '(8 1 20 1 1 0 1)
+    SF-ADJUSTMENT "Replication radix"     '(8 1 30 1 1 0 1)
     SF-ADJUSTMENT "Number of rings"       '(2 1 30 1 10 0 1)
     SF-ADJUSTMENT "Ring spacing"          '(50 10 1000 1 10 0 1)
     SF-ADJUSTMENT "Offset angle"          '(30 -360 360 1 15 0 1)
@@ -226,7 +227,7 @@
     SF-ADJUSTMENT "Zoom at outer ring"        '(1 0 10 0.01 1 2 1)
     SF-TOGGLE "Zoom-adjust ring-spacing"  TRUE
     SF-TOGGLE "Central motif"             TRUE
-    SF-TOGGLE "Rotate motifs"             FALSE
+    SF-TOGGLE "Rotate motifs"             TRUE
     SF-TOGGLE "Outer rings uppermost"     FALSE
     SF-TOGGLE "Create new image"          TRUE
     SF-OPTION "Layers mode"               '("All on one layer" "Rings on separate layers" "Motifs on separate layers")
