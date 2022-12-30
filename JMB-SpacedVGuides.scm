@@ -7,7 +7,7 @@
 ;
 ; Spaced V Guides script  for GIMP 2.10.18
 ;
-; Tags: spaced horizontal guides
+; Tags: spaced horizontal guides 
 ;
 ; Author statement:
 ;
@@ -95,9 +95,9 @@
    "copyright 2009, Jeffrey Boulais"           ;copyright notice
    "February 2008"                             ;date created
    "RGB* GRAY* INDEXED*"                       ;image type that the script works on
-   SF-IMAGE "Image" 0
-   SF-VALUE "Vertical Guide Spacing (px)" "100"
-   SF-OPTION "Start from" '("Left" "Center" "Right")
+   SF-IMAGE     "Image"                         0
+   SF-VALUE     "Vertical Guide Spacing (px)"       "100"
+   SF-OPTION    "Start from"                        '("Left" "Center" "Right")
    
 )
 

@@ -2,7 +2,7 @@
 ;
 ; Accès par :   Fichier > Créer > Motifs > Feu d artifice - Fireworks...
 ;               File > Create > Patterns > Feu d artifice - Fireworks...
-;
+;   
 ;                __________________________________________________________
 ; 
 ;
@@ -101,16 +101,16 @@
     (gimp-context-set-background '(255 255 255))
     
     ; remplir de PP	
-    (gimp-drawable-fill calque_fond 0)	
+    (gimp-drawable-fill calque_fond 0)
     
     ; créer une sélection circulaire
     (gimp-image-select-ellipse 
-        img							; image 
-        0							; operation 
-        (round (* width 0.05 ))		; x 
-        (round (* height 0.05 ))	; y 
-        (round (* width 0.9 ))		; width 
-        (round (* height 0.9 ))		; height ; was width-why?
+        img                         ; image 
+        0                           ; operation 
+        (round (* width 0.05 ))     ; x 
+        (round (* height 0.05 ))    ; y 
+        (round (* width 0.9 ))      ; width 
+        (round (* height 0.9 ))     ; height ; was width-why?
     )
     
     
@@ -157,13 +157,13 @@
     
     ; ajouter du bruit TSV
     (plug-in-hsv-noise 
-        1							; run-mode 
-        img							; image 
-        calque_fond					; drawable 
-        holdness					; holdness   défaut 2
-        3							; hue-distance 
-        10							; saturation-distance 
-        value-distance				; value-distance  défaut 227
+        1                           ; run-mode 
+        img                         ; image 
+        calque_fond                 ; drawable 
+        holdness                    ; holdness   défaut 2
+        3                           ; hue-distance 
+        10                          ; saturation-distance 
+        value-distance              ; value-distance  défaut 227
     )
     
     ; ajouter du flou
@@ -171,15 +171,15 @@
     
     ; ajuster niveaux de couleurs
     (gimp-drawable-levels 
-        calque_fond				; drawable 
-        HISTOGRAM-VALUE						; channel 
-        0.0						; low-input 
-        0.21						; high-input was 52 
+        calque_fond             ; drawable 
+        HISTOGRAM-VALUE         ; channel 
+        0.0                     ; low-input 
+        0.21                    ; high-input was 52 
         TRUE                    ; clamp
-        0.29					; gamma  was 0.29
-        0.0						; low-output 
-        1.0						; high-output
-        TRUE
+        0.29                    ; gamma  was 0.29
+        0.0                     ; low-output 
+        1.0                     ; high-output
+        TRUE                    ; clamp
     )
     
     
@@ -201,11 +201,11 @@
     
     ; tourner le calque de 90° sens horaire
     (gimp-item-transform-rotate-simple 
-        calque_fond				; item 
-        0						; rotate-type 
-        TRUE					; auto-center 
-        (* width 0.5 )			; center-x 
-        (* height 0.5 )			; center-y
+        calque_fond             ; item 
+        0                       ; rotate-type 
+        TRUE                    ; auto-center 
+        (* width 0.5 )          ; center-x 
+        (* height 0.5 )         ; center-y
     )
     
     
@@ -233,14 +233,14 @@
     
     ; coordonnées polaires
     (plug-in-polar-coords 
-        1						; run-mode 
-        img						; image 
-        calque_fond				; drawable 
-        100						; circle 
-        0						; angle 
+        1                       ; run-mode 
+        img                     ; image 
+        calque_fond             ; drawable 
+        100                     ; circle 
+        0                       ; angle 
         FALSE                   ; backwards  Was F
-        TRUE					; inverse 
-        TRUE					; polrec
+        TRUE                    ; inverse 
+        TRUE                    ; polrec
     )
      
 
@@ -259,11 +259,11 @@
     
     ; ajuster niveaux de couleurs
     (gimp-drawable-levels 
-        calque_fond				; drawable 
-        HISTOGRAM-VALUE						; channel 
-        (/ 130 255)						; low-input 
-        (/ 230 255)						; high-input 
-        TRUE                            ; clamp input
+        calque_fond             ; drawable 
+        HISTOGRAM-VALUE         ; channel 
+        (/ 130 255)             ; low-input 
+        (/ 230 255)             ; high-input 
+        TRUE                    ; clamp input
         0.83                    ; gamma  was 0.72
         0.0                     ; low-output was 0
         1.0                     ; high-output was 1
@@ -362,15 +362,15 @@
                 (gimp-layer-set-mode calque_degrade 13)
                 
                 ; sélectionner le dégradé choisi
-                (gimp-context-set-gradient degrade_couleurs_concentriques)				
+                (gimp-context-set-gradient degrade_couleurs_concentriques)
                 
                 
                 ; appliquer un dégradé sur calque_degrade
                 (gimp-edit-blend 
                     calque_degrade 
-                    BLEND-CUSTOM 						; MODE
+                    BLEND-CUSTOM            ; MODE
                     LAYER-MODE-OVERLAY  ; was normal
-                    2 						;  radial
+                    2                   ;  radial
                     100 
                     0 
                     0 
@@ -379,9 +379,9 @@
                     0 
                     0 
                     FALSE 
-                    (round (/ width 2))		; x1 
-                    (round (/ height 2))	; y1 
-                    (round (/ width 2))		; x2
+                    (round (/ width 2))     ; x1 
+                    (round (/ height 2))    ; y1 
+                    (round (/ width 2))     ; x2
                     0                       ; y2
                 )
                 
