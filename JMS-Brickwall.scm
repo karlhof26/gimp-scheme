@@ -17,6 +17,8 @@
 ;;  *   Free Software Foundation, Inc.,                                       *
 ;;  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ;;  ***************************************************************************
+;
+;
 
 ; Courtesy of Jonathan Stipe <JonStipe@prodigy.net> and his layer effects scripts
 (define (math-round-wall input)
@@ -219,8 +221,9 @@
                 (draw-blurshape-wall img bumpmaplayer size halfsizec alphaSel 0)
             )
         )
-        (
+        (else
             (begin
+                (gimp-message "line 226")
                 (set! halfsizef (floor (/ size 2)))
                 (set! halfsizec (- size halfsizef))
                 (gimp-selection-all img)
@@ -239,7 +242,9 @@
         (apply-contour bumpmaplayer 0 surfacecontour)
     )
     (if (< angle 0)
-        (set! angle (+ angle 360))
+        (begin
+            (set! angle (+ angle 360))
+        )
     )
     (plug-in-bump-map 1 img highlightmask bumpmaplayer angle altitude depth 0 0 0 0 1 direction 0)
     (if (> glosscontour 0)
@@ -249,7 +254,9 @@
         (plug-in-gauss-rle 1 img highlightmask soften 1 1)
     )
     (if (> invert 0)
-        (gimp-invert highlightmask)
+        (begin
+            (gimp-drawable-invert highlightmask FALSE)
+        )
     )
     (gimp-channel-combine-masks shadowmask highlightmask 2 0 0)
     ;(gimp-levels highlightmask 0 127 255 1.0 0 255)
@@ -290,6 +297,7 @@
                 )
             )
             (begin
+                (gimp-message "row 300")
                 (set! origmask (car (gimp-layer-get-mask drawable)))
                 (if (> origmask -1)
                     (gimp-layer-remove-mask drawable 0)
@@ -300,14 +308,14 @@
             )
         )
     )
-    (gimp-message "row 300")
+    (gimp-message "row 311")
     (gimp-context-set-foreground origfgcolor)
     (gimp-selection-load origselection)
-    (gimp-message "row 303")
+    (gimp-message "row 314")
     (gimp-image-remove-channel img alphaSel)
     (gimp-image-remove-channel img origselection)
     (gimp-displays-flush)
-    (gimp-message "row 307 returning")
+    (gimp-message "row 318 returning")
   )
   (gimp-image-undo-group-end img)
 )
@@ -372,24 +380,31 @@
             (rowflag 0)
             (rowCheck 0)
             
-            ; Coordinates for the brick		
+            ; Coordinates for the brick
             (x1 0)
             (y1 0)
             (x2 inWidth)
             (y2 0)
             (lineArray (make-vector 4 0.0))
+            
+            (randseed 1)
         )
-        (gimp-message "row 373")
+        (gimp-message "row 392")
+        (gimp-progress-pulse)
         
         ; Set the random seed for the wall
-        (set! seed (if (number? seed) seed (realtime)))
-        (srand seed)
+        ;(set! seed (if (number? seed) seed (realtime)))
+        (gimp-message (number->string (car (gettimeofday))))
+        (gimp-message (number->string (cadr (gettimeofday))))
+        (set! seed (if (number? seed) seed (cadr (gettimeofday))))
         
+        (srand seed)
+        (set! randseed (rand 10000))
         ; Add in the layers
         (gimp-image-insert-layer theImage noiseLayer 0 0)
         (gimp-image-insert-layer theImage brickLayer 0 0)
         (gimp-image-insert-layer theImage mortarLayer 0 0)
-        (gimp-message "row 389")
+        (gimp-message "row 400")
         
         ; Set the colors
         (gimp-context-set-foreground mortarColor)
@@ -404,13 +419,13 @@
         (gimp-brush-set-angle mortarbrush 0)
         (gimp-brush-set-spacing mortarbrush 20)
         (gimp-context-set-brush mortarbrush)
-        (gimp-message "row 404")
+        (gimp-message "row 415")
         
         ; Start the main loop
         (while (> inHeight y1)
             (begin
-                
-                (gimp-message "row 401")
+                (gimp-progress-update (/ y1 inHeight))
+                (gimp-message "row 421")
                 ; Draw the horizontal line for the mortar
                 (gimp-context-set-foreground mortarColor)
                 (vector-set! lineArray 0 x1)
@@ -418,7 +433,7 @@
                 (vector-set! lineArray 2 x2)
                 (vector-set! lineArray 3 (+ brickHeight y2))
                 (gimp-pencil mortarLayer 4 lineArray)
-                (gimp-message "row 418")
+                (gimp-message "row 429")
                 
                 ; If we're on an even row, run through the following loop to draw the half-brick on the left side of the picture
                 (if (= (fmod rowflag 2) 1)
@@ -426,7 +441,7 @@
                         (set! rowCheck (* brickWidth 0.5))
                         ;(gimp-rect-select theImage 0 y1 rowCheck brickHeight CHANNEL-OP-ADD 0 0)
                         (gimp-image-select-rectangle theImage CHANNEL-OP-ADD 0 y1 rowCheck brickHeight)
-                        (gimp-message "row 426")
+                        (gimp-message "row 437")
                         (if (= (car (gimp-selection-is-empty theImage)) FALSE)
                             (begin
                                 (set! red (+ redStart (rand redDiff)))
@@ -443,14 +458,15 @@
                 )
                 
                 (vector-set! lineArray 1 y1)
-                (gimp-message "row 443")
+                (gimp-message "row 454")
                 
                 (while (> inWidth x1)
                     (begin
+                        (gimp-progress-update (/ x1 inWidth))
                         (vector-set! lineArray 0 (+ x1 rowCheck))
                         (vector-set! lineArray 2 (+ x1 rowCheck))
                         (gimp-pencil mortarLayer 4 lineArray)
-                        (gimp-message "row 450")
+                        (gimp-message "row 461")
                         ;(gimp-rect-select theImage (+ x1 rowCheck) y1 brickWidth brickHeight CHANNEL-OP-ADD 0 0)
                         (gimp-image-select-rectangle theImage CHANNEL-OP-ADD (+ x1 rowCheck) y1 brickWidth brickHeight)
                         
@@ -478,38 +494,50 @@
                 (set! y2 y1)
             )
         )
-        (gimp-message "row 478")
+        (gimp-message "row 489")
         
         (gimp-brush-delete mortarbrush)
         
-        (plug-in-solid-noise RUN-NONINTERACTIVE theImage noiseLayer 1 0 (rand 1000000000) 15 2.0 2.0)
+        (plug-in-solid-noise RUN-NONINTERACTIVE theImage noiseLayer 1 0 (rand 600001) 15 2.0 2.0)
+        (gimp-progress-pulse)
         (plug-in-bump-map RUN-NONINTERACTIVE theImage brickLayer noiseLayer 0 45.00 20 0 0 0 0 1 0 0)
         (plug-in-bump-map RUN-NONINTERACTIVE theImage brickLayer noiseLayer 0 45.00 20 0 0 0 0 1 0 0)
         
         (if (> RGBnoise 0.0)
-            (plug-in-rgb-noise RUN-NONINTERACTIVE theImage brickLayer 0 0 RGBnoise RGBnoise RGBnoise 0.0)
+            (begin
+                (plug-in-rgb-noise RUN-NONINTERACTIVE theImage brickLayer 0 0 RGBnoise RGBnoise RGBnoise 0.0)
+            )
         )
         
-        (plug-in-solid-noise RUN-NONINTERACTIVE theImage noiseLayer 1 0 (rand 10000000) 15 2.0 2.0) ; knocked some 0 off rand
-        
+        (plug-in-solid-noise RUN-NONINTERACTIVE theImage noiseLayer 1 0 (rand 600001) 15 2.0 2.0) ; knocked some 0 off rand
+        (gimp-progress-pulse)
         (plug-in-bump-map RUN-NONINTERACTIVE theImage mortarLayer noiseLayer 0 45.00 20 0 0 0 0 1 0 0)
         
         (if (= fuzzyMortar TRUE)
-            (plug-in-cubism RUN-NONINTERACTIVE theImage mortarLayer mortar-size mortar-saturation 1)
+            (begin
+                (gimp-message "fuzzy mortar")
+                (plug-in-cubism RUN-NONINTERACTIVE theImage mortarLayer mortar-size mortar-saturation 1)
+            )
         )
-        (gimp-message "row 497")
+        (gimp-progress-pulse)
+        (gimp-message "row 513")
         (if (= beMortar TRUE)
-            (script-fu-layerfx-wall-bevel-emboss theImage mortarLayer 1 3 1 5 0 120 30 0 '(255 255 255) 0 75 '(0 0 0) 0 75 0 0 0)
+            (begin
+                (script-fu-layerfx-wall-bevel-emboss theImage mortarLayer 1 3 1 5 0 120 30 0 '(255 255 255) 0 75 '(0 0 0) 0 75 0 0 0)
+            )
         )
         (gimp-displays-flush)
-        (gimp-message "row 501")
+        (gimp-message "row 520")
+        (gimp-progress-pulse)
         (set! frameName "123456")
         (set! frameName (string-append "Wall " (number->string seed) "-frame" (number->string frameNum)))
-        (gimp-drawable-set-name noiseLayer frameName)
-        (gimp-message "row 504")
+        (gimp-item-set-name noiseLayer frameName)
+        (gimp-message "row 524")
         
         (if (= flattenYN TRUE)
-            (gimp-image-flatten theImage)
+            (begin
+                (gimp-image-flatten theImage)
+            )
         )
         
         (gimp-display-new theImage)
@@ -529,7 +557,7 @@
     SF-ADJUSTMENT _"Image Height"       '(500 30 3000 1 50 0 0)
     SF-ADJUSTMENT _"Brick Width"        '(80 3 100 1 5 0 0)
     SF-ADJUSTMENT _"Brick Height"       '(40 3 100 1 5 0 0)
-    SF-COLOR      _"Brick Color"        '(178 33 33)
+    SF-COLOR      _"Brick Color"        '(158 33 33)
     SF-ADJUSTMENT _"Color Variations"   '(30 0 50 1 5 0 0)
     SF-ADJUSTMENT _"RGB brick noise?"   '(0.10 0 1 0.01 0.1 2 0)
     SF-ADJUSTMENT _"Mortar Thickness"   '(5 1 15 1 5 0 0)
