@@ -4,8 +4,8 @@
 ; 02/14/2014 on GIMP-2.8.10
 ; 20/10/2020 on GIMP-2.10.20
 ;
-; 02/14/2014 - convert to RGB if needed
-;==============================================================
+; 02/14/2014 - convert to RGB if needed 
+;=============================================================
 ;
 ; Installation:
 ; This script should be placed in the user or system-wide script folder.
@@ -61,6 +61,8 @@
 ;     - Initial relase
 ; version 0.2 by Tim Jacobs 2004/04/15
 ;     - Modified to work for GIMP 2.x
+; version 0.3 by Karl Hofmeyr 2022/12/20
+;     - Modified for Gimp 2.10.32
 ;==============================================================
 
 
@@ -69,9 +71,10 @@
             img
             drawable
             detail
-            length
+            sharpenoption
+            lengthA
             amount
-            angle
+            anglemblur
             flatten
         )
     
@@ -79,49 +82,106 @@
     (if (not (= RGB (car (gimp-image-base-type img))))
                 (gimp-image-convert-rgb img))
     (let* (
+            (ImageW (car (gimp-drawable-width drawable))) 
+            (ImageH (car (gimp-drawable-height drawable))) 
+            
             (layer-orig (car (gimp-layer-copy drawable TRUE)))
             (old-selection (car (gimp-selection-save img)))
             (layer-copy0 (car (gimp-layer-copy drawable TRUE)))
             (dummy (gimp-image-add-layer img layer-copy0 -1))
-            (dummy (if (< 0 (car (gimp-layer-get-mask layer-copy0)))
+            (dummy2 (if (< 0 (car (gimp-layer-get-mask layer-copy0)))
                   (gimp-layer-remove-mask layer-copy0 MASK-DISCARD)))
             (layer-copy1 (car (gimp-layer-copy layer-copy0 TRUE)))
-            (length (if (= length 1) 0 length))
-            (dummy (begin
-                (plug-in-mblur TRUE img layer-copy0 0 length angle 0 0 )
-                (plug-in-mblur TRUE img layer-copy0 0 length (+ angle 180) 0 0 ) 
+            (lengthA (if (= lengthA 1) 0 lengthA))
+            (dummy3 (begin
+                (plug-in-mblur TRUE img layer-copy0 0 lengthA anglemblur 0 0 )
+                (plug-in-mblur TRUE img layer-copy0 0 lengthA (+ anglemblur 180) 0 0 ) 
                 )
             )
             (layer-copy2 (car (gimp-layer-copy layer-copy0 TRUE)))
             (marged-layer 0)
             (final-layer 0)
             (new-layer 0)
+            (working-copy)
+            (revisedlengthA 0)
+            (finalbackground)
         )
+        
+        (set! working-copy (car (gimp-layer-copy drawable TRUE)))
+        (gimp-image-insert-layer img working-copy 0 -1)
+        (if (> lengthA 2)
+            (begin
+                (set! revisedlengthA (+ lengthA 2))
+            )
+            (begin
+                (set! revisedlengthA 2)
+            )
+        )
+        (plug-in-mblur TRUE img working-copy 0 revisedlengthA anglemblur (/ ImageW 2) (/ ImageH 2))
+        (plug-in-mblur TRUE img working-copy 0 revisedlengthA (+ anglemblur 120) 500  500 )
+        (gimp-item-set-name working-copy "working-copy")
+        
         
         (gimp-image-insert-layer img layer-copy2 0 -1)
         (gimp-image-insert-layer img layer-copy1 0 -1)
         (gimp-image-insert-layer img layer-orig 0 -1)
+        (gimp-item-set-name layer-copy2 "layer copy2")
+        (gimp-item-set-name layer-copy1 "layer copy1")
+        (gimp-item-set-name layer-orig "layer orig")
         
-        (plug-in-gauss-iir TRUE img layer-copy1 (- 16 detail) TRUE TRUE)
-        (plug-in-edge TRUE img layer-copy1 10.0 1 0)
+        (plug-in-gauss-iir TRUE img layer-copy1 (- 20 detail) TRUE TRUE) ;
+        
+        (plug-in-edge TRUE img layer-copy1 10.0 1 1) ; was 10.0 1 0)
+        
         (gimp-layer-set-mode layer-copy1 LAYER-MODE-DIVIDE)
+        
+        ;(gimp-message "line136")
+        ;(gimp-displays-flush)
+        ;(quit)
+        
         (set! marged-layer (car (gimp-image-merge-down img layer-copy1 EXPAND-AS-NECESSARY)))
         (gimp-layer-set-mode marged-layer LAYER-MODE-HSV-VALUE)
+        (gimp-item-set-name marged-layer "marged layer")
+        ;(gimp-message "line143")
+        ;(gimp-displays-flush)
+        ;(quit)
         
-        (plug-in-unsharp-mask TRUE img layer-copy0 (+ 1 (/ length 5)) amount 0)
+        (if (= sharpenoption TRUE)
+            (begin
+                (plug-in-unsharp-mask TRUE img layer-copy0 (+ 1.5 (* lengthA 0.8)) amount 128) ; was length/5 and threshold 0
+            )
+        )
+        
+        ;(gimp-message "line152")
+        ;(gimp-displays-flush)
+        ;(quit)
+        
         (set! final-layer (car (gimp-image-merge-down img marged-layer EXPAND-AS-NECESSARY)))
+        (gimp-item-set-name final-layer "final layer")
+        (gimp-layer-set-opacity final-layer 95.5)
         
-        (gimp-selection-load old-selection)
-        (gimp-edit-copy final-layer)
-        (gimp-image-remove-layer img final-layer)
-        (gimp-floating-sel-anchor (car (gimp-edit-paste drawable 0)))
-        (gimp-selection-load old-selection)
-        (gimp-image-remove-channel img old-selection)
         
-        (set! new-layer (car(gimp-image-get-active-layer img)))
-        (gimp-layer-set-opacity new-layer 30)
-        (gimp-item-set-name new-layer "Pastel Layer")
+        (set! finalbackground (car (gimp-layer-new img ImageW ImageH RGBA-IMAGE "final background" 100 LAYER-MODE-NORMAL)))
+        (gimp-image-insert-layer img finalbackground 0 2)
+        (gimp-drawable-fill finalbackground FILL-WHITE)
+        (gimp-item-set-name finalbackground "final background")
         
+        ;(gimp-message "line165")
+        ;(gimp-displays-flush)
+        ;(quit)
+        
+        ;(gimp-selection-load old-selection)
+        ;(gimp-edit-copy final-layer)
+        ;(gimp-image-remove-layer img final-layer)
+        ;(gimp-floating-sel-anchor (car (gimp-edit-paste drawable 0)))
+        ;(gimp-selection-load old-selection)
+        ;(gimp-image-remove-channel img old-selection)
+        
+        ;(set! new-layer (car(gimp-image-get-active-layer img)))
+        ;(gimp-layer-set-opacity new-layer 30)
+        ;(gimp-item-set-name new-layer "Pastel Layer")
+        ;
+        (gimp-image-lower-layer img layer-orig)
         (gimp-image-lower-layer img layer-orig)
         (gimp-item-set-name layer-orig "Original Image")
         
@@ -132,6 +192,7 @@
         ;; Clean up 
         (gimp-image-undo-group-end img)
         (gimp-displays-flush)
+        (gc) ; garbage cleanup; memory cleanup
     )
 )
 
@@ -145,13 +206,14 @@
     "*"
     SF-IMAGE      "Image"         0
     SF-DRAWABLE   "Drawable"      0
-    SF-ADJUSTMENT "Detail Level"  '(12.0 0 15.0 0.1 0.5 1 1)
-    SF-ADJUSTMENT "Sketch Length" '(10 0 32 1 1 0 1)
-    SF-ADJUSTMENT "Sketch Amount" '(1.0 0 5.0 0.1 0.5 1 1)
-    SF-ADJUSTMENT "Angle"         '(45 0 180 1 15 0 0)
-    SF-TOGGLE     "Flatten image"  FALSE
+    SF-ADJUSTMENT "Detail Level (higher is sharper)"  '(4.0 0 20.0 0.1 0.5 1 1)
+    SF-TOGGLE     "Sharpen sketch"                  TRUE
+    SF-ADJUSTMENT "Sharpen radius length"           '(12 0 32 1 1 0 1)
+    SF-ADJUSTMENT "Shapen sharpness Amount"         '(2.2 0 5.0 0.1 0.5 1 1)
+    SF-ADJUSTMENT "Color blur Angle"                '(45 0 180 1 15 0 0)
+    SF-TOGGLE     "Flatten image"                   FALSE
  )
  
-(script-fu-menu-register "FU-pastel-portrait" "<Image>/Script-Fu/Photo/Effects")
+(script-fu-menu-register "FU-pastel-portrait" "<Toolbox>/Script-Fu/Photo/Effects")
 
 ;end of script
