@@ -1,8 +1,8 @@
 ; HDR Fake Effect is a script for The GIMP
-;
+; 
 ; This script produces a fake HDR effect + on an image
 ;
-; Follow the tut of jneurock@gimpology.com
+; Follow the tut of jneurock@gimpology.com 
 ; here the link :
 ; http://gimpology.com/submission/view/fake_hdr_look_in_gimp/
 ;
@@ -62,7 +62,6 @@
             (merged)
         )
         
-        
         ;Rename the layer
         (gimp-drawable-set-name firstTemp "First temp")
         
@@ -85,8 +84,12 @@
             ;Change the mode of the thin layer to lighten
             (gimp-layer-set-mode thinTemp 10)
             
-            ;Change the mode of the thin layer to darken
-            (gimp-layer-set-mode thinTemp 9)
+            ;else
+            (begin
+                ;Change the mode of the thin layer to darken
+                ;(gimp-layer-set-mode thinTemp 9)
+                (gimp-layer-set-mode thinTemp LAYER-MODE-DARKEN-ONLY)
+            )
         )
         
         
@@ -104,7 +107,8 @@
         (set! merged (car (gimp-image-merge-down myImage thinTemp 0)))
         
         ;Change the mode of the dodge copy layer to difference mode
-        (gimp-layer-set-mode merged 6)
+        ;(gimp-layer-set-mode merged 6)
+        (gimp-layer-set-mode merged LAYER-MODE-DIFFERENCE)
         
         ;Merge the top layer down and keep track of the newly merged layer
         (set! merged (car (gimp-image-merge-down myImage merged 0)))
@@ -186,7 +190,8 @@
         
         (gimp-image-set-active-layer inImage theNewlayer3)
         (set! subdra (gimp-hue-saturation theNewlayer3 0 0 0 statunum))
-        (set! subdra (gimp-levels theNewlayer3 HISTOGRAM-VALUE lev5min lev5max 1.0 0 255))
+        ;(set! subdra (gimp-levels theNewlayer3 HISTOGRAM-VALUE lev5min lev5max 1.0 0 255))
+        (set! subdra (gimp-drawable-levels theNewlayer3 HISTOGRAM-VALUE (/ lev5min 255) (/ lev5max 255) FALSE 1.0 0.0 1.0 FALSE))
         
         (gimp-image-flatten inImage)
         ;Finish the undo group for the process
@@ -200,7 +205,7 @@
 
 (script-fu-register
     "script-fu-fake-hdr-effect-plus"
-    "<Image>/Script-Fu/Enhance/Fake HDR Effect plus..."
+    "<Toolbox>/Script-Fu/Enhance/Fake HDR Effect plus..."
     "Make a photo to fake HDR with GIMP. This is the PLus version. \nfile:hdr-eff-plus.scm"
     "Bui The Thang  <vincent.valentine71@gmail.com>"
     "Bui The Thang"

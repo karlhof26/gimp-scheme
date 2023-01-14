@@ -2,7 +2,7 @@
 ;
 ; This script produces a fake HDR effect on an image
 ;
-; Follow the tut of jneurock@gimpology.com
+; Follow the tut of jneurock@gimpology.com 
 ; here the link : 
 ; http://gimpology.com/submission/view/fake_hdr_look_in_gimp/
 ;
@@ -151,7 +151,7 @@
         
         (gimp-image-insert-layer inImage theNewlayer 0 0)
         (gimp-drawable-desaturate theNewlayer 2)
-        (gimp-drawable-invert theNewlayer TRUE)
+        (gimp-drawable-invert theNewlayer FALSE)
         (plug-in-softglow RUN-NONINTERACTIVE inImage theNewlayer 10 0.75 0.85)
         (gimp-layer-set-mode theNewlayer LAYER-MODE-SOFTLIGHT)
         (gimp-layer-set-opacity theNewlayer 50)
@@ -189,7 +189,7 @@
     ;Finish the undo group for the process
     (gimp-image-undo-group-end inImage)
     
-    ;Ensure the updated image is displayed now
+    ;Ensure the updated image is displayed now  
     (gimp-displays-flush)
 )
 
@@ -200,8 +200,8 @@
     "Bui The Thang"
     "Nov, 2008"
     "RGB*"
-    SF-IMAGE        "Image"        0
-    SF-DRAWABLE     "Drawable"    0
+    SF-IMAGE        "Image"         0
+    SF-DRAWABLE     "Drawable"      0
     SF-ADJUSTMENT   "Dark Layer Opacity:"     '(35 30 50 1 1 0 1)
 )
 
