@@ -4,7 +4,7 @@
 ; Bercovich LOMO script  for GIMP 2.4
 ; Copyright (C)March 2003 under GPL by Avi Bercovich <avi@sillypages.org>
 ;
-; Tags: photo, lomo
+; Tags: photo, lomo 
 ;
 ; Author statement:
 ;
@@ -35,17 +35,16 @@
 
 (define (script-fu-lomo-berco image drawable fringeWidth fringeBoost)
     
-    (let*
-     (
-        (imgWidth (car (gimp-image-width image)))
-        (imgHeight (car (gimp-image-height image)))
-        
-        (midpoint_X (/ imgWidth 2))
-        (midpoint_Y (/ imgHeight 2))
-        
-        (l_whiteFlare (car (gimp-layer-new image imgWidth imgHeight RGBA-IMAGE "White flare" 100 0 )))
-        (l_fringe (car (gimp-layer-new image imgWidth imgHeight RGBA-IMAGE "frame" 100 LAYER-MODE-NORMAL )))
-     )
+    (let* (
+            (imgWidth (car (gimp-image-width image)))
+            (imgHeight (car (gimp-image-height image)))
+            
+            (midpoint_X (/ imgWidth 2))
+            (midpoint_Y (/ imgHeight 2))
+            
+            (l_whiteFlare (car (gimp-layer-new image imgWidth imgHeight RGBA-IMAGE "White flare" 100 0 )))
+            (l_fringe (car (gimp-layer-new image imgWidth imgHeight RGBA-IMAGE "frame" 100 LAYER-MODE-NORMAL )))
+        )
         
         
         (gimp-image-undo-group-start image)
@@ -75,7 +74,9 @@
         (gimp-image-insert-layer image (car (gimp-layer-copy l_fringe FALSE)) 0 0)
         
         (if (= fringeBoost TRUE)
-            (gimp-image-insert-layer image (car (gimp-layer-copy l_fringe FALSE)) 0 0)
+            (begin
+                (gimp-image-insert-layer image (car (gimp-layer-copy l_fringe FALSE)) 0 0)
+            )
         )
         
         ; clean up.
@@ -89,15 +90,15 @@
 
 (script-fu-register "script-fu-lomo-berco"
             "<Toolbox>/Script-Fu/Photo/Effects/Bercovich Lomo..."
-            "Turn an image into a 'LOMO' snap. \nwww.lomography.com for those that are not sure what lomo's are.\nfile:bercovich-lomo.scm\nEnjoy!"
+            "Turn an image into a 'LOMO' snap. \nGoogle lomography for those that are not sure what lomo's are.\nfile:bercovich-lomo.scm"
             "Avi Bercovich <avi@sillypages.org>"
             "Avi Bercovich"
             "April 2003"
             "RGB* GRAY* INDEXED*"
-            SF-IMAGE "Image" 0
-            SF-DRAWABLE "Drawable" 0
-            SF-ADJUSTMENT "Fringe offset" '(4 1 10 1 10 0 1)
-            SF-TOGGLE "Boost fringe?" FALSE
+            SF-IMAGE        "Image"         0
+            SF-DRAWABLE     "Drawable"      0
+            SF-ADJUSTMENT   "Fringe offset"     '(4 1 10 1 10 0 1)
+            SF-TOGGLE       "Boost fringe?"     FALSE
 )
 
 ; end of script
