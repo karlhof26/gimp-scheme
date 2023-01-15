@@ -19,7 +19,7 @@
 ; GNU General Public License for more details.
 ; 
 ; You should have received a copy of the GNU General Public License
-; along with this program; if not, see <http://www.gnu.org/licenses>.
+; along with this program; if not, see <http://www.gnu.org/licenses>.  
 ;
 ; Define the function
 ;
@@ -155,8 +155,8 @@
     "RGB* GRAY*"
     SF-IMAGE        "The Image"         0
     SF-DRAWABLE     "The Layer"         0
-    SF-ADJUSTMENT   "Outer border size (width in percent)"  '(18 1.0 100 1.0 0 1 0)   ; was 0 2 0 at end
-    SF-ADJUSTMENT   "Inner border size (in percent)"        '(0.20 0.0 10.0 0.1 0 1 0)
+    SF-ADJUSTMENT   "Outer border size (width in percent)"  '(10.1 1.0 100 1.0 0 1 0)   ; was 0 2 0 at end
+    SF-ADJUSTMENT   "Inner border size (in percent)"        '(0.50 0.0 10.0 0.1 0 1 0)
     SF-TOGGLE       "Use symmetric outer borders"   FALSE
     SF-TOGGLE       "Use portrait style border"     FALSE
     SF-COLOR        "Outer border color"        '(255 255 255)
