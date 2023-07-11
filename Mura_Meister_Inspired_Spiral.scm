@@ -1,4 +1,4 @@
-; Mura Meister Copies Rel 1    
+; Artist Copies Rel 1    
 ; Created by Tin Tran
 ; Comments directed to http://gimpchat.com or http://gimpscripts.com
 ;
