@@ -79,11 +79,11 @@
                                             RGBA-IMAGE "Colorize" 100 LAYER-MODE-NORMAL)))  ;creates layer
                 ;insert above current layer
                 ;(gimp-image-insert-layer image new-layer 0 (car (gimp-image-get-item-position image layer)))	
-                (gimp-image-insert-layer image floating 0 0)	 	  
+                (gimp-image-insert-layer image floating 0 0)
                 ;set that layer to be active layer
                 (gimp-image-set-active-layer image floating)
                 
-                (set! hue (rand 360))
+                (set! hue (rand 359))
                 (gimp-drawable-colorize-hsl floating hue 100 10)
                 ;sqrt( 0.299*R^2 + 0.587*G^2 + 0.114*B^2 )
                 ;(set! l-original (sqrt(+ (pow(* red R) 2) (pow (* green G) 2)  (pow (* blue B) 2))))
@@ -102,15 +102,15 @@
                     (begin
                         (if (> l-original 245)
                             (begin
-                                (set! r (+ (rand 20) 235))
-                                (set! g (+ (rand 20) 235))
-                                (set! b (+ (rand 20) 235))
+                                (set! r (+ (rand 21) 234))
+                                (set! g (+ (rand 21) 234))
+                                (set! b (+ (rand 21) 234))
                                 
                             )
                             (begin
-                                (set! r (- (rand 255) 1))
-                                (set! g (- (rand 255) 1))
-                                (set! b (- (rand 255) 1))
+                                (set! r (rand 254))
+                                (set! g (rand 254))
+                                (set! b (rand 254))
                             )
                         )
                         
@@ -123,10 +123,10 @@
                 (set! l-new (+ (* r R) (* g G) (* b B)))
                 (set! difference (abs (- l-new l-original)))
             )
-                
-                ;(script-fu-colorize image floating (list r g b) 100)
-                (gimp-context-set-foreground (list r g b))
-                (gimp-edit-fill floating FILL-FOREGROUND)
+            
+            ;(script-fu-colorize image floating (list r g b) 100)
+            (gimp-context-set-foreground (list r g b))
+            (gimp-edit-fill floating FILL-FOREGROUND)
                 
                 
             (if (> y 1) ;if y is still valid we set colors to the next colors
@@ -140,11 +140,11 @@
               ;loop control
             (set! y (- y 1))
         );end of while 
-          (gimp-selection-none image)	
+        (gimp-selection-none image)
             ;(gimp-image-undo-enable image) ;DN = NO UNDO
             (gimp-image-undo-group-end image)                     ;undo group in one step
             (gimp-displays-flush)
-            (gc) ; garbage cleanup
+            (gc) ; garbage cleanup 
     )
 ) ;end of define
 
