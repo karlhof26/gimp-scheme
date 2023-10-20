@@ -10,7 +10,7 @@
 ;
 ;    This program is distributed in the hope that it will be useful,
 ;    but WITHOUT ANY WARRANTY; without even the implied warranty of
-;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the  
 ;    GNU General Public License for more details.
 ;
 ;    To view a copy of the GNU General Public License
@@ -25,6 +25,7 @@
 ; Rel 0.03 - Bugfix for text size
 ; Rel 0.04.3 - Added Metal type and tint options bugfix for colors and mesh shapes
 ; Rel 0.05 - Updated to GIMP-2.10.22
+; Rel 0.06 - Bug fixes; updated for Gimp-2.10.34 ; this script depends on FU-chrome-image
 ;
 ;scaled pattern fill procedure
 (define (scaled-pattern-fill image drawable pattern scale)
@@ -187,7 +188,7 @@
     ;(gimp-displays-flush)
     ;(quit)
     
-    ;(gimp-message "line 190")
+    ;(gimp-message "line 191")
     (if (< (/ size 6) 2)
         (set! tilespac 2.0)
         (set! tilespac (round (/ size 6)))
@@ -261,14 +262,14 @@
     (gimp-image-set-active-layer image pattern-layer)
     (gimp-context-set-background '(128 128 128))
     (gimp-edit-blend pattern-layer BLEND-FG-BG-RGB LAYER-MODE-NORMAL GRADIENT-LINEAR 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE (/ width 2) 0 (/ width 2) height)
-    (gimp-message "264")
-    (gimp-displays-flush)
+    ;(gimp-message "line265")
+    ;(gimp-displays-flush)
     ;(quit)
     
     (gimp-selection-none image)
     (plug-in-bump-map RUN-NONINTERACTIVE image pattern-layer bump-channel 135 45 32 0 0 0 0 TRUE FALSE 0)
     (gimp-displays-flush)
-    ;(gimp-message "line271")
+    ;(gimp-message "line272")
     
     
     (plug-in-alienmap2 1 image pattern-layer 1 0 1 0 1 0 0 TRUE TRUE TRUE)
@@ -294,8 +295,9 @@
     
     (script-fu-drop-shadow image pattern-layer 4 4 15 '(0 0 0) 80 FALSE)
     (set! shadow-layer (car (find-layer-by-name image "Drop Shadow")))
-    ;(gimp-message "line297")
-    (gimp-displays-flush)
+    ;(gimp-message "line298")
+    (gimp-progress-pulse)
+    ;(gimp-displays-flush)
     ;(quit)
     
     (gimp-layer-resize-to-image-size shadow-layer)
@@ -303,7 +305,7 @@
     ;;;;finish the script
     (if (= conserve FALSE)
         (begin
-            (gimp-message "flatten process")
+            ;(gimp-message "line 308 flatten process")
             (set! background (car (gimp-image-merge-down image pattern-layer EXPAND-AS-NECESSARY)))
             (set! background (car (gimp-image-merge-down image background EXPAND-AS-NECESSARY)))
             (set! background (car (gimp-image-merge-down image background EXPAND-AS-NECESSARY)))
@@ -436,6 +438,7 @@
     (set! final-width (car (gimp-drawable-width size-layer)))
     (set! final-height (car (gimp-drawable-height size-layer)))
     
+    (gimp-progress-update 0.1)
     ;;;Add the text layer for a temporary larger Image size
     (set! text-layer (car (gimp-text-fontname image -1 0 0 text (round (/ 400 4)) TRUE 400 PIXELS font)))
     (gimp-drawable-set-name text-layer "Text")
@@ -449,7 +452,8 @@
     (gimp-image-remove-layer image size-layer)
     (gimp-image-resize-to-layers image)
     
-    ;(gimp-message "line452")
+    ;(gimp-message "line455")
+    (gimp-progress-pulse)
     ;;;create selection-channel (cond ((= ver 2.8) (gimp-image-select-item image 2 selection-channel)) (else (gimp-selection-load selection-channel)))	
     
     ;(gimp-image-select-item image CHANNEL-OP-REPLACE text-layer)) 
@@ -460,13 +464,14 @@
     (cond ((= ver 2.8) (gimp-item-set-name selection-channel "selection-channel"))
         (else (gimp-item-set-name selection-channel "selection-channel"))
     ) ;endcond
-    ;(gimp-message "line463")
+    ;(gimp-message "line467")
     (gimp-image-set-active-layer image text-layer)
     (gimp-selection-grow image edge-width)
     (gimp-edit-fill text-layer FILL-FOREGROUND)
     (gimp-selection-none image)
     
     ;(gimp-context-set-antialias TRUE)
+    (gimp-progress-update 0.2)
     
     ;;;;begin the script
     
@@ -479,15 +484,17 @@
     
     (set! chrome-layer (car (gimp-layer-copy text-layer TRUE)))
     (gimp-image-insert-layer image chrome-layer 0 -1)
-    (gimp-message "line482")
+    ;(gimp-message "line487")
     (gimp-image-select-color image CHANNEL-OP-REPLACE chrome-layer (car (gimp-context-get-foreground)))
     ;(gimp-display-new image)
     
-    ;(gimp-message "line485")
+    ;(gimp-message "line491")
+    (gimp-progress-pulse)
+    ; this scripts depends on FU-chrome-image
     (FU-chrome-image image chrome-layer  95.0 16.0 4.0 TRUE TRUE TRUE) ;'(118 112 107)
-    ;(gimp-message "line486")
+    ;(gimp-message "line495")
     
-    
+    (gimp-progress-update 0.3)
     ;                        
     ;(gimp-image-remove-layer image (car (find-layer-by-name image "Background")))
     (set! text-layer (car (gimp-image-merge-down image (car (gimp-image-get-active-layer image)) EXPAND-AS-NECESSARY)))
@@ -506,6 +513,8 @@
     
     (cond ((= ver 2.8) (gimp-image-select-item image CHANNEL-OP-REPLACE selection-channel)) (else (gimp-selection-load selection-channel)))
     
+    ;(gimp-message "line516")
+    (gimp-progress-update 0.4)
     (script-fu-metal-mesh-b image 
                               text-layer ;drawable
                               text-mesh-type
@@ -516,10 +525,10 @@
                               FALSE) ;conserve
     
     ;(gimp-display-new image)
-    ;(quit)
+    (gimp-progress-pulse)
     
     (set! text-layer (car (gimp-image-get-active-layer image)))
-    
+    ;(gimp-message "line531")
     (metal-mesh-easy-3d image 
                         text-layer ;drawable
                         3d-size
@@ -527,11 +536,14 @@
                         v-dir
                         FALSE ;keep-selection-in
                         FALSE) ;conserve
-     
+    
+    ;(gimp-message "line540")
+    (gimp-progress-update 0.5)
     (set! text-layer (car (gimp-image-get-active-layer image)))
     
-    (cond ((not (= bkg-type 4))
-        (mesh-pixel-frame image 
+    (if (not (= bkg-type 4))
+        (begin
+            (mesh-pixel-frame image 
                     text-layer ;drawable 
                     border-size 
                     FALSE ;keep-selection-in 
@@ -541,8 +553,9 @@
     
     (set! text-layer (car (gimp-image-get-active-layer image)))
     
-    ;(gimp-message "line544")
+    ;(gimp-message "line556")
     ;;;end
+    (gimp-progress-update 0.6)
     
     ;;;;Scale Image to it's final size;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (set! aspect (/ final-width (car (gimp-image-width image)))) 
@@ -552,6 +565,8 @@
      
     (if (= bkg-type 0) 
         (begin
+            ;(gimp-message "line568")
+            (gimp-progress-update 0.64)
             (script-fu-metal-mesh-b image 
                               text-layer ;drawable
                               bkg-mesh-type
@@ -564,14 +579,17 @@
             (set! bkg-layer (car (gimp-image-get-active-layer image))) 
         )
     ) ;endif
-    ;(gimp-message "line567")
-    
+    ;(gimp-message "line582")
+    (gimp-progress-update 0.7)
     ;;;;create the background layer    
-    (cond ((not (or (= bkg-type 4) (= bkg-type 0)))
-        (set! bkg-layer (car (gimp-layer-new image width height RGBA-IMAGE "Background" 100 LAYER-MODE-NORMAL)))
-        (include-layer image bkg-layer text-layer 1)	;stack 0=above 1=below
+    (if (not (or (= bkg-type 4) (= bkg-type 0)))
+        (begin
+            (set! bkg-layer (car (gimp-layer-new image width height RGBA-IMAGE "Background" 100 LAYER-MODE-NORMAL)))
+            (include-layer image bkg-layer text-layer 1)    ;stack 0=above 1=below
         )
     ) ;endcond
+     
+    ;(gimp-message "line592")
      
     (gimp-context-set-pattern pattern)
     (gimp-context-set-background bkg-color)
@@ -594,7 +612,7 @@
             (gimp-edit-blend bkg-layer BLEND-CUSTOM LAYER-MODE-NORMAL GRADIENT-LINEAR 100 0 REPEAT-NONE reverse FALSE 3 0.2 TRUE x1 y1 x2 y2)
         )
     )
-     
+    (gimp-progress-update 0.95)
     (if (= merge TRUE)
         (begin
             (gimp-image-remove-channel image selection-channel)
@@ -604,7 +622,7 @@
             ) ;endcond
         )
     ) ;endif
-    
+    (gimp-progress-update 0.99)
     (gimp-context-pop)
     (gimp-display-new image)
     (gimp-message "Good finish OK")
@@ -716,6 +734,7 @@
         
 ;       (gimp-context-set-foreground color)
 ;       (gimp-edit-fill image-layer FOREGROUND-FILL)
+        (gimp-progress-pulse)
         
         (plug-in-bump-map
             1
@@ -746,7 +765,7 @@
         (gimp-image-set-active-layer image image-layer)
         (set! 3d-layer (car (gimp-layer-copy image-layer TRUE)))
         (gimp-image-insert-layer image 3d-layer 0 1)
-        
+        (gimp-progress-pulse)
         
         (set! horizontal
             (cond 
@@ -768,6 +787,7 @@
         
         (gimp-selection-none image)
         (while (> cnt 0)
+            (gimp-progress-update (* 0.01 (/ 100 cnt)))
             (gimp-image-set-active-layer image 3d-layer)
             (set! copy-layer (car (gimp-layer-copy 3d-layer TRUE)))
             (gimp-image-add-layer image copy-layer -1)
@@ -813,7 +833,7 @@
         (if (= keep-selection FALSE) (gimp-selection-none image))
         (gimp-image-remove-channel image selection-channel)
 ;       (if (and (= conserve FALSE) (= alpha FALSE) (gimp-layer-flatten image-layer)))	
-        
+        (gimp-progress-pulse)
         
         (gimp-displays-flush)
         (gimp-image-undo-group-end image)
@@ -844,7 +864,8 @@
             (frame-layer 0)
         )
     
-    (gimp-message "mesh pixel frame")
+    ;(gimp-message "mesh pixel frame")
+    (gimp-progress-pulse)
     (gimp-context-push)
     (gimp-image-undo-group-start image)
     (gimp-context-set-default-colors)
@@ -852,8 +873,9 @@
     ;;;;save the selection (gimp-selection-load original-channel)
     (if (= sel FALSE)
         (begin
+            ;(gimp-message "line863")
             (gimp-selection-save image)
-            (set! original-channel (car (gimp-image-get-active-drawable image)))	
+            (set! original-channel (car (gimp-image-get-active-drawable image)))
             (gimp-channel-set-opacity original-channel 100)	
             (gimp-drawable-set-name original-channel "original-channel")
             (gimp-image-set-active-layer image image-layer)
@@ -861,13 +883,19 @@
         )
     )
     
+    ;(gimp-message "line882")
+    (gimp-progress-pulse)
     (if (= alpha FALSE) (gimp-layer-add-alpha image-layer))
     
-    ;;;;check that a selection was made and make one	
+    ;;;;check that a selection was made and make one
     (if (= sel TRUE) (set! keep-selection FALSE))
     
+    ;(gimp-message "line889")
     (gimp-context-set-feather FALSE)
-    (gimp-context-set-feather-radius 10)
+    (gimp-context-set-feather-radius 10 8)
+    
+    ;(gimp-message "line893")
+    (gimp-progress-pulse)
     (gimp-image-select-rectangle image
                         CHANNEL-OP-REPLACE
                         (car (gimp-drawable-offsets image-layer))
@@ -879,16 +907,20 @@
     ;;;;create selection-channel (gimp-selection-load selection-channel)
     (gimp-selection-save image)
     (set! selection-channel (car (gimp-image-get-active-drawable image)))
+    ;(gimp-message "line906")
     (gimp-channel-set-opacity selection-channel 100)
     (gimp-drawable-set-name selection-channel "selection-channel")
     (gimp-image-set-active-layer image image-layer)	
-    (gimp-selection-none image)	
+    (gimp-selection-none image)
     
     ;;;;begin the script;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;create the Gradient image
     (set! gradient-image (car (gimp-image-new 400 400 RGB)))
     (set! gradient-layer (car (gimp-layer-new gradient-image 400 400 RGBA-IMAGE "Gradient" 100 LAYER-MODE-NORMAL)))
     (gimp-image-insert-layer gradient-image gradient-layer 0 1)
+    
+    ;(gimp-message "line918")
+    (gimp-progress-pulse)
     (plug-in-diffraction 1 gradient-image gradient-layer 0.815 1.221 1.123 0.821 0.821 0.974 1 1 1 0.066 37.126 -0.473)
     (plug-in-rgb-noise 1 gradient-image gradient-layer TRUE FALSE 1 1 1 0)
     (gimp-image-crop gradient-image 400 1 0 200)
@@ -897,9 +929,9 @@
     
     ;;;;run Gradient from image
     ;(gimp-display-new gradient-image)
-    ;(gimp-message "line 900 - where's it going")
+    ;(gimp-message "line 914 - where's it going")
     (the-pixel-frame-gradient-from-image gradient-image gradient-layer 100 FALSE inName TRUE)
-    ;(gimp-message "line 902 - what are we deleting")
+    ;(gimp-message "line 916 - what are we deleting")
     ;(gimp-image-delete gradient-image)
     
     ;;;;create the frame layer
@@ -910,15 +942,18 @@
     (gimp-image-insert-layer image frame-layer 0 -1)
     (gimp-context-set-background '(255 255 255))
     (gimp-drawable-fill frame-layer FILL-BACKGROUND)
+    (gimp-progress-pulse)
     (gimp-context-set-gradient "Border Gradient")
     (gimp-edit-blend frame-layer BLEND-CUSTOM LAYER-MODE-NORMAL GRADIENT-SHAPEBURST-SPHERICAL 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE 0 0 width height)
     (gimp-gradient-delete "Border Gradient")
     (gimp-selection-load selection-channel)
     (gimp-edit-clear frame-layer)
-    (gimp-selection-none image)	
+    (gimp-selection-none image)
     
     ;;;;finish the script
-    (if (= conserve FALSE) (set! image-layer (car (gimp-image-merge-down image frame-layer EXPAND-AS-NECESSARY))))
+    (if (= conserve FALSE)
+        (set! image-layer (car (gimp-image-merge-down image frame-layer EXPAND-AS-NECESSARY)))
+    )
     (gimp-drawable-set-name image-layer layer-name)
     (if (= keep-selection TRUE)(gimp-selection-load original-channel))
     (gimp-image-remove-channel image selection-channel)
