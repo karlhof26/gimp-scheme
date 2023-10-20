@@ -153,10 +153,10 @@
     SF-DRAWABLE     "Drawable"      0
     SF-ADJUSTMENT "Contrast variation"  '(40 0 127 1 1 0 0)
     SF-ADJUSTMENT "Deformation"         '(23 1 50 1 10 0 0)
-    SF-ADJUSTMENT "Ramdomeness"         '(4 1 7 1 10 0 1)
-    SF-TOGGLE     "Enable Emboss"   TRUE
-    SF-TOGGLE     "Bright Chrome"   FALSE
-    SF-TOGGLE     "Stop after emboss" FALSE
+    SF-ADJUSTMENT "Randomness"          '(4 1 7 1 10 0 1)
+    SF-TOGGLE     "Enable Emboss"       TRUE
+    SF-TOGGLE     "Bright Chrome"       FALSE
+    SF-TOGGLE     "Stop after emboss"   FALSE
 )
 
 ; end of script
