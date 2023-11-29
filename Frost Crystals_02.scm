@@ -31,6 +31,7 @@
                                       text 
                                     font-in 
                                     font-size
+                                    font-color
                                     bkg-type 
                                     pattern
                                     bkg-color
@@ -43,6 +44,9 @@
                                     flare-inten 
                                     spike-len
                                     density
+                                    outline-option
+                                    outline-color
+                                    outline-growth
                                     conserve                                      
             )
                                     
@@ -75,7 +79,7 @@
         )
         ;(gimp-message "start")
         (gimp-context-push)
-        (gimp-context-set-foreground '(0 0 0))
+        (gimp-context-set-foreground '(0  0  0)) ; was 0 0 0 ; used to set font-color
         (gimp-context-set-background '(255 255 255))
         (gimp-image-insert-layer image layer-color 0 0)
         ;(gimp-display-new image)
@@ -84,12 +88,12 @@
         
         ;;;;Add the text layer for a temporary larger Image size
         (set! text-layer (car (gimp-text-fontname image -1 0 0 text (round (/ 350 4)) TRUE 350 PIXELS font)))
-        ;(gimp-message "line80")
+        ;(gimp-message "line91")
         
         ;(gimp-image-insert-layer image text-layer 0 -1)
         (gimp-item-set-name text-layer "text layer")
         (gimp-item-set-name size-layer "size layer")
-        ;(gimp-message "debug 1")
+        ;(gimp-message "line96")
         
         (gimp-text-layer-set-justification text-layer 2)
         (gimp-text-layer-set-letter-spacing text-layer letter-spacing)
@@ -98,7 +102,7 @@
         (gimp-image-remove-layer image size-layer)  ; kh change
         
         (gimp-image-resize-to-layers image)	
-        ;(gimp-message "debug 2")
+        ;(gimp-message "line105")
         
         ;;;;set the new Image size
         (if (> text-width img-width) (set! width text-width))           
@@ -113,7 +117,7 @@
         (set! offy (/ (- height text-height) 2))    
         (gimp-layer-set-offsets text-layer offx offy)
         
-        ;(gimp-message "after centre text layer")
+        ;(gimp-message "after centre text layer") 
         
         ;;;;set the text layer    
         (gimp-image-select-item image CHANNEL-OP-ADD text-layer)
@@ -123,6 +127,8 @@
         (gimp-layer-set-mode text-layer LAYER-MODE-SCREEN)
         (gimp-selection-none image)    
         ;(gimp-message "debug 3")
+        ;(gimp-display-new image)
+        ;(quit)
         
         ;;;;resize the text-layer ;;;
         (gimp-image-set-active-layer image text-layer)
@@ -133,41 +139,65 @@
         (set! layer (car (gimp-layer-new img size (/ size 12) RGBA-IMAGE "Brush" 100 LAYER-MODE-NORMAL)))
         (gimp-image-insert-layer img layer 0 0)
         
-        (gimp-image-select-ellipse img 2 0 0 size (/ size 12))
+        (gimp-image-select-ellipse img 2 0 0 size  (/ size 12) )
         (gimp-context-set-foreground '(255 255 255))
         (gimp-context-set-background '(21 45 76))
-        (gimp-edit-blend layer BLEND-FG-BG-RGB LAYER-MODE-NORMAL GRADIENT-BILINEAR 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE (/ size 2) (/ (/ size 12) 2) size (/ (/ size 12) 2))
-        ;(gimp-message "line140")
+        (gimp-edit-blend layer BLEND-FG-BG-RGB LAYER-MODE-NORMAL GRADIENT-BILINEAR 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE (/ size 2) (/ (/ size 12) 2) size (/ (/ size 12) 2) )
+        ;(gimp-message "line146")
         ;(gimp-displays-flush)
         ;(gimp-display-new image)
         
         (gimp-selection-none img) ; kh change
-        (set! path (string-append gimp-directory "/brushes/" "mybrush" ".gbr"))
-        (file-gbr-save RUN-NONINTERACTIVE img layer path path brush-space "My Brush")
-        ;(gimp-image-delete img) ; kh change
+        (catch
+            (begin
+                (gimp-message "ERROR:: Logobrush not found")
+                (quit)
+            )
+            (set! path (string-append gimp-directory "/brushes/" "logobrush" ".gbr"))
+            (file-gbr-save RUN-NONINTERACTIVE img layer path path brush-space "Logo Brush")
+            ;(gimp-image-delete img) ; kh change
+            ;(gimp-message "line159")
+            
+            ;;;;stroke the text-layer
+            (gimp-brushes-refresh)
+            (gimp-context-set-brush "Logo Brush")
+            (gimp-context-set-dynamics "Dynamics Random")
+        )
         
-        ;;;;stroke the text-layer
-        (gimp-brushes-refresh)
-        (gimp-context-set-brush "My Brush")
-        (gimp-context-set-dynamics "Dynamics Random")
-        
-        ; added by Karl
-        (gimp-context-set-foreground '(255 0 255))
-        (gimp-context-set-feather 2)
+        ; added by karlhof26
+        (gimp-context-set-foreground font-color)
+        ;(gimp-context-set-feather 2)
+        ;added by karlhof26
+        (gimp-context-set-brush-size (* size 2))
+        (gimp-context-set-brush-spacing (/ brush-space 100))
         
         ;; deprecated (gimp-selection-load selection) replaced with line below
         (gimp-image-select-item image CHANNEL-OP-REPLACE selection)
+        
+        ;added by karlhof26
+        (gimp-drawable-edit-fill text-layer FILL-FOREGROUND)
+        
         (gimp-edit-stroke text-layer)
         
         
         (gimp-selection-none image)
         (plug-in-sparkle 1 image text-layer lum-threshold flare-inten spike-len 4 15 density 0 0 0 FALSE FALSE FALSE 0)
-        ;(gimp-brush-delete "My Brush") ; kh change
+        (gimp-brush-delete "Logo Brush") ; kh chnaged to Logo Brush
+        
+        ;; resequenced by karlhof26 to allow font to be colored
+         ;;;;color the frost
+        ;(gimp-message "line186 colorify")
+        (gimp-selection-all image)
+        (gimp-image-select-item image CHANNEL-OP-SUBTRACT selection)
+        (plug-in-colorify RUN-NONINTERACTIVE image text-layer frost-color)
+        (gimp-selection-none image)
+        
         
         ;;;;Scale Image to it's original size;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (gimp-image-scale-full image final-width final-height 2)
         (set! width (car (gimp-image-width image)))
         (set! height (car (gimp-image-height image)))
+        
         
         ;;;;create the background layer    
         (set! bkg-layer (car (gimp-layer-new image width height RGBA-IMAGE "Background" 100 LAYER-MODE-NORMAL)))
@@ -176,14 +206,15 @@
         (gimp-context-set-background bkg-color)
         (gimp-context-set-gradient gradient)
         
-        ;(gimp-message "line179")
+        ;(gimp-message "line206")
         ;(gimp-displays-flush)
         ;(gimp-display-new image)
         
         (if (= bkg-type 0)
             (begin
-                ;(gimp-message "line169 off to frosty sky")
+                ;(gimp-message "line212 off to frosty sky")
                 (fc-frosty-sky image bkg-layer 230 30 6 32 24 conserve) ; was 200 20 4 32 24
+                ;(gimp-message "line214 back")
             )
         )
         (if (= bkg-type 1)
@@ -192,40 +223,67 @@
         (if (= bkg-type 2)
             (gimp-drawable-fill bkg-layer FILL-BACKGROUND)
         )
-        (if (= bkg-type 3) (gimp-edit-blend bkg-layer BLEND-CUSTOM LAYER-MODE-NORMAL GRADIENT-LINEAR 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE 0 0 width height))
+        (if (= bkg-type 3)
+            (gimp-edit-blend bkg-layer BLEND-CUSTOM LAYER-MODE-NORMAL GRADIENT-LINEAR 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE 0 0 width height)
+        )
         
         ; kh debug code
         ;(gimp-image-insert-layer image layer 0 -1)
-        ;(gimp-message "crashing")
+        ;
+        ;(gimp-message "line230")
         ;(gimp-display-new image)
         ;(gimp-display-new img)
         ;(gimp-displays-flush)
         ;(quit)
         
-        ;;;;color the frost
-        (plug-in-colorify RUN-NONINTERACTIVE image text-layer frost-color)
+        ;;;;color the frost - Removed here and placed higher by karlhof26
+        ;(gimp-message "colorify")
+        ;(plug-in-colorify RUN-NONINTERACTIVE image text-layer frost-color)
+        
+        ;(gimp-message "line240")
+        ;(gimp-display-new image)
+        ;(quit)
         
         ;;;;add crystals outline
-        (set! outline (car (gimp-layer-new image width height RGBA-IMAGE "Outline" 100 LAYER-MODE-NORMAL)))
-        (gimp-image-insert-layer image outline 0 (+ (car (gimp-image-get-layer-position image text-layer)) 1)) ;stack 0=above 1=below
-        ;; depreacted (gimp-selection-layer-alpha text-layer)
-        ;(gimp-message "line207")
-        ;(gimp-display-new image)
-        
-        (gimp-image-select-item image CHANNEL-OP-ADD selection)
-        (gimp-selection-grow image 1)
-        (gimp-context-set-foreground '(0 0 0))
-        (gimp-edit-fill outline FILL-FOREGROUND)
-        (gimp-selection-none image)
+        (if (= outline-option TRUE)
+            (begin
+                ;(gimp-message "line247 outline")
+                (set! outline (car (gimp-layer-new image width height RGBA-IMAGE "Outline" 100 LAYER-MODE-OVERLAY)))
+                (gimp-image-insert-layer image outline 0 (+ (car (gimp-image-get-layer-position image text-layer)) 1)) ;stack 0=above 1=below
+                ;; depreacted (gimp-selection-layer-alpha text-layer)
+                ;(gimp-message "line251")
+                ;(gimp-display-new image)
+                
+                ;(gimp-image-selection-all image)
+                (gimp-image-select-item image CHANNEL-OP-REPLACE selection) ; was channel-op-add
+                (gimp-selection-grow image outline-growth) ; was 1
+                (gimp-context-set-foreground outline-color)
+                (gimp-edit-fill outline FILL-FOREGROUND)
+                (gimp-selection-none image)
+                
+                
+            )
+        )
         (gimp-image-set-active-layer image text-layer)
-        ;(gimp-message "line211")
-        ;(gimp-display-new image)
         
-        (if (and (= conserve TRUE) (= bkg-type 0)) (gimp-image-remove-layer image bkg-layer))
+        ;(gimp-message "line266")
+        ;(gimp-display-new image)
+        ;(quit)
+        (gimp-layer-set-mode text-layer LAYER-MODE-NORMAL)
+        
+        (if (and (= conserve TRUE) (= bkg-type 0))
+            (begin
+                ;(gimp-message "line272 remove bkglayer")
+                (gimp-image-remove-layer image bkg-layer)
+            )
+        )
         (if (= conserve FALSE)
             (begin
                 (set! text-layer (car (gimp-image-merge-down image text-layer EXPAND-AS-NECESSARY)))
-                (set! text-layer (car (gimp-image-merge-down image text-layer EXPAND-AS-NECESSARY)))
+                
+                ;(set! text-layer (car (gimp-image-merge-down image text-layer EXPAND-AS-NECESSARY)))
+                ;
+                ;(set! text-layer (car (gimp-image-merge-down image text-layer EXPAND-AS-NECESSARY)))
             )
         ) ;endif
         (gimp-drawable-set-name text-layer text)
@@ -233,13 +291,14 @@
         
         (gimp-context-pop)
         (gimp-display-new image)
+        (gc) ; garbage cleanup; memory cleanup
         
   )
 )
   
 (script-fu-register "script-fu-frost-crystals-logo"
     "Frost Crystals[logo]..."
-    "Create an image with a text layer over a pattern layer. \nfile:Frost Crystals_02.scm"
+    "Create an image with a text layer over a pattern layer. The overlay option may overwhelm the font color.\nfile:Frost Crystals_02.scm"
     "Graechan"
     "Graechan - http://gimpchat.com"
     "June 2011"
@@ -247,19 +306,23 @@
     SF-TEXT       "Text"    "FROST CRYSTALS"
     SF-FONT       "Font"               "Arial Bold"
     SF-ADJUSTMENT "Font size (pixels)" '(200 10 500 1 1 0 1)
+    SF-COLOR      "Font color"         '(0 0 0)
     SF-OPTION "Background Type" '("Cold Sky" "Pattern" "Color" "Gradient" "Transparent")
     SF-PATTERN    "Pattern"            "Pink Marble"
     SF-COLOR      "Background color"         '(0 0 0)
     SF-GRADIENT   "Background Gradient" "Abstract 3"
-    SF-ADJUSTMENT "Letter Spacing" '(20 -100 100 1 10 0 0)
-    SF-ADJUSTMENT "Brush Size" '(60 1 100 1 5 0 0)
-    SF-ADJUSTMENT "Brush Spacing" '(45 1 100 1 5 0 0)
-    SF-COLOR      "Frost Color"         '(255 255 255)
-    SF-ADJUSTMENT "Frost-Amount" '(.025 0 .075 .001 .005 3 0)
-    SF-ADJUSTMENT "Frost-Intensity" '(.15 0 .30 .01 .05 2 0)
-    SF-ADJUSTMENT "Frost-Length(pixels)" '(20 1 100 1 5 0 0)
-    SF-ADJUSTMENT "Frost-Density" '(1 0 1 .01 .1 2 0)
-    SF-TOGGLE     "Keep the Layers"   FALSE
+    SF-ADJUSTMENT "Letter Spacing"          '(20 -100 100 1 10 0 0)
+    SF-ADJUSTMENT "Brush Size"              '(83 12 100 1 5 0 0)
+    SF-ADJUSTMENT "Brush Spacing"           '(100 1 4900 1 5 0 0)
+    SF-COLOR      "Frost Color"             '(255 255 255)
+    SF-ADJUSTMENT "Frost-Amount"            '(.025 0 .075 .001 .005 3 0)
+    SF-ADJUSTMENT "Frost-Intensity"         '(.15 0 .30 .01 .05 2 0)
+    SF-ADJUSTMENT "Frost-Length(pixels)"    '(20 1 100 1 5 0 0)
+    SF-ADJUSTMENT "Frost-Density"           '(1 0 1 .01 .1 2 0)
+    SF-TOGGLE     "Outline in color"        TRUE
+    SF-COLOR      "Outline Color"           '(0 0 0)
+    SF-ADJUSTMENT "Outline growth"          '(1 0 20 1 5 0 0)
+    SF-TOGGLE     "Keep the Layers"         TRUE
     
 )
 
@@ -281,7 +344,7 @@
                                 keep-selection-in
                                 conserve
         )
-        (gimp-image-undo-group-start image)						  
+        (gimp-image-undo-group-start image)      
         
   (let* (
             (image-layer (car (gimp-layer-copy (car (gimp-image-get-active-layer image)) TRUE)))
@@ -299,6 +362,9 @@
             (img 0)
             (layer 0)
             (path 0)
+            
+            (result 111)
+            (result2 0)
         )
         
         (gimp-image-insert-layer image image-layer 0 -1)
@@ -319,7 +385,9 @@
         ;;;;create selection-channel (gimp-selection-load selection)
         (set! selection (car (gimp-selection-save image)))
         (gimp-drawable-fill image-layer FILL-TRANSPARENT)
-        (if (and (= bkg-type 4) (= original FALSE)) (gimp-layer-set-visible drawable FALSE))
+        (if (and (= bkg-type 4) (= original FALSE))
+            (gimp-layer-set-visible drawable FALSE)
+        )
         (if (or (= original TRUE) (= bkg-type 4))
             (begin
                 (gimp-selection-invert image)
@@ -328,7 +396,8 @@
         )
         (gimp-selection-none image)
         
-        ;;;;begin the script
+        ;(gimp-display-new image)
+        ;(quit)
         
         ;;;;create the brush
         (set! img (car (gimp-image-new size (/ size 12) RGB)))
@@ -340,23 +409,37 @@
         (gimp-edit-blend layer BLEND-FG-BG-RGB LAYER-MODE-NORMAL  GRADIENT-BILINEAR 100 0 REPEAT-NONE FALSE FALSE 3 0.2 TRUE (/ size 2) (/ (/ size 12) 2) size (/ (/ size 12) 2))
         (gimp-displays-flush)
         (gimp-selection-none img)
-        (set! path (string-append gimp-directory "/brushes/" "mybrush" ".gbr"))
-        (file-gbr-save RUN-NONINTERACTIVE img layer path path brush-space "My Brush")
-        (gimp-image-delete img)
+        (catch
+            (begin
+                (gimp-message "ERROR - Frost brush creation error")
+                (quit)
+            )
+            
+            (set! path (string-append gimp-directory "/brushes/" "frostcrystalbrush" ".gbr"))
+            (file-gbr-save RUN-NONINTERACTIVE img layer path path brush-space "frostcrystalbrush")
+            (gimp-image-delete img)
+            
+            ;;;;stroke the layer
+            (gimp-brushes-refresh)
+            (gimp-context-set-brush "frostcrystalbrush")
+            (gimp-context-set-dynamics "Dynamics Random")
+        )
+        ;added by karlhof26
+        (gimp-context-set-brush-size (* size 2))
+        (gimp-context-set-brush-spacing (/ brush-space 100))
         
-        ;;;;stroke the layer
-        (gimp-brushes-refresh)
-        (gimp-context-set-brush "My Brush")
-        (gimp-context-set-dynamics "Dynamics Random")
         (gimp-selection-load selection)
         (gimp-edit-stroke image-layer)
         (gimp-selection-none image)
         (plug-in-sparkle 1 image image-layer lum-threshold flare-inten spike-len 4 15 density 0 0 0 FALSE FALSE FALSE 0)
-        (gimp-brush-delete "My Brush")
-         
+        (gimp-brush-delete "frostcrystalbrush")
+        
+        ;;;;color the frost 
+        (plug-in-colorify RUN-NONINTERACTIVE image image-layer frost-color)
+        
         ;;;;create the background layer    
         (set! bkg-layer (car (gimp-layer-new image width height RGBA-IMAGE "Background" 100 LAYER-MODE-NORMAL)))
-        (gimp-image-add-layer image bkg-layer 1)
+        (gimp-image-insert-layer image bkg-layer 0 1)
         (gimp-context-set-pattern pattern)
         (gimp-context-set-background bkg-color)
         (gimp-context-set-gradient gradient)
@@ -387,8 +470,8 @@
             )
         )
             
-        ;;;;color the frost
-        (plug-in-colorify RUN-NONINTERACTIVE image image-layer frost-color)
+        ;;;;color the frost - moved higher by karlhof26
+        ;(plug-in-colorify RUN-NONINTERACTIVE image image-layer frost-color)
         
         (if (= original TRUE)
             (begin
@@ -399,7 +482,7 @@
         
         ;;;;add crystals outline
         (set! outline (car (gimp-layer-new image width height RGBA-IMAGE "Outline" 100 LAYER-MODE-NORMAL)))
-        (gimp-image-add-layer image outline (+ (car (gimp-image-get-layer-position image image-layer)) 1)) ;stack 0=above 1=below
+        (gimp-image-insert-layer image outline 0 (+ (car (gimp-image-get-layer-position image image-layer)) 1)) ;stack 0=above 1=below
         (gimp-selection-layer-alpha image-layer)
         (gimp-selection-grow image 1)
         (gimp-context-set-foreground '(0 0 0))
@@ -407,7 +490,7 @@
         (gimp-selection-none image)
         (gimp-image-set-active-layer image image-layer)
         
-        ;;;;finish the script	
+        ;;;;finish the script
         (if (= conserve FALSE)
             (begin
                 (set! image-layer (car (gimp-image-merge-down image image-layer EXPAND-AS-NECESSARY)))
@@ -425,10 +508,14 @@
             )
         ) ;endif
         (if (= conserve TRUE)
-            (gimp-drawable-set-name drawable layer-name)
+            (begin
+                (gimp-drawable-set-name drawable layer-name)
+            )
         )
         (if (and (= conserve TRUE) (= original FALSE))
-            (gimp-image-remove-layer image drawable)
+            (begin
+                (gimp-image-remove-layer image drawable)
+            )
         )
         
         (if (= keep-selection TRUE)
@@ -440,6 +527,7 @@
         (gimp-displays-flush)
         (gimp-image-undo-group-end image)
         (gimp-context-pop)
+        (gc); garbage; cleanup
         
   )
 )
@@ -457,15 +545,15 @@
     SF-PATTERN      "Pattern"                   "Pink Marble"
     SF-COLOR        "Background color"          '(0 0 0)
     SF-GRADIENT     "Background Gradient"       "Abstract 3"
-    SF-ADJUSTMENT   "Brush Size"                '(40 1 100 1 5 0 0)
-    SF-ADJUSTMENT   "Brush Spacing"             '(45 1 100 1 5 0 0)
+    SF-ADJUSTMENT   "Brush Size"                '(40 12 100 1 5 0 0)
+    SF-ADJUSTMENT   "Brush Spacing"             '(100 1 4900 1 5 0 0)
     SF-COLOR        "Frost Color"               '(255 255 255)
     SF-ADJUSTMENT   "Frost-Amount"              '(.025 0 .075 .001 .005 3 0)
     SF-ADJUSTMENT   "Frost-Intensity"           '(.15 0 .30 .01 .05 2 0)
     SF-ADJUSTMENT   "Frost-Length(pixels)"      '(20 1 100 1 5 0 0)
     SF-ADJUSTMENT   "Frost-Density"             '(1 0 1 .01 .1 2 0)
-    SF-TOGGLE       "Keep the Original Image"   FALSE
-    SF-TOGGLE       "Keep selection"            FALSE
+    SF-TOGGLE       "Keep the Original Image"   TRUE
+    SF-TOGGLE       "Keep selection"            TRUE
     SF-TOGGLE       "Keep the Layers"           TRUE
 )
 
@@ -513,8 +601,9 @@
         ; generating small stars
         (while (< ns smalls)
             (set! ns (+ ns 1))
-            (set! xs (rand (- width 1)))
-            (set! ys (rand (- height 1)))
+            (set! xs (+ 2 (rand (- width 5))))
+            (set! ys (+ 2 (rand (- height 5))))
+            ;(gimp-message (number->string xs))
             (set! lum (+ (rand 160) 32))
             (aset pixw 0 (+ lum (rand 61)))
             (aset pixw 1 (+ lum (rand 61)))
@@ -524,6 +613,7 @@
             ; preparing the exit of the loop
             (set! ii (+ ii 1))
             (if (> ii 10000) (set! ns smalls))
+            (gimp-progress-update (/ ns smalls))
         ) ; end of loop
         
         ; generating medium stars
@@ -531,8 +621,9 @@
         (set! ii 0)
         (while (< nm mediums)
             (set! nm (+ nm 1))
-            (set! xm (rand (- width 1)))
-            (set! ym (rand (- height 1)))
+            (set! xm (+ 3 (rand (- width 6))))
+            (set! ym (+ 3 (rand (- height 6))))
+            ;(gimp-message (number->string xm))
             (set! lum (+ (rand 96) 128))
             (aset pixw 0 (+ lum (rand 31)))
             (aset pixw 1 (+ lum (rand 31)))
@@ -545,6 +636,7 @@
             ; preparing the exit of the loop
             (set! ii (+ ii 1))
             (if (> ii 10000) (set! nm mediums))
+            (gimp-progress-update (/ nm mediums))
         ) ; end of loop
         
         ; generating big stars
@@ -552,12 +644,14 @@
         (set! ii 0)
         (while (< nb bigs)
             (set! nb (+ nb 1))
-            (set! xb (rand (- width 2)))
-            (set! yb (rand (- height 2)))
+            (set! xb (+ 6 (rand (- width 12))))
+            (set! yb (+ 6 (rand (- height 12))))
+            ;(gimp-message (number->string xb))
             (set! lum (+ (rand 64) 160))
-            (aset pixw 0 (+ lum (rand 30)))
-            (aset pixw 1 (+ lum (rand 30)))
-            (aset pixw 2 (+ lum (rand 30)))
+            (aset pixw 0 (+ lum (rand 29)))
+            (aset pixw 1 (+ lum (rand 29)))
+            (aset pixw 2 (+ lum (rand 29)))
+            ;(gimp-message "bigsets")
             (gimp-drawable-set-pixel layer-one xb yb 3 pixw)
             (gimp-drawable-set-pixel layer-one (+ xb 1) yb 3 pixw)
             (gimp-drawable-set-pixel layer-one (+ xb 2) yb 3 pixw)
@@ -571,7 +665,9 @@
             ; preparing the exit of the loop
             (set! ii (+ ii 1))
             (if (> ii 10000) (set! nb bigs))
+            (gimp-progress-update (/ nb bigs))
         ) ; end of loop
+        ;(gimp-message "line679")
         
         (define layer-two (car (gimp-layer-copy layer-one 1)))
         (gimp-image-insert-layer image layer-two 0 -1)
