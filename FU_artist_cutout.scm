@@ -79,7 +79,7 @@
     (gimp-edit-copy drawable)
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-temp1 0)))
     
-    (gimp-message (number->string blur))
+    ;(gimp-message (number->string blur))
     
     (plug-in-gauss 1 img layer-temp1 blur blur 0)
     (gimp-edit-copy layer-temp1)
