@@ -55,13 +55,16 @@
     
     (gimp-image-undo-group-start img)
     (define indexed (car (gimp-drawable-is-indexed drawable)))
-    (if (= indexed TRUE)(gimp-image-convert-rgb img))
+    (if (= indexed TRUE)
+        (gimp-image-convert-rgb img)
+    )
+    
   (let* (
             (width (car (gimp-drawable-width drawable)))
             (height (car (gimp-drawable-height drawable)))
             (old-selection (car (gimp-selection-save img)))
             (image-type (car (gimp-image-base-type img)))
-            (blur (* width  smoothness 0.001 ))
+            (blur (* (* width  smoothness) 0.001 ))
             (layer-type (car (gimp-drawable-type drawable)))
             (layer-temp1 (car (gimp-layer-new img width height layer-type "temp1"  100 LAYER-MODE-NORMAL)))
             (img2 (car (gimp-image-new width height image-type)))
@@ -75,6 +78,8 @@
     (gimp-image-insert-layer img layer-temp1 0 -1)
     (gimp-edit-copy drawable)
     (gimp-floating-sel-anchor (car (gimp-edit-paste layer-temp1 0)))
+    
+    (gimp-message (number->string blur))
     
     (plug-in-gauss 1 img layer-temp1 blur blur 0)
     (gimp-edit-copy layer-temp1)
@@ -101,9 +106,12 @@
     (gimp-image-select-item img CHANNEL-OP-REPLACE old-selection)
     (gimp-image-remove-channel img old-selection)
     
-    (if (= inMerge TRUE)(gimp-image-merge-visible-layers img EXPAND-AS-NECESSARY))
+    (if (= inMerge TRUE)
+        (gimp-image-merge-visible-layers img EXPAND-AS-NECESSARY)
+    )
     (gimp-image-undo-group-end img)
     (gimp-displays-flush)
+    (gc) ; garbage cleanup; memory cleanup
   )
 )
 
@@ -111,7 +119,7 @@
     "FU-cutout"
     "<Toolbox>/Script-Fu/Artist/Cutout"
     "Creates a drawing effect of soft-edged, simplified colors. \nfile:FU_artist_cutout.scm"
-    "Eddy Verlinden <eddy_verlinden@hotmail.com>"
+    "Eddy Verlinden <eddy_verlinden@hotmail.com> Karlhof26 <karlhofmeyr@gmail.com>"
     "Eddy Verlinden"
     "2007, juli"
     "*"
