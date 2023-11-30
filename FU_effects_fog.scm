@@ -3,6 +3,7 @@
 ; last modified/tested by Paul Sherman
 ; 02/14/2014 on GIMP-2.8.10
 ; 03/09/2020 on GIMP-2.10.20
+; 30/11/2020 on GIMP-2.10.36
 ;
 ; 02/14/2014 - convert to RGB if needed, option to merge layers
 ;==============================================================
@@ -75,11 +76,12 @@
     
     (define mask (car (gimp-layer-create-mask white-layer 0)))
     (gimp-layer-add-mask white-layer mask)
-    (plug-in-plasma 1 inImage mask (rand 4294967295) turb)
+    (plug-in-plasma 1 inImage mask (rand 4294967) turb)
     
     (if (= inMerge TRUE)(gimp-image-merge-visible-layers inImage EXPAND-AS-NECESSARY))
     (gimp-image-undo-group-end inImage)
     (gimp-displays-flush)
+    (gc) ; garbage collect; memory cleanup
     
 ); end DEFINE
 
@@ -93,7 +95,7 @@
     SF-IMAGE        "Image"                      0
     SF-DRAWABLE     "Drawable"                   0
     SF-COLOR        "Fog Colour"                    '(255 255 255)
-    SF-ADJUSTMENT   "Turbulance"                    '(1.0 0 10 0.1 1 1 0)
+    SF-ADJUSTMENT   "Turbulance"                    '(1.0 0 6.9 0.1 1 1 0)
     SF-ADJUSTMENT   "Opacity"                       '(100 0 100 1 5 1 0)
     SF-TOGGLE       "Merge layers when complete?"   FALSE
 )
