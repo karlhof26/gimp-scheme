@@ -89,8 +89,20 @@
             (while (< yFlag yCirc)
                 (set! yStart (+ rowCheck (+ oBorder (+ (* gapSpace yFlag) (* circDiam yFlag)))))
                 
-                (gimp-free-select theImage 16
-                    (vector (+ xStart (* circDiam 0.2929)) yStart
+                ;(gimp-free-select theImage 16
+                ;    (vector (+ xStart (* circDiam 0.2929)) yStart
+                ;        (+ xStart (* circDiam 0.7071)) yStart
+                ;        (+ xStart circDiam) (+ yStart (* circDiam 0.2929))
+                ;        (+ xStart circDiam) (+ yStart (* circDiam 0.7071))
+                ;        (+ xStart (* circDiam 0.7071)) (+ yStart circDiam)
+                ;        (+ xStart (* circDiam 0.2929)) (+ yStart circDiam)
+                ;        xStart (+ yStart (* circDiam 0.7071))
+                ;        xStart (+ yStart (* circDiam 0.2929))
+                ;    )
+                ;    CHANNEL-OP-REPLACE TRUE FALSE 0)
+                    
+                (gimp-image-select-polygon theImage CHANNEL-OP-REPLACE 16
+                        (vector (+ xStart (* circDiam 0.2929)) yStart
                         (+ xStart (* circDiam 0.7071)) yStart
                         (+ xStart circDiam) (+ yStart (* circDiam 0.2929))
                         (+ xStart circDiam) (+ yStart (* circDiam 0.7071))
@@ -99,7 +111,7 @@
                         xStart (+ yStart (* circDiam 0.7071))
                         xStart (+ yStart (* circDiam 0.2929))
                     )
-                    CHANNEL-OP-REPLACE TRUE FALSE 0)
+                )
                 (gimp-edit-bucket-fill baseLayer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 255 0 0 0)
                 (set! yFlag (+ 1 yFlag))
             )
@@ -132,8 +144,8 @@
     SF-ADJUSTMENT   "Circles in y Direction"         '(10 1 100 1 5 0 0)
     SF-ADJUSTMENT   "Outer Border Around Circles"    '(10 1 100 1 5 0 0)
     SF-ADJUSTMENT   "Gap Between the Circles"        '(10 1 100 1 5 0 0)
-    SF-COLOR        "Color for grid lines"           '(0 0 0)
-    SF-COLOR        "Color for rectangle interior"   '(255 255 255)
+    SF-COLOR        "Color for Octagons"             '(0 0 0)
+    SF-COLOR        "Color for background"           '(255 255 255)
 )
 
 (script-fu-menu-register "script-fu-octagongrid-kh"
