@@ -18,7 +18,7 @@
 ;;  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ;;  ***************************************************************************
 
-(define (script-fu-HexGrid
+(define (script-fu-HexGrid-jms
     gType
     circDiam
     xCirc
@@ -47,16 +47,19 @@
             (xStart 0.0)
             (yStart 0.0)
             (rowCheck 0.0)
+            
+            (vGapSpace 0) 
           )
         
         (gimp-context-push)
         (cond
             ((= gType 0)
+                (set! vGapSpace  (+ -4.5 (* gapSpace 0.722)) )
                 (set! inWidth (+ (+ tBorder (* circDiam xCirc)) (* gapSpace (- xCirc 1))))
-                (set! inHeight (+ (+ tBorder (* circDiam yCirc)) (* gapSpace (- yCirc 1))))
+                (set! inHeight (+ (+ tBorder (* circDiam yCirc)) (* vGapSpace (- yCirc 1))))
             )
             ((= gType 1)
-                (set! xGap (round (* s3 (+ circRad (round (* 0.5 gapSpace))))))
+                (set! xGap (round (* s3 (+ circRad (round (* gapSpace 0.5))))))
                 (set! yGap (* gapSpace (- yCirc 1)))
                 (set! inWidth (+ (+ tBorder circDiam) (+ (* (- xCirc 1) xGap))))
                 (set! inHeight (+ tBorder (+ circRad (+ yGap (+ (round (* gapSpace 0.5)) (* circDiam yCirc))))))
@@ -68,6 +71,10 @@
         
         (gimp-image-insert-layer theImage baseLayer 0 0)
         
+        (gimp-context-set-feather FALSE)
+        (gimp-context-set-feather-radius 0.0 0.0)
+        (gimp-context-set-antialias TRUE)
+        
         (gimp-context-set-background bgColor)
         (gimp-context-set-foreground gridColor)
         
@@ -77,19 +84,55 @@
             (cond
                 ((= gType 0)
                     (set! xStart (+ oBorder (* xFlag (+ circDiam gapSpace))))
+                    
+                    ;(set! rowCheck 0.0)
+                    ; reduce vGapSpace by just less than the golden ratio to improve appearance 
+                    (set! vGapSpace  (+ -4.5 (* gapSpace 0.722)) )
+                    ;(gimp-message (number->string vGapSpace))
                 )
                 ((= gType 1)
                     (if (= (fmod xFlag 2) 1)
-                        (set! rowCheck (+ (* gapSpace 0.5) circRad))
+                        (set! rowCheck (+ (* 0.5 gapSpace) circRad))
                     )
-                    (set! xStart (+ oBorder (* s3 (+ circRad (round (* 0.5 gapSpace))) xFlag)))
+                    (set! xStart (+ oBorder (* s3 (* (+ circRad (round (* 0.5 gapSpace))) xFlag))))
                 )
             )
             
             (while (< yFlag yCirc)
+                ;(gimp-message (number->string rowCheck))
+                ;(gimp-message (number->string oBorder))
+                ;(gimp-message (number->string gapSpace))
+                ;(gimp-message (number->string yFlag))
+                ;(quit)
+                
+                ;(gimp-message "line102")
+                ;(set! yStart (+ rowCheck (+ oBorder (+ (* gapSpace yFlag) (* circDiam yFlag)))))
                 (set! yStart (+ rowCheck (+ oBorder (+ (* gapSpace yFlag) (* circDiam yFlag)))))
                 
-                (gimp-free-select theImage 12
+                (if (= gType 0)
+                    (begin
+                        ;(gimp-message "line111 adjust yStart")
+                        (set! yStart (+ rowCheck (+ oBorder (+ (* vGapSpace yFlag) (* circDiam yFlag)))))
+                    )
+                )
+                
+                
+                ;(gimp-message "line106")
+                ;(gimp-free-select theImage 12
+                ;    (vector xStart (+ yStart (* circDiam 0.5))
+                ;        (+ xStart (* circDiam 0.25)) (+ yStart (* circDiam 0.067))
+                ;        (+ xStart (* circDiam 0.75)) (+ yStart (* circDiam 0.067))
+                ;        (+ xStart circDiam) (+ yStart (* circDiam 0.5))
+                ;        (+ xStart (* circDiam 0.75)) (+ yStart (* circDiam 0.933))
+                ;        (+ xStart (* circDiam 0.25)) (+ yStart (* circDiam 0.933))
+                ;    )
+                ;    CHANNEL-OP-REPLACE TRUE FALSE 0) 
+                
+                ;(gimp-message "line130")
+                (gimp-context-set-feather FALSE)
+                ;(gimp-context-set-feather-radius 0.0 0.0)
+                
+                (gimp-image-select-polygon theImage CHANNEL-OP-REPLACE 12 
                     (vector xStart (+ yStart (* circDiam 0.5))
                         (+ xStart (* circDiam 0.25)) (+ yStart (* circDiam 0.067))
                         (+ xStart (* circDiam 0.75)) (+ yStart (* circDiam 0.067))
@@ -97,9 +140,10 @@
                         (+ xStart (* circDiam 0.75)) (+ yStart (* circDiam 0.933))
                         (+ xStart (* circDiam 0.25)) (+ yStart (* circDiam 0.933))
                     )
-                    CHANNEL-OP-REPLACE TRUE FALSE 0)
-                    (gimp-edit-bucket-fill baseLayer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 255 0 0 0)
-                    (set! yFlag (+ 1 yFlag))
+                    )
+                
+                (gimp-edit-bucket-fill baseLayer BUCKET-FILL-FG LAYER-MODE-NORMAL 100 255 0 0 0)
+                (set! yFlag (+ yFlag 1))
             )
             
             (set! xFlag (+ xFlag 1))
@@ -115,7 +159,7 @@
 )
 
 (script-fu-register
-    "script-fu-HexGrid"
+    "script-fu-HexGrid-jms"
     "Grid - Hexagon..."
     "Creates a grid of X by Y Hexagons. either in rectangular or hexagonal packing. - \nfile:JMS-Grid_Create_Hexagon.scm"
     "James Sambrook"
@@ -124,16 +168,16 @@
     ""
     SF-OPTION     "Grid Type"                      '( "Rectangular"
                                                      "Hexagonal")
-    SF-ADJUSTMENT _"Circular Diameter"               '(40 10 200 1 5 0 0)
-    SF-ADJUSTMENT _"Hexes in X Direction"            '(10 1 100 1 5 0 0)
-    SF-ADJUSTMENT _"Hexes in y Direction"            '(10 1 100 1 5 0 0)
-    SF-ADJUSTMENT _"Outer Border Around Hexagons"    '(10 1 100 1 5 0 0)
-    SF-ADJUSTMENT _"Gap Between the Hexagons"        '(10 1 100 1 5 0 0)
-    SF-COLOR      _"Color for grid lines"            '(0 0 0)
-    SF-COLOR      _"Color for interior"   '(255 255 255)
+    SF-ADJUSTMENT "Circular Diameter"               '(40 10 200 1 5 0 0)
+    SF-ADJUSTMENT "Hexes in X Direction"            '(10 1 100 1 5 0 0)
+    SF-ADJUSTMENT "Hexes in y Direction"            '(10 1 100 1 5 0 0)
+    SF-ADJUSTMENT "Outer Border Around Hexagons"    '(10 0 100 1 5 0 0)
+    SF-ADJUSTMENT "Gap Between the Hexagons"        '(10 0 100 1 5 0 0)
+    SF-COLOR      "Color for Hexagons"            '(0 0 0)
+    SF-COLOR      "Color for background"             '(255 255 255)
 )
 
-(script-fu-menu-register "script-fu-HexGrid"
+(script-fu-menu-register "script-fu-HexGrid-jms"
     "<Toolbox>/Script-Fu/Render/Pattern/")
     
 ;end of script
