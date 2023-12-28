@@ -3,15 +3,15 @@
 ;
 ; Advanced Photo LAB Color Punch script  for GIMP 2.4
 ; Copyright (C) 2005 Lasm <lasm@rocketmail.com>
-;  http://www.godsimmediatecontact.com
-;  http://www.godsdirectcontact.org
-;  http://www.raindesigninc.com
+;  http://www. gods immediatecontact.com
+;  http://www. gods directcontact.org
+;  http://www. rain designinc.com
 ;
 ; Tags: color
 ;
 ;  Latest scripts/packages available at
-;  http://sourceforge.net/projects/lasmz/ 
-;  http://groups.yahoo.com/group/script-fu/
+;  http: // sourceforge.net/projects/lasmz/ 
+;  http://     groups.yahoo.com/group/script-fu/
 ;
 ; Welcome to the Line Art Coffee House
 ; This Photo LAB Color Punch script is for kung-fu connisseurs only 
@@ -153,9 +153,9 @@
   (let* ((curve-value (cons-array 8 'byte)))
    (aset curve-value 0 0)
    (aset curve-value 1 0)
-   (aset curve-value 2 0)
+   (aset curve-value 2 1)         ; was 0
    (aset curve-value 3 wuji)
-   (aset curve-value 4 255)
+   (aset curve-value 4 254)       ; was 255
    (aset curve-value 5 (- 255 wuji))
    (aset curve-value 6 255)
    (aset curve-value 7 255)
@@ -165,8 +165,12 @@
 
 (define (get-lab-curves saturate? curvestr)
   (if (eqv? saturate? TRUE)
-    (curve0 curvestr)
-    (curve1 curvestr)
+    (begin
+        (curve0 curvestr)
+    )
+    (begin
+        (curve1 curvestr)
+    )
   )
 )
 
@@ -198,9 +202,10 @@
         (if (< Bc 2)                       ;; sat/desat
           (append '(1) ((L-list Lc)))
           (if (= Bc 2)                       ;; color-tint
-            (append '(2) ((L-list Lc)))
-              (append '(0) ((L-list Lc))))
+              (append '(2) ((L-list Lc)))
+              (append '(0) ((L-list Lc)))
           )
+        )
       )
     )
     (define (B-locked Ac Lc)
@@ -209,8 +214,9 @@
           (append '(1) ((L-list Lc)))
           (if (= Ac 2)                        ;; color-tint
             (append '(2) ((L-list Lc)))
-            (append '(0) ((L-list Lc))))
+            (append '(0) ((L-list Lc)))
           )
+        )
       )
     )
     (define (A-list Ac lB? Bc Lc)
@@ -221,21 +227,28 @@
               (append '(1) ((B-locked Ac Lc)))
               (if (= Ac 2)                ;; color-tint
                 (append '(2) ((B-locked Ac Lc)))
-                (append '(0) ((B-locked Ac Lc)))))
+                (append '(0) ((B-locked Ac Lc)))
+              )
             )
+          )
           (begin                                ;; B is un-locked
             (if (< Ac 2)                ;; sat and desat
               (append '(1) ((B-list Bc Lc)))
                 (if (= Ac 2)                ;; color-tint
-                (append '(2) ((B-list Bc Lc)))
-                (append '(0) ((B-list Bc Lc)))))))  ;;; A-B-L
+                    (append '(2) ((B-list Bc Lc)))
+                    (append '(0) ((B-list Bc Lc)))
+                )
+            )
+          )
+        )  ;;; A-B-L
       )
     )
     (define (read-list ls)  ;; cumulative sum of list
         (if (null? ls)
           0
           (+ (car ls)
-             (read-list (cdr ls))))
+             (read-list (cdr ls)))
+        )
     )
 ;    ((A-list Achl lckB? Bchl Lchl))
     (if (> Hchl 0)
@@ -250,8 +263,10 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (calc-color-tint curvestr)
-  (let* ((color-tint (* 2 curvestr)))
-  color-tint
+  (let* (
+            (color-tint (* 2 curvestr))
+        )
+    color-tint
   )
 )
 
@@ -338,7 +353,7 @@
 ;                      (number->string stat-L)))
     
     (if (= stat-H 1)  ;; start of H channel create mask magic
-      (begin
+        (begin
             (set! hisdw-img (car (gimp-image-new width height 0)))
             (set! hisdw-color-layer (car (gimp-layer-new-from-drawable inLayer hisdw-img)))
             (gimp-image-insert-layer hisdw-img hisdw-color-layer 0 -1)
@@ -367,32 +382,32 @@
                     (gimp-layer-set-apply-mask hisdw-A-layer hisdw-maskA)
                 )
             )
-      (if (= stat-B 1)  ;; create B mask and apply it
-            (begin
-                (gimp-image-set-active-layer gray-img B-layer)
-                (set! hisdw-B-layer (copylayer B-layer "B copy"))
-                (gimp-image-insert-layer gray-img hisdw-B-layer 0 -1)
-                (set! hisdw-B-mask (car (gimp-layer-create-mask hisdw-B-layer 0)))
-                (gimp-layer-add-mask hisdw-B-layer hisdw-B-mask)
-                (set! hisdw-maskB (car (gimp-edit-paste hisdw-B-mask TRUE)))
-                (gimp-floating-sel-anchor hisdw-maskB)
-                (gimp-layer-set-apply-mask hisdw-B-layer hisdw-maskB)
+            (if (= stat-B 1)  ;; create B mask and apply it
+                (begin
+                    (gimp-image-set-active-layer gray-img B-layer)
+                    (set! hisdw-B-layer (copylayer B-layer "B copy"))
+                    (gimp-image-insert-layer gray-img hisdw-B-layer 0 -1)
+                    (set! hisdw-B-mask (car (gimp-layer-create-mask hisdw-B-layer 0)))
+                    (gimp-layer-add-mask hisdw-B-layer hisdw-B-mask)
+                    (set! hisdw-maskB (car (gimp-edit-paste hisdw-B-mask TRUE)))
+                    (gimp-floating-sel-anchor hisdw-maskB)
+                    (gimp-layer-set-apply-mask hisdw-B-layer hisdw-maskB)
+                )
             )
-      )
-      (if (= stat-L 1)  ;; create L mask and apply it
-            (begin
-                (gimp-image-set-active-layer gray-img L-layer)
-                (set! hisdw-L-layer (copylayer L-layer "L copy"))
-                (gimp-image-insert-layer gray-img hisdw-L-layer 0 -1)
-                (set! hisdw-L-mask (car (gimp-layer-create-mask hisdw-L-layer 0)))
-                (gimp-layer-add-mask hisdw-L-layer hisdw-L-mask)
-                (set! hisdw-maskL (car (gimp-edit-paste hisdw-L-mask TRUE)))
-                (gimp-floating-sel-anchor hisdw-maskL)
-                (gimp-layer-set-apply-mask hisdw-L-layer hisdw-maskL)
+            (if (= stat-L 1)  ;; create L mask and apply it
+                (begin
+                    (gimp-image-set-active-layer gray-img L-layer)
+                    (set! hisdw-L-layer (copylayer L-layer "L copy"))
+                    (gimp-image-insert-layer gray-img hisdw-L-layer 0 -1)
+                    (set! hisdw-L-mask (car (gimp-layer-create-mask hisdw-L-layer 0)))
+                    (gimp-layer-add-mask hisdw-L-layer hisdw-L-mask)
+                    (set! hisdw-maskL (car (gimp-edit-paste hisdw-L-mask TRUE)))
+                    (gimp-floating-sel-anchor hisdw-maskL)
+                    (gimp-layer-set-apply-mask hisdw-L-layer hisdw-maskL)
+                )
             )
-      )
-    )
-  )   ;; end of H channel create mask magic
+        )
+    )   ;; end of H channel create mask magic
     
     (if (= Achannel 0)
       (begin
@@ -472,13 +487,17 @@
       )
     )  ;; end of A tint
       
-      
+        
         (if (eqv? lockB? FALSE)
             (begin
                 (if (= Bchannel 0)
-                    (gimp-curves-spline B-layer 0 8 (get-lab-curves TRUE curvestr2))
-                    (if (= Bchannel 1)
-                        (gimp-curves-spline B-layer 0 8 (get-lab-curves FALSE curvestr2))
+                    (begin
+                        (gimp-curves-spline B-layer 0 8 (get-lab-curves TRUE curvestr2))
+                    )
+                    (begin
+                        (if (= Bchannel 1)
+                            (gimp-curves-spline B-layer 0 8 (get-lab-curves FALSE curvestr2))
+                        )
                     )
                 )
                 
@@ -565,7 +584,7 @@
                 )
             )
         )
-      
+        
         (set! comp-img (car
             (plug-in-drawable-compose RUN-NONINTERACTIVE gray-img L-layer A-layer B-layer 0 "Lab")))
         (set! tt-d (car (gimp-display-new comp-img))) ;; working
@@ -596,6 +615,7 @@
         
         (gimp-context-set-background old-bg)
         (gimp-context-set-foreground old-fg)
+        (gc); garbage collect; memory cleanup; arrays were used
         
   )
   
@@ -605,7 +625,7 @@
 (script-fu-register
     "script-fu-lab-color-punch"
     "<Toolbox>/Script-Fu/Colors/Lasm/Lasm LAB Color Punch"
-    "Lasm's famous special effect for photographs. This works on any RGB image. LAB Color Punch gives you the power and freedom to change the color you want ! Caution: it runs slowly on large images. \n file:lasm-lab-color-punch.scm"
+    "Lasm's famous special effect for photographs. This works on any RGB image. Allows for power saturation or color-tint. Color tint uses the Strength to determine shade between the 2 colors. Caution: it runs slowly on large images. \n file:lasm-lab-color-punch.scm"
     "lasm"
     "Copyright 2005, lasm"
     "Nov 1, 2005"
@@ -615,12 +635,12 @@
     SF-OPTION               "Highlight/Shadow"      SCRIPT-FU-LAB-COLOR-PUNCH-CHOICE3
     SF-ADJUSTMENT           "Sensitivity"           '(64 0 127 1 10 0 0)
     SF-OPTION               "Green/Red"             SCRIPT-FU-LAB-COLOR-PUNCH-CHOICE1
-    SF-ADJUSTMENT           "Strength"              '(64 0 127 1 10 1 0)
-    SF-TOGGLE               "Lock Blue/Yellow"      TRUE
+    SF-ADJUSTMENT           "Gr-Red Strength (0 to 127)"              '(94 0 127 1 10 1 0)
+    SF-TOGGLE               "Lock Blue/Yellow"      FALSE
     SF-OPTION               "Blue/Yellow"           SCRIPT-FU-LAB-COLOR-PUNCH-CHOICE1
-    SF-ADJUSTMENT           "Strength"              '(64 0 127 1 10 1 0)
+    SF-ADJUSTMENT           "Blu-Yel Strength (0-127)"              '(85 0 127 1 10 1 0)
     SF-OPTION               "Luminosity"            SCRIPT-FU-LAB-COLOR-PUNCH-CHOICE2
-    SF-ADJUSTMENT           "Strength"              '(64 0 127 1 10 1 0)
+    SF-ADJUSTMENT           "Strength (0-127)"              '(64 0 127 1 10 1 0)
     SF-TOGGLE               "New Layer"             TRUE
 )
 
