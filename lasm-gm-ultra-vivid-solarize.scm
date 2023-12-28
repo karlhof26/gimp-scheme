@@ -4,9 +4,9 @@
 ;
 ; LASM ultra vivid solarize script  for GIMP 2.4
 ; Original author: lasm <lasm@rocketmail.com>
-;;;  http://www.godsimmediatecontact.com
-;;;  http://www.godsdirectcontact.org
-;;;  http://www.raindesigninc.com
+;;;  http://www. godsimmediatecontact.com
+;;;  http://www. godsdirectcontact.org
+;;;  http://www. raindesigninc.com
 ;
 ; Tags: color
 ;
@@ -83,17 +83,37 @@
 (define (get-gm-solarize s-type curvestr)
     (let* (
             (curve-value (cons-array 4 'byte))
+            (reducecurvestr 0)
           )
+          
+          ;(gimp-message (number->string s-type))
+          ;(gimp-message (number->string curvestr))
+          
+          (set! reducecurvestr (/ curvestr 255))
+          
+          ;(gimp-message (number->string reducecurvestr))
+        ;(aset curve-value 0
+        ;    (if (= s-type 0)
+        ;        0
+        ;        curvestr))
+        ;(aset curve-value 1 0)
+        ;(aset curve-value 2 255)
+        ;(aset curve-value 3
+        ;    (if (= s-type 0)
+        ;        curvestr
+        ;        255))
+        
         (aset curve-value 0
             (if (= s-type 0)
-                0
-                curvestr))
-        (aset curve-value 1 0)
-        (aset curve-value 2 255)
+                0.0
+                reducecurvestr))
+        (aset curve-value 1 0.0)
+        (aset curve-value 2 1.0)
         (aset curve-value 3
             (if (= s-type 0)
-                curvestr
-                255))
+                reducecurvestr
+                1.0))
+        
         curve-value     ; return the curve
     )
 )
@@ -127,7 +147,8 @@
         (gimp-drawable-curves-spline inLayer HISTOGRAM-GREEN 6 (get-gm-color))
         (gimp-drawable-curves-spline inLayer HISTOGRAM-BLUE 6 (get-gm-color))
         
-        (gimp-curves-spline inLayer HISTOGRAM-VALUE 4 (get-gm-solarize
+        
+        (gimp-drawable-curves-spline inLayer HISTOGRAM-VALUE 4 (get-gm-solarize
             (if (eqv? auto? TRUE)
                 (begin
                     (set! intense 127)
@@ -139,15 +160,31 @@
             intense)
         )
         
-        ;;(gimp-message "got to here")
+        ;(gimp-message "got to here")
         
         (if (eqv? auto? TRUE)
             (begin
                 (if (eqv? ultra? TRUE)
                     (begin
                         (plug-in-color-enhance RUN-NONINTERACTIVE img inLayer)
-                        (gimp-drawable-levels-stretch inLayer))
+                        (gimp-drawable-levels-stretch inLayer)
+                    )
+                    (begin
                         (gimp-drawable-equalize inLayer FALSE)
+                    )
+                )
+            )
+            (begin
+                ;(gimp-message "Auto false")
+                (if (eqv? ultra? TRUE)
+                    (begin
+                        ;(gimp-message "auto false ultra true")
+                        (plug-in-color-enhance RUN-NONINTERACTIVE img inLayer)
+                        (gimp-drawable-levels-stretch inLayer)
+                    )
+                    (begin
+                        ;(gimp-drawable-equalize inLayer FALSE)
+                    )
                 )
             )
         )
@@ -165,7 +202,7 @@
         
         (gimp-image-undo-group-end img)
         (gimp-displays-flush)
-        (gc) ; array was used; garbage cleanuo the memory
+        (gc) ; array was used; garbage cleanup the memory
     )
 )
 
@@ -173,7 +210,7 @@
 
 (script-fu-register  "script-fu-gm-ultra-vivid-solarize-a"
     "<Toolbox>/Script-Fu/Colors/Lasm/Lasm Asymmetric Ultra Vivid Solarize"
-    "Version 2pt0 \n Lasm's fancy solarize effect. Toggle the Ultra Vivid button for a turbo-charged boost to the solarize effect. \n file:lasm-gm-ultra-vivid-solarize.scm"
+    "Version 2pt0. Lasm's fancy solarize effect. Toggle the Ultra Vivid button for a turbo-charged boost to the solarize effect. \n file:lasm-gm-ultra-vivid-solarize.scm"
     "lasm"
     "Copyright 2005, lasm"
     "December 01, 2005"
@@ -182,7 +219,7 @@
     SF-DRAWABLE     "The Layer"        0
     SF-TOGGLE       "Automatic"        TRUE
     SF-TOGGLE       "(Ultra)-Vivid"    TRUE
-    SF-ADJUSTMENT   "Intensity"        '(127 0 255 1 10 0 0)
+    SF-ADJUSTMENT   "Intensity (requires Automatic off)"        '(127 0 255 1 10 0 0)
 )
 
 ; end of script
